@@ -3,4 +3,4 @@
 Signal Flow Analysis (SFA)
 ==========================
 
-A simulation framework for processing multiple algorithms with multiple data
+A simulation framework enabling multiple algorithms to process multiple data
