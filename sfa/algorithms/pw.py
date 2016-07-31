@@ -7,15 +7,14 @@ Created on Thu Jul 28 15:03:58 2016
 
 import sfa.base
 
-def create_algorithm():
-    return PathwayWiring()
+def create_algorithm(abbr):
+    return PathwayWiring(abbr)
 # end of def
     
 
 class PathwayWiring(sfa.base.Algorithm):
-    def __init__(self):
-        super().__init__()        
-        self._id = "PW"
+    def __init__(self, abbr):
+        super().__init__(abbr)        
         self._name = "Feiglin's pathway wiring algorithm"       
 
     

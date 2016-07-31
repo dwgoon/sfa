@@ -8,15 +8,14 @@ import pandas as pd
 import sfa.base
 
 
-def create_algorithm():
-    return SignalPropagation()
+def create_algorithm(abbr):
+    return SignalPropagation(abbr)
 # end of def
     
 
 class SignalPropagation(sfa.base.Algorithm):
-    def __init__(self):
-        super().__init__()        
-        self._id = "SP"
+    def __init__(self, abbr):
+        super().__init__(abbr)        
         self._name = "Signal propagation algorithm"
     
     def initialize(self):

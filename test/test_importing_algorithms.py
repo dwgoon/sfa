@@ -43,10 +43,23 @@ class TestImportingAlgorithms(unittest.TestCase):
     def test_create_algorithm(self):
         for alg_mod in self._algorithms:
             self.assertTrue( hasattr(alg_mod, 'create_algorithm') )
-            alg = alg_mod.create_algorithm()
-            self.assertTrue( isinstance(alg, sfa.Algorithm) )
+            alg = alg_mod.create_algorithm("TEST")
+            self.assertTrue( isinstance(alg, sfa.base.Algorithm) )
         # end of for            
     # end of def test_create_algorithm
+
+
+    # Test Algorithms.load
+    def test_algorithms_load(self):
+        algs = sfa.Algorithms()
+        algs.load("SP") # Single algorithm
+        self.assertTrue( len(algs) == 1 )
+
+        algs.load(["GS",]) # Algorithms in an iterable object
+        self.assertTrue( len(algs) == 2 )
+
+        algs.load() # Load all algorithms
+        self.assertTrue( len(algs) == (len(self._algorithms)-1)  )
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

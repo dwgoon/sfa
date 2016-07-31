@@ -5,14 +5,14 @@
 # This module is for the purpose of testing
 # (This algorithm is not included in Algorithms object)
 
-from sfa import Algorithm
+import sfa.base
 
 
-def create_algorithm():
-    return ThisAlgorithm()
+def create_algorithm(abbr):
+    return ThisAlgorithm(abbr)
 
 
-class ThisAlgorithm(Algorithm):
+class ThisAlgorithm(sfa.base.Algorithm):
     def compute(self):
         pass
     

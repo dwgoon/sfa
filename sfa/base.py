@@ -31,8 +31,12 @@ class Algorithm(ABC):
         >>> res = alg.compute()    
         
     """
-    def __init__(self):
-        self._id = None
+    def __init__(self, abbr):
+        """
+        abbr: Abbreviation of algorithm name
+        name: Full name of this algorithm
+        """
+        self._abbr = abbr
         self._name = None
         self._data = None
         self._params = None
@@ -43,8 +47,8 @@ class Algorithm(ABC):
 
     # Read-only properties
     @property
-    def id(self):
-        return self._id
+    def abbr(self):
+        return self._abbr
 
     @property
     def name(self):
