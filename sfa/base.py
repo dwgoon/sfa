@@ -35,8 +35,8 @@ class Algorithm(ABC):
         self._params = None
         self._result = None
 
-    def __str__(self):
-        return self._name
+    #def __str__(self):
+    #    return self._abbr
 
     # Read-only properties
     @property
@@ -88,6 +88,11 @@ class Data(ABC):
         """
         self._abbr = abbr
         self._name = None
+        self._A = None
+        self._n2i = None
+        self._dg = None
+        self._df_ba = None
+        self._df_exp = None
 
     def __str__(self):
         return self._name
@@ -100,5 +105,26 @@ class Data(ABC):
     @property
     def name(self):
         return self._name
+
+    # Read-only members
+    @property
+    def A(self): # Adjacency matrix
+        return self._A
+
+    @property
+    def n2i(self): # Name to index mapping (hashable)
+        return self._n2i
+
+    @property
+    def dg(self): # Directed graph object of NetworkX
+        return self._dg
+
+    @property # DataFrame of basal activity
+    def df_ba(self):
+        return self._df_ba
+
+    @property # DataFrame of experimental result
+    def df_exp(self):
+        return self._df_exp
 
 # end of class Data
