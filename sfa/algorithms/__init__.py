@@ -6,12 +6,15 @@ import re
 import importlib
 import collections
 
+
 class Algorithms(collections.MutableMapping):
     """
     An simple singleton object, which handles algorithm objects with
     its dictionary (i.e., mapping) functionality.
     """
+
     __instance = None
+
     def __new__(cls):
         if not Algorithms.__instance:
             Algorithms.__instance = super().__new__(cls)            
@@ -54,8 +57,7 @@ class Algorithms(collections.MutableMapping):
         self._algorithms[abbr_up] = alg
 
         # For testing purpose
-        print( "%s has been loaded."%(mod.__name__) )
-
+        print("%s has been loaded."%(mod.__name__))
 
     def load(self, abbr=None):
         """
@@ -67,7 +69,7 @@ class Algorithms(collections.MutableMapping):
             if type(abbr) is str:
                 self._load_algorithm(abbr)
             elif hasattr(abbr, '__iter__'):
-            # An iterable object contains multiple abbreviations of algorithms.
+                # An iterable object contains multiple abbreviations.
                 for elem in abbr:
                     self._load_algorithm(elem)
         else:       
@@ -78,9 +80,6 @@ class Algorithms(collections.MutableMapping):
                     self._load_algorithm(alg_mod_name)
             # end of for
 
-# end of def class
-        
-        
 """
 <References>
 
@@ -90,3 +89,6 @@ http://stackoverflow.com/questions/3387691/python-how-to-perfectly-override-a-di
 [Singleton]
 http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
 """
+# end of def class
+        
+        

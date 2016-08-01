@@ -10,13 +10,14 @@ import importlib
 import sfa.base
 import sfa.algorithms
 
+
 class TestImportingAlgorithms(unittest.TestCase):
-    
+
     def setUp(self):
         self._algorithms = []
         
         # Directory path with the file pattern for algorithm modules
-        dir_path = sfa.algorithms.__path__[0]            
+        dir_path = os.path.dirname(sfa.algorithms.__file__)
         dir_fpat = os.path.join(dir_path, "[a-zA-Z0-9]*.py")        
                 
         # Import algorithms based on its file name
@@ -30,7 +31,7 @@ class TestImportingAlgorithms(unittest.TestCase):
             self._algorithms.append(mod)
         # end of for
     # end of def setUp
-    
+
     def test_import_module(self):
         # Module path
         mpath = 'sfa.algorithms.this_should_be_imported'         
@@ -48,10 +49,11 @@ class TestImportingAlgorithms(unittest.TestCase):
         # end of for            
     # end of def test_create_algorithm
 
-
-    # Test Algorithms.load
-    def test_algorithms_load(self):
-        algs = sfa.Algorithms()
+    def test_algorithmset_load(self):
+        """
+        Test AlgorithmSet.load
+        """
+        algs = sfa.AlgorithmSet()
         algs.load("SP") # Single algorithm
         self.assertTrue( len(algs) == 1 )
 

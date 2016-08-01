@@ -2,7 +2,7 @@
 
 
 #from .base import Algorithm
-from .algorithms import Algorithms
+from .containers import AlgorithmSet
 
 from .utils import *
 
@@ -15,7 +15,7 @@ from .manager import JobManager
 
 __all__ = []
 
-__all_algorithms = ["Algorithms",]
+__all_algorithms = ["AlgorithmSet",]
 __all_utils = ["read_sif",]
 
 
