@@ -31,21 +31,22 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
         list_nodes = sorted(set_nodes)
     else:
         list_nodes = list(set_nodes)
-            
-    if not as_nx:
-        N = len(set_nodes)
-        adj = np.zeros((N,N), dtype=np.int)
-        
-        for isrc, name in enumerate(list_nodes):
-            name_to_idx[name] = isrc # index of source
-        # end of for
-        for name_src in name_to_idx:
-            isrc = name_to_idx[name_src]
-            for name_tgt, sign in dict_links[name_src]:
-                itgt = name_to_idx[name_tgt]
-                adj[itgt, isrc] = sign    
+
+    N = len(set_nodes)
+    adj = np.zeros((N, N), dtype=np.int)
+
+    for isrc, name in enumerate(list_nodes):
+        name_to_idx[name] = isrc  # index of source
+    # end of for
+    for name_src in name_to_idx:
+        isrc = name_to_idx[name_src]
+        for name_tgt, sign in dict_links[name_src]:
+            itgt = name_to_idx[name_tgt]
+            adj[itgt, isrc] = sign
             # end of for
-        # end of for
+    # end of for
+
+    if not as_nx:
         return adj, name_to_idx
     else: # NetworkX DiGraph
         dg = nx.DiGraph()
@@ -60,7 +61,7 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
                             attr_dict={'sign': sign})
             # end of for
         # end of for
-        return dg
+        return adj, name_to_idx, dg
     # end of else
 # end of def
 

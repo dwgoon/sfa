@@ -156,3 +156,6 @@ class DataSet(SingletonContainer):
 
     def _load_data(self, key):
         pass
+
+
+    def _load_all(self):
