@@ -3,65 +3,71 @@
 import unittest
 
 import os
-import sys
 import glob
 import importlib
 
 import sfa.base
-import sfa.algorithms
+import sfa.data
 
 
 class TestImportingData(unittest.TestCase):
 
     def setUp(self):
-        self._algorithms = []
+        self._data = {}
         
         # Directory path with the file pattern for algorithm modules
-        dir_path = os.path.dirname(sfa.algorithms.__file__)
-        dir_fpat = os.path.join(dir_path, "[a-zA-Z0-9]*.py")        
+        dir_path = os.path.dirname(sfa.data.__file__)
                 
-        # Import algorithms based on its file name
-        for fdir in glob.glob(dir_fpat):
-            fname = os.path.basename(fdir)
-            alg_mod_name = fname.split('.')[0] # Algorithm module name
-            fstr_module_path = "%s.%s"%(sfa.algorithms.__package__,
-                                        alg_mod_name)
+        # Create all data objects
+        for elem in os.listdir(dir_path):
+            dpath = os.path.join(dir_path, elem)
+            if not elem.startswith('_') and os.path.isdir(dpath):
+                fstr_module_path = "%s.%s"%(sfa.data.__package__,
+                                            elem)
             
-            mod = importlib.import_module(fstr_module_path)
-            self._algorithms.append(mod)
+                mod = importlib.import_module(fstr_module_path)
+                data = mod.create_data()
+                if type(data) is dict:
+                    self._data.update(data)
+                elif type(data) is list:
+                    for obj in data:
+                        self._data[obj.abbr] = obj
+                elif isinstance(data, sfa.base.Data):
+                    self._data[data.abbr] = data
+                else:
+                    self.fail("%s.create_data() returns unsupported type."%(dname))
+            # end of if
         # end of for
     # end of def setUp
 
-    def test_import_module(self):
-        # Module path
-        mpath = 'sfa.algorithms.this_should_be_imported'         
-        self.assertTrue(mpath in sys.modules)
-        
-        mpath = 'sfa.algorithms._this_should_not_be_imported'
-        self.assertFalse(mpath in sys.modules)
-    # end of def test_import
-        
-    def test_create_algorithm(self):
-        for alg_mod in self._algorithms:
-            self.assertTrue( hasattr(alg_mod, 'create_algorithm') )
-            alg = alg_mod.create_algorithm("TEST")
-            self.assertTrue( isinstance(alg, sfa.base.Algorithm) )
-        # end of for            
-    # end of def test_create_algorithm
+    def test_verify_data_object(self):
+        for abbr, data in self._data.items():
+            self.assertTrue(isinstance(data, sfa.base.Data))
+        # end of for
+    # end of def test_create_data
 
-    def test_algorithmset_load(self):
+    def test_data_size(self):
+        data = self._data["BORISOV_2009_AUC_EGF+I"]
+        self.assertEqual(data.df_exp.shape, (91, 13))
+
+        data = self._data["MOLINELLI_2013"]
+        self.assertEqual(data.df_exp.shape, (44, 25))
+    # end of def test_data_size
+
+
+    def test_dataset_load(self):
         """
-        Test AlgorithmSet.load
+        Test DataSet.load
         """
-        algs = sfa.AlgorithmSet()
-        algs.load("SP") # Single algorithm
-        self.assertTrue( len(algs) == 1 )
+        ds = sfa.DataSet()
+        data = ds.load("NELENDER_2008")  # Single algorithm
+        self.assertTrue(len(algs) == 1)
 
-        algs.load(["GS",]) # Algorithms in an iterable object
-        self.assertTrue( len(algs) == 2 )
+        algs.load(["GS", ])  # Algorithms in an iterable object
+        self.assertTrue(len(algs) == 2)
 
-        algs.load() # Load all algorithms
-        self.assertTrue( len(algs) == (len(self._algorithms)-1)  )
+        algs.load()  # Load all algorithms
+        self.assertTrue(len(algs) == (len(self._algorithms) - 1))
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

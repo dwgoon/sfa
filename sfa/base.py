@@ -35,8 +35,12 @@ class Algorithm(ABC):
         self._params = None
         self._result = None
 
-    #def __str__(self):
-    #    return self._abbr
+    def __str__(self):
+        return self._abbr
+
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        return "%s object" % (class_name)
 
     # Read-only properties
     @property
@@ -96,6 +100,10 @@ class Data(ABC):
 
     def __str__(self):
         return self._name
+
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        return "%s object" % (class_name)
 
     # Read-only properties
     @property
