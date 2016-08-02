@@ -81,12 +81,12 @@ class Algorithm(ABC):
 
 
 class Data(ABC):
-    def __init__(self, abbr):
+    def __init__(self):
         """
         abbr: Abbreviation of data name
         name: Full name of this data
         """
-        self._abbr = abbr
+        self._abbr = None
         self._name = None
         self._A = None
         self._n2i = None

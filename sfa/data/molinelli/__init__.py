@@ -1,5 +1,48 @@
 # -*- coding: utf-8 -*-
+
 """
-@author: dwlee
+[Reference]
+Molinelli, E. J. et al.
+Perturbation biology: inferring signaling networks in cellular systems.
+PLoS Computational Biology, (2013) 9(12), e1003290.
+http://doi.org/10.1371/journal.pcbi.1003290
+
+[Information]
+
 """
+
+import os
+
+import pandas as pd
+
+import sfa
+import sfa.base
+
+def create_data():
+    return Molinelli()
+
+
+class Molinelli(sfa.base.Data):
+
+    def __init__(self):
+
+        self._abbr = "MOLINELLI_2013"
+        self._name = "Molinell et al. 2013 PLoS Comput Biol 9(12): e1003290"
+
+        dpath = os.path.dirname(__file__)
+        dpath_network = os.path.join(dpath, "network.sif")
+
+        A, n2i, dg = sfa.read_sif(dpath_network, as_nx=True)
+        self._A = A
+        self._n2i = n2i
+        self._dg = dg
+        self._df_ba = pd.read_table(os.path.join(dpath, "ba.tsv"),
+                                    header=0, index_col=0)
+        self._df_exp = pd.read_table(os.path.join(dpath, "exp.tsv"),
+                                     header=0, index_col=0)
+
+    # end of def __init__
+
+
+
 
