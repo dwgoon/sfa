@@ -16,7 +16,8 @@ from .manager import JobManager
 __all__ = []
 
 __all_algorithms = ["AlgorithmSet",]
-__all_utils = ["read_sif",]
+__all_utils = ["FrozenClass",
+               "read_sif",]
 
 
 __all__ += __all_algorithms

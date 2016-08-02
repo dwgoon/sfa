@@ -18,6 +18,4 @@ if __name__ == "__main__":
     data.df_exp # Experimental result
     
     alg = sp.create_algorithm()
-        
-    
-    
+

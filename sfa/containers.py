@@ -11,21 +11,26 @@ from abc import ABC, abstractmethod
 import sfa.algorithms
 
 
-class SingletonContainer(ABC, collections.MutableMapping):
+class Container(ABC, collections.MutableMapping):
     """
-    An simple singleton class, which handles multiple objects with
+    A simple singleton class, which handles multiple objects with
     its hashable functionality (using dictionary).
     """
 
     __instance = None
 
     def __new__(cls):
-        if not SingletonContainer.__instance:
-            SingletonContainer.__instance = super().__new__(cls)
-        return SingletonContainer.__instance
+        if not Container.__instance:
+            Container.__instance = super().__new__(cls)
+        return Container.__instance
 
     def __init__(self, *args, **kwargs):
+        """
+        _dict: internal data structure, which is hashable.
+        _dpath: Path for the directory containing algorithms or data.
+        """
         self._dict = dict()
+        self._dpath = None
         self.update(dict(*args, **kwargs))
 
     def __getitem__(self, key):
@@ -46,19 +51,13 @@ class SingletonContainer(ABC, collections.MutableMapping):
     def __keytransform__(self, key):
         return key
 
-    @abstractmethod
+
     def load(self, keys=None):
         """
-        Load a single or multiple objects according to keys.
-        keys: a single string or multiple strings in an iterable object.
-              All related objects are loaded if 'keys' is None.
+            Load a single or multiple objects according to keys.
+            keys: a single string or multiple strings in an iterable object.
+                  All related objects are loaded if 'keys' is None.
         """
-        # dir_path should be defined according to the class
-        # self._load(dir_path, keys)
-    # end of load
-
-    def load(self, fpath, keys=None):
-        dir_path = os.path.basename(fpath)
         if keys is not None:
             if type(keys) is str:
                 self._load_single(keys)
@@ -76,7 +75,7 @@ class SingletonContainer(ABC, collections.MutableMapping):
     # end of def
 
     @abstractmethod
-    def _load_all(self, dir_path):
+    def _load_all(self):
         """Load all objects"""
     # end of def
 
@@ -92,13 +91,16 @@ http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
 # end of def class
 
 
-class AlgorithmSet(SingletonContainer):
-    def load(self, keys=None):
-        # sfa.algorithms.__file__ represents a directory path containing
-        # sfa.algorithms.__init__.py
-        dir_path = os.path.dirname(sfa.algorithms.__file__)
-        self._load(dir_path, keys)
-    # end of def load
+class AlgorithmSet(Container):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        """
+        sfa.algorithms.__file__ represents a directory path
+        containing sfa.algorithms's init module (__init__.py).
+        """
+        self._dpath = os.path.basename(sfa.algorithms.__file__)
+
+    # end of def __init__
 
     def _load_single(self, key):
         key_low = key.lower()
@@ -117,11 +119,11 @@ class AlgorithmSet(SingletonContainer):
         # For testing purpose
         print("%s has been loaded." % (mod.__name__))
 
-    def _load_all(self, dir_path):
+    def _load_all(self):
         """
         Import all algorithms, based on file names
         """
-        for fname in os.listdir(dir_path):
+        for fname in os.listdir(self._dpath):
             if re.match(r"[^_]\w+\.py", fname):
                 mod_name = fname.split('.')[0]  # Module name
                 self._load_single(mod_name)
@@ -130,29 +132,36 @@ class AlgorithmSet(SingletonContainer):
 
 # end of class Algorithms
 
-class DataSet(SingletonContainer):
+class DataSet(Container):
     """
     The name of this class is similar to that of 'DataSet' in C#.
     The instance of this class handles multiple sfa.base.Data objects.
     """
-    def load(self, keys=None):
-        dir_path = os.path.dirname(sfa.data.__file__)
-        if keys is not None:
-            if type(keys) is str:
-                self._load_single(keys)
-            elif hasattr(keys, '__iter__'):
-                # An iterable object contains multiple abbreviations.
-                for elem in keys:
-                    self._load_single(elem)
-        else:
-            # Import algorithms based on its file name
-            for fname in os.listdir(dir_path):
-                if re.match(r"[^_]\w+\.py", fname):
-                    alg_mod_name = fname.split('.')[0]  # Algorithm module name
-                    self._load_single(alg_mod_name)
-            # end of for
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        """
+        sfa.data.__file__ represents a directory path
+        containing sfa.data's init module (__init__.py).
+        """
+        self._dpath = os.path.basename(sfa.data.__file__)
 
-    # end of def
+    # end of def __init__
 
-    def _load_data(self, key):
+
+
+    def _load_single(self, key):
         pass
+    # end of def _load_single
+
+    def _load_all(self):
+        """
+        Import all algorithms, based on file names
+        """
+        for fname in os.listdir(self._dpath):
+            if re.match(r"[^_]\w+\.py", fname):
+                mod_name = fname.split('.')[0]  # Module name
+                self._load_single(mod_name)
+        # end of for
+    # end of def _load_all
+
+# end of def class DataSet
