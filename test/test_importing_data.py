@@ -35,7 +35,8 @@ class TestImportingData(unittest.TestCase):
                 elif isinstance(data, sfa.base.Data):
                     self._data[data.abbr] = data
                 else:
-                    self.fail("%s.create_data() returns unsupported type."%(dname))
+                    self.fail("%s.create_data() returns unsupported type." \
+                              % (fstr_module_path))
             # end of if
         # end of for
     # end of def setUp
@@ -54,24 +55,24 @@ class TestImportingData(unittest.TestCase):
         self.assertEqual(data.df_exp.shape, (44, 25))
     # end of def test_data_size
 
-
     def test_dataset_load(self):
         """
         Test DataSet.load
         """
         ds = sfa.DataSet()
-        data = ds.load("NELENDER_2008")  # Single algorithm
-        self.assertTrue(len(algs) == 1)
+        ds.load("NELENDER_2008")  # Single data
+        self.assertTrue(len(ds) == 1)
 
-        algs.load(["GS", ])  # Algorithms in an iterable object
-        self.assertTrue(len(algs) == 2)
+        ds.load(["MOLINELLI_2013",])  # Specify data in an iterable object
+        self.assertTrue(len(ds) == 2)
 
-        algs.load()  # Load all algorithms
-        self.assertTrue(len(algs) == (len(self._algorithms) - 1))
+        ds.load("BORISOV_2009")
+        self.assertTrue(len(ds) == 3)
+        self.assertTrue(len(ds["BORISOV_2009"]) == 8)  # A collection of data
+
+    # end of def test_dataset_load
+
+# end of def class TestImportingData
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-    
-
-
-    
