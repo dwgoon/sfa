@@ -19,10 +19,10 @@ import sfa
 import sfa.base
 
 def create_data():
-    return Molinelli()
+    return MolinelliData()
 
 
-class Molinelli(sfa.base.Data):
+class MolinelliData(sfa.base.Data):
 
     def __init__(self):
 

@@ -13,9 +13,8 @@ class TestReadingNetwork(unittest.TestCase):
     
     def test_read_network(self):
         dpath = sfa.data.__path__[0]
-        fpath = os.path.join(dpath, "borisov", "network.sif")
-        A, n2i = sfa.read_sif(fpath)
-        dg = sfa.read_sif(fpath, as_nx=True)
+        fpath = os.path.join(dpath, "borisov_2009", "network.sif")
+        A, n2i, dg = sfa.read_sif(fpath, as_nx=True)
 
         self.assertTrue( isinstance(dg, nx.DiGraph) )        
         self.assertEqual(A.shape[0], dg.number_of_nodes())
