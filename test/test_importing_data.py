@@ -3,7 +3,6 @@
 import unittest
 
 import os
-import glob
 import importlib
 
 import sfa.base
@@ -60,13 +59,13 @@ class TestImportingData(unittest.TestCase):
         Test DataSet.load
         """
         ds = sfa.DataSet()
-        ds.load("NELENDER_2008")  # Single data
+        ds.create("NELENDER_2008")  # Single data
         self.assertTrue(len(ds) == 1)
 
-        ds.load(["MOLINELLI_2013",])  # Specify data in an iterable object
+        ds.create(["MOLINELLI_2013", ])  # Specify data in an iterable object
         self.assertTrue(len(ds) == 2)
 
-        ds.load("BORISOV_2009")
+        ds.create("BORISOV_2009")
         self.assertTrue(len(ds) == 3)
         self.assertTrue(len(ds["BORISOV_2009"]) == 8)  # A collection of data
 

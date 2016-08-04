@@ -54,13 +54,13 @@ class TestImportingAlgorithms(unittest.TestCase):
         Test AlgorithmSet.load
         """
         algs = sfa.AlgorithmSet()
-        algs.load("SP") # Single algorithm
+        algs.create("SP") # Single algorithm
         self.assertTrue( len(algs) == 1 )
 
-        algs.load(["GS",]) # Algorithms in an iterable object
+        algs.create(["GS", ]) # Algorithms in an iterable object
         self.assertTrue( len(algs) == 2 )
 
-        algs.load() # Load all algorithms
+        algs.create() # Load all algorithms
         self.assertTrue( len(algs) == (len(self._algorithms)-1)  )
 
 if __name__ == "__main__":

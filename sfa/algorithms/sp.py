@@ -5,45 +5,100 @@
 
 import numpy as np
 import pandas as pd
+
 import sfa.base
+from sfa.utils import FrozenClass
 
 
 def create_algorithm(abbr):
     return SignalPropagation(abbr)
 # end of def
-    
+
+
+class ParameterSet(FrozenClass):
+    """
+    Parameters of SignalPropagation algorithm.
+    """
+    def __init__(self):
+        self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
+        self._freeze()
+
+    @property
+    def alpha(self):
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, val):
+        if not isinstance(val, float):
+            raise TypeError("alpha should be float value in (0,1).")
+        elif (val <= 0.0) or (val >= 1.0):
+            raise ValueError("alpha should be within (0,1).")
+        else:
+            self._alpha = val
+
+# end of def class
+
+
+class Result(FrozenClass):
+
+    def __init__(self):
+        self._df_sim = None
+        self._freeze()
+
+    @property
+    def df_sim(self):
+        return self._df_sim
+
+    @df_sim.setter
+    def df_sim(self, val):
+        self._df_sim = val
+
+# end of def class
 
 class SignalPropagation(sfa.base.Algorithm):
     def __init__(self, abbr):
         super().__init__(abbr)        
         self._name = "Signal propagation algorithm"
+        self._params = ParameterSet()
+
+        # The following members are assigned the instances in initialize()
+        self._b = None
+        self._ind_ba = None
+        self._val_ba = None
+        self._iadj_to_idf = None
+        self._P = None
     
     def initialize(self):
-        A = self._data.A        
-        name_to_idx = self._data.name_to_idx 
-        df_ba = self._data.df_ba # Basal activity
+        A = self._data.A  # Adjacency matrix
+        n2i = self._data.n2i  # Name to index mapper
+        df_ba = self._data.df_ba  # Basal activity
         
-        self._x0 = np.zeros(A.shape[0])
+        self._b = np.zeros(A.shape[0])
         self._ind_ba = []
         self._val_ba = []
         for i, row in enumerate(df_ba.iterrows()):
             row = row[1]
-            list_ind = [] # Indices
-            list_val = [] # Values
+            list_ind = []  # Indices
+            list_val = []  # Values
             for target in df_ba.columns[ row.nonzero() ]:
-                list_ind.append( name_to_idx[target] )
-                list_val.append( row[target] )
+                list_ind.append(n2i[target])
+                list_val.append(row[target])
             # end of for
-            self._ind_ba.append( list_ind )
-            self._val_ba.append( list_val )
+
+            self._ind_ba.append(list_ind)
+            self._val_ba.append(list_val)
         # end of for      
     
-        # Mapping from the indices of adjacency to those of DataFrame
-        self._iadj_to_idf = list(map(lambda x: name_to_idx[x],
+        # For mapping from the indices of adj. matrix to those of DataFrame
+        # (arrange the indices of adj. matrix according to df_exp.columns)
+        self._iadj_to_idf = list(map(lambda x: n2i[x],
                                      self._data.df_exp.columns))
     
         # Transition matrix
         self._P = self.normalize(A)
+
+        # Create result object
+        self._result = Result()
         
     # end of def
         
@@ -52,38 +107,40 @@ class SignalPropagation(sfa.base.Algorithm):
         alpha = self._params.alpha
 
         P = self._P
-        df_exp = self._data.df_exp # Result of experiment
+        df_exp = self._data.df_exp  # Result of experiment
 
         # Simulation result
         sim_result = np.zeros(df_exp.shape, dtype=np.float)    
         
-        x0 = self._x0
+        b = self._b
+        #x_cnt, trjx_cnt = self.propagate(P, b, b, a=alpha, notrj=False)
+
         # Main loop of the simulation
         for i, ind_ba in enumerate(self._ind_ba):
-            x_cnt, trjx_cnt = self.propagate(P, x0, x0, a=alpha, notrj=False)
             ind_ba = self._ind_ba[i]
-            x0_ba_store = x0[ ind_ba ][:]            
-
-            x0[ ind_ba ] = self._val_ba[i] # Basal activity
+            b_store = b[ ind_ba ][:]
+            b[ ind_ba ] = self._val_ba[i] # Basal activity
             
-            x_exp, trjx_exp = self.propagate(P, x0, x0, a=alpha, notrj=False)
-            rel_change = ((x_exp-x_cnt)/np.abs(x_cnt))[ self._iadj_to_idf ]            
-            sim_result[i, :] = rel_change                        
-            x0[ ind_ba ] = x0_ba_store
+            x_exp, trjx_exp = self.propagate(P, b, b, a=alpha, notrj=False)
+
+            # rel_change = ((x_exp-x_cnt)/np.abs(x_cnt))[ self._iadj_to_idf ]
+            # sim_result[i, :] = rel_change
+            sim_result[i, :] = x_exp[self._iadj_to_idf]
+            b[ ind_ba ] = b_store
         # end of for
        
-        df_sim = pd.DataFrame(self._sim_result,
+        df_sim = pd.DataFrame(sim_result,
                               index=df_exp.index,
                               columns=df_exp.columns)
     
         # Abandon the proteins which are not included in the exp. results.
-        self._result = df_sim[ df_exp.columns ]
+        self._result.df_sim = df_sim[ df_exp.columns ]
     # end of def compute
         
     def normalize(self,
-                   A,
-                   norm_in=True,
-                   norm_out=True):
+                  A,
+                  norm_in=True,
+                  norm_out=True):
                 
         # Check whether A is a square matrix
         if A.shape[0] != A.shape[1]:
@@ -124,7 +181,8 @@ class SignalPropagation(sfa.base.Algorithm):
         return P
     # end of def normalize
     
-    def propagate(P,
+    def propagate(self,
+                  P,
                   xi,
                   b,
                   a=0.5,
@@ -212,4 +270,4 @@ class SignalPropagation(sfa.base.Algorithm):
             return x_t2, np.array(trj_x)
     # end of def
             
-# end of class
+# end of def class

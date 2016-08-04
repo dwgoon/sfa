@@ -8,6 +8,7 @@ import collections
 
 from abc import ABC, abstractmethod
 
+import sfa.base
 import sfa.algorithms
 import sfa.data
 
@@ -28,7 +29,7 @@ class Container(ABC, collections.MutableMapping):
     def __init__(self, *args, **kwargs):
         """
         _dict: internal data structure, which is hashable.
-        _dpath: Path for the directory containing algorithms or data.
+        _dpath: Path of the directory containing algorithms, data, etc.
         """
         self._map = dict()
         self._dpath = None
@@ -38,7 +39,11 @@ class Container(ABC, collections.MutableMapping):
         return self._map[key]
 
     def __setitem__(self, key, value):
-        self._map[key] = value
+        if isinstance(value, sfa.base.ContainerItem):
+            self._map[key] = value
+        else:
+            raise TypeError("Container.__setitem__ only accepts "
+                            "sfa.base.ContainerItem type object.")
 
     def __delitem__(self, key):
         del self._map[key]
@@ -55,31 +60,31 @@ class Container(ABC, collections.MutableMapping):
     def values(self):
         return self._map.values()
 
-    def load(self, keys=None):
+    def create(self, keys=None):
         """
-            Load a single or multiple objects according to keys.
+            Create a single or multiple objects according to keys.
             keys: a single string or multiple strings in an iterable object.
-                  All related objects are loaded if 'keys' is None.
+                  All related objects are created if 'keys' is None.
         """
         if keys is not None:
             if type(keys) is str:
-                self._load_single(keys)
+                self._create_single(keys)
             elif hasattr(keys, '__iter__'):
                 # An iterable object contains multiple keys.
                 for elem in keys:
-                    self._load_single(elem)
+                    self._create_single(elem)
         else:
-            self._load_all()
-    # end of def _load
+            self._crate_all()
+    # end of def create
 
     @abstractmethod
-    def _load_single(self, key):
-        """Load a single object"""
+    def _create_single(self, key):
+        """Create a single object"""
     # end of def
 
     @abstractmethod
-    def _load_all(self):
-        """Load all objects"""
+    def _crate_all(self):
+        """Create all objects"""
     # end of def
 
 """
@@ -105,13 +110,13 @@ class AlgorithmSet(Container):
 
     # end of def __init__
 
-    def _load_single(self, key):
+    def _create_single(self, key):
         key_low = key.lower()
         fstr_module_path = "%s.%s" % (sfa.algorithms.__package__,
                                       key_low)
 
-        key_up = key.upper()  # Avoid redundant importing
-        if key_up in self._map:
+        _key= key.upper()  # We use captial characters for the key.
+        if _key in self._map:  # Avoid redundant importing
             return
 
         mod = importlib.import_module(fstr_module_path)
@@ -119,22 +124,22 @@ class AlgorithmSet(Container):
         if "this_should_be_imported" in mod.__name__:
             return
 
-        alg = mod.create_algorithm(key_up)
-        self._map[key_up] = alg
+        alg = mod.create_algorithm(_key)
+        self._map[_key] = alg
 
         # For testing purpose
-        print("%s has been loaded." % (mod.__name__))
+        print("%s has been created." % (mod.__name__))
 
-    def _load_all(self):
+    def _crate_all(self):
         """
         Import all algorithms, based on file names
         """
         for entity in os.listdir(self._dpath):
             if re.match(r"[^_]\w+\.py", entity):
                 mod_name = entity.split('.')[0]  # Module name
-                self._load_single(mod_name)
+                self._create_single(mod_name)
         # end of for
-    # end of def _load_all
+    # end of def _crate_all
 
 # end of class Algorithms
 
@@ -154,14 +159,14 @@ class DataSet(Container):
 
     # end of def __init__
 
-    def _load_single(self, key):
+    def _create_single(self, key):
         key_items = key.split("_")
         key_1st, key_2nd = key_items[:2]
         mod_name = "%s_%s"%(key_1st.lower(), key_2nd.lower())
         fstr_module_path = "%s.%s" % (sfa.data.__package__, mod_name)
 
-        key_upper = key.upper()
-        if key_upper in self._map:  # Avoid redundant importing
+        _key = key.upper()
+        if _key in self._map:  # Avoid redundant importing
             return
         elif mod_name.upper() in self._map:
             # All data object in this directory has been created before.
@@ -173,28 +178,29 @@ class DataSet(Container):
         else:  # Create all data objects from this directory
             data = mod.create_data()
 
-        if type(data) is dict:
-            self._map[key_upper] = data
-        elif type(data) is list:
-            self._map[key_upper] = {obj.abbr: obj for obj in data}
+        if isinstance(data, dict):
+            self._map[_key] = data
+        elif isinstance(data, list):
+            self._map[_key] = {obj.abbr.upper(): obj for obj in data}
         elif isinstance(data, sfa.base.Data):
-            self._map[data.abbr] = data
+            _key = data.abbr.upper()
+            self._map[_key] = data
         else:
             err_msg = "%s.create_data() returns unsupported type."\
                       % (fstr_module_path)
             raise TypeError(err_msg)
         # end of if
-    # end of def _load_single
+    # end of def _create_single
 
-    def _load_all(self):
+    def _crate_all(self):
         """
         Import all data, based on the directory names of data modules
         """
         for entity in os.listdir(self._dpath):
             dpath = os.path.join(self._dpath, entity)
             if not entity.startswith('_') and os.path.isdir(dpath):
-                self._load_single(entity)
+                self._create_single(entity)
         # end of for
-    # end of def _load_all
+    # end of def _crate_all
 
 # end of def class DataSet

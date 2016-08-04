@@ -8,7 +8,33 @@ class Result(ABC):
 # end of class Result
 
 
-class Algorithm(ABC):
+class ContainerItem(ABC):
+    def __init__(self, abbr=None, name=None):
+        """
+        abbr: Abbreviation (or symbol) representing this item
+        name: Full name of this item
+        """
+        self._abbr = abbr
+        self._name = name
+
+    def __str__(self):
+        return self._abbr
+
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        return "%s object" % (class_name)
+
+    # Read-only properties
+    @property
+    def abbr(self):
+        return self._abbr
+
+    @property
+    def name(self):
+        return self._name
+
+
+class Algorithm(ContainerItem):
     """
     The algorithms should implement compute method.    
     
@@ -29,28 +55,12 @@ class Algorithm(ABC):
         abbr: Abbreviation of algorithm name
         name: Full name of this algorithm
         """
-        self._abbr = abbr
-        self._name = None
+        super().__init__(abbr)
         self._data = None
         self._params = None
         self._result = None
 
-    def __str__(self):
-        return self._abbr
-
-    def __repr__(self):
-        class_name = self.__class__.__name__
-        return "%s object" % (class_name)
-
     # Read-only properties
-    @property
-    def abbr(self):
-        return self._abbr
-
-    @property
-    def name(self):
-        return self._name
-
     @property
     def result(self):
         return self._result
@@ -84,35 +94,15 @@ class Algorithm(ABC):
 # end of class Algorithm        
 
 
-class Data(ABC):
+class Data(ContainerItem):
     def __init__(self):
-        """
-        abbr: Abbreviation of data name
-        name: Full name of this data
-        """
-        self._abbr = None
-        self._name = None
+        super().__init__()
         self._A = None
         self._n2i = None
         self._dg = None
         self._df_ba = None
         self._df_exp = None
 
-    def __str__(self):
-        return self._name
-
-    def __repr__(self):
-        class_name = self.__class__.__name__
-        return "%s object" % (class_name)
-
-    # Read-only properties
-    @property
-    def abbr(self):
-        return self._abbr
-
-    @property
-    def name(self):
-        return self._name
 
     # Read-only members
     @property

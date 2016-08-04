@@ -6,8 +6,11 @@ from collections import defaultdict
 import numpy as np
 import networkx as nx
 
+
 class FrozenClass(object):
+
     __isfrozen = False
+
     def __setattr__(self, key, value):
         if self.__isfrozen and not hasattr(self, key):
             raise TypeError( "%r is a frozen class" % self )
@@ -16,6 +19,13 @@ class FrozenClass(object):
     def _freeze(self):
         self.__isfrozen = True
 
+    def _melt(self):
+        self.__isfrozen = False
+
+"""
+<Reference>
+http://stackoverflow.com/questions/3603502/prevent-creating-new-attributes-outside-init
+"""
 # end of def FrozenClass
 
 def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
