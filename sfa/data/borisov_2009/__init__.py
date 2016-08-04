@@ -27,54 +27,50 @@ p = re.compile("BORISOV_2009_(\w+)_(\w+)")
 
 
 def create_data(abbr=None):
-    dpath = os.path.dirname(__file__)
-    if abbr is None: # Create all data objects
-        data_mult = {} # Multiple data
+    if abbr is None:  # Create all data objects
+        data_mult = {}  # Multiple data
         list_ba = ["CTRL", "EGF", "I", "EGF+I"]
         for stim_type in list_ba:
-            df_ba = pd.read_table("%s/ba_%s.tsv"%(dpath, stim_type),
-                                  header=0, index_col=0)
-            df_exp_auc = pd.read_table("%s/exp_auc_%s.tsv"%(dpath, stim_type),
-                                       header=0, index_col=0)
-            df_exp_ss = pd.read_table("%s/exp_ss_%s.tsv"%(dpath, stim_type),
-                                      header=0, index_col=0)
-
             abbr_auc = "BORISOV_2009_AUC_%s"%(stim_type)
             abbr_ss = "BORISOV_2009_SS_%s"%(stim_type)
-
-            data_auc = BorisovData(abbr_auc, df_ba, df_exp_auc)
-            data_ss = BorisovData(abbr_ss, df_ba, df_exp_ss)
-
-            data_mult[abbr_auc] = data_auc
-            data_mult[abbr_ss] = data_ss
+            data_mult[abbr_auc] = _create_single_data(abbr_auc)
+            data_mult[abbr_ss] = _create_single_data(abbr_ss)
         # end of for
-
         return data_mult
     else: # Create a single data object
-        m = p.match(abbr)
-        try:
-            data_type, stim_type = m.groups()
-        except AttributeError: # if m is None
-            raise ValueError("The wrong abbr. for Borisov 2009 data: %s"%(abbr))
-
-        fstr_ba_file = os.path.join(dpath, "ba_%s.tsv"%(stim_type))
-        df_ba = pd.read_table(fstr_ba_file,
-                              header=0, index_col=0)
-
-        data_type = data_type.lower()
-        fstr_exp_file = os.path.join(dpath,
-                                     "exp_%s_%s.tsv"%(data_type, stim_type))
-        df_exp = pd.read_table(fstr_exp_file,
-                               header=0, index_col=0)
-
-        return BorisovData(abbr, df_ba, df_exp)
-
-    # end of if-else
-
+        return _create_single_data(abbr)
 # end of def
 
+def _create_single_data(abbr):
+    dpath = os.path.dirname(__file__)
+
+    m = p.match(abbr)
+    try:
+        data_type, stim_type = m.groups()
+    except AttributeError: # if m is None
+        raise ValueError("The wrong abbr. for Borisov 2009 data: %s"%(abbr))
+
+    fstr_ba_file = os.path.join(dpath, "ba_%s.tsv"%(stim_type))
+    df_ba = pd.read_table(fstr_ba_file,
+                          header=0, index_col=0)
+
+    data_type = data_type.lower()
+    fstr_exp_file = os.path.join(dpath,
+                                 "exp_%s_%s.tsv"%(data_type, stim_type))
+    df_exp = pd.read_table(fstr_exp_file,
+                           header=0, index_col=0)
+
+    fstr_input_file = os.path.join(dpath, "inputs_%s.tsv" % (stim_type))
+    ser_inputs = pd.read_table(fstr_input_file,
+                               header=None, index_col=0, squeeze=True)
+    inputs = ser_inputs.to_dict()
+
+    return BorisovData(abbr, inputs, df_ba, df_exp)
+# end of def
+
+
 class BorisovData(sfa.base.Data):
-    def __init__(self, abbr, df_ba, df_exp):
+    def __init__(self, abbr, inputs, df_ba, df_exp):
         super().__init__()
         self._abbr = abbr
         self._name = "Data generated from Borisov et al. ODE model (%s)"%(abbr)
@@ -86,6 +82,7 @@ class BorisovData(sfa.base.Data):
         self._A = A
         self._n2i = n2i
         self._dg = sfa.read_sif(fpath, as_nx=True)
+        self._inputs = inputs
         self._df_ba = df_ba
         self._df_exp = df_exp
     # end of def __init__

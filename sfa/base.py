@@ -100,6 +100,7 @@ class Data(ContainerItem):
         self._A = None
         self._n2i = None
         self._dg = None
+        self._inputs= None
         self._df_ba = None
         self._df_exp = None
 
@@ -116,6 +117,10 @@ class Data(ContainerItem):
     @property
     def dg(self): # Directed graph object of NetworkX
         return self._dg
+
+    @property
+    def inputs(self): # Input conditions
+        return self._inputs
 
     @property # DataFrame of basal activity
     def df_ba(self):

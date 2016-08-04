@@ -21,6 +21,7 @@ class ParameterSet(FrozenClass):
     """
     def __init__(self):
         self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
+        self._is_rel_change = False
         self._freeze()
 
     @property
@@ -30,12 +31,21 @@ class ParameterSet(FrozenClass):
     @alpha.setter
     def alpha(self, val):
         if not isinstance(val, float):
-            raise TypeError("alpha should be float value in (0,1).")
+            raise TypeError("alpha is a float type value in (0,1).")
         elif (val <= 0.0) or (val >= 1.0):
             raise ValueError("alpha should be within (0,1).")
         else:
             self._alpha = val
 
+    @property
+    def is_rel_change(self):
+        return self._is_rel_change
+
+    @is_rel_change.setter
+    def is_rel_change(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("is_rel_change is bool type.")
+        self._is_rel_change = val
 # end of def class
 
 
@@ -113,20 +123,33 @@ class SignalPropagation(sfa.base.Algorithm):
         sim_result = np.zeros(df_exp.shape, dtype=np.float)    
         
         b = self._b
-        #x_cnt, trjx_cnt = self.propagate(P, b, b, a=alpha, notrj=False)
+
+        if self._data.hasattr('inputs'): # Input condition
+            ind_inputs = [self._data.n2i(inp) for inp in self._data.inputs]
+            val_inputs = [val for val in self._data.inputs.values()]
+            b[ind_inputs] = val_inputs
+        # end of if
+
+        if self._params.is_rel_change:
+            x_cnt, trjx_cnt = self.propagate(P, b, b, a=alpha, notrj=False)
+
 
         # Main loop of the simulation
         for i, ind_ba in enumerate(self._ind_ba):
             ind_ba = self._ind_ba[i]
-            b_store = b[ ind_ba ][:]
-            b[ ind_ba ] = self._val_ba[i] # Basal activity
-            
+            b_store = b[ind_ba][:]
+            b[ind_ba] = self._val_ba[i] # Basal activity
+
             x_exp, trjx_exp = self.propagate(P, b, b, a=alpha, notrj=False)
 
-            # rel_change = ((x_exp-x_cnt)/np.abs(x_cnt))[ self._iadj_to_idf ]
-            # sim_result[i, :] = rel_change
-            sim_result[i, :] = x_exp[self._iadj_to_idf]
-            b[ ind_ba ] = b_store
+            # Result of a single condition
+            if self._params.is_rel_change:  # Use relative change
+                res_single = ((x_exp - x_cnt)/np.abs(x_cnt))[self._iadj_to_idf]
+            else:
+                res_single = x_exp[self._iadj_to_idf]
+
+            sim_result[i, :] = res_single
+            b[ind_ba] = b_store
         # end of for
        
         df_sim = pd.DataFrame(sim_result,

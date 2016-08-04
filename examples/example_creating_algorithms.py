@@ -14,7 +14,7 @@ if __name__ == "__main__":
     algs.create(["PW", "GS", "SP"])
 
     # Access with the id of algorithm
-    alg_pw = algs["PW"]  # Pathway wiring (Feiglin et al)
+    alg_pw = algs["PW"]  # Pathway wiring
     alg_gs = algs["GS"]  # Gaussian smoothing
     alg_sp = algs["SP"]  # Signal propagation
 
