@@ -23,7 +23,7 @@ import pandas as pd
 import sfa
 import sfa.base
 
-p = re.compile("BORISOV_2009_(\w+)_(\w+)")
+p = re.compile("BORISOV_2009_(\S+)_(\S+)")
 
 
 def create_data(abbr=None):
@@ -40,6 +40,7 @@ def create_data(abbr=None):
     else: # Create a single data object
         return _create_single_data(abbr)
 # end of def
+
 
 def _create_single_data(abbr):
     dpath = os.path.dirname(__file__)

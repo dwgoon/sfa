@@ -20,9 +20,12 @@ class ParameterSet(FrozenClass):
     Parameters of SignalPropagation algorithm.
     """
     def __init__(self):
-        self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
-        self._is_rel_change = False
+        self.initialize()
         self._freeze()
+
+    def initialize(self):
+        self._alpha = 0.5 # float value in (0, 1). The default value is 0.5.
+        self._is_rel_change = False
 
     @property
     def alpha(self):
@@ -77,13 +80,17 @@ class SignalPropagation(sfa.base.Algorithm):
         self._val_ba = None
         self._iadj_to_idf = None
         self._P = None
+
+        self._exsol_avail = False  # The exact solution is available.
+        self._M = None  # A matrix for getting the exact solution.
     
-    def initialize(self):
+    def initialize(self, normalize=None):
         A = self._data.A  # Adjacency matrix
         n2i = self._data.n2i  # Name to index mapper
         df_ba = self._data.df_ba  # Basal activity
         
-        self._b = np.zeros(A.shape[0])
+        self._b = np.finfo(np.float).eps*np.ones(A.shape[0])
+        #self._b = np.zeros(A.shape[0])
         self._ind_ba = []
         self._val_ba = []
         for i, row in enumerate(df_ba.iterrows()):
@@ -104,19 +111,27 @@ class SignalPropagation(sfa.base.Algorithm):
         self._iadj_to_idf = list(map(lambda x: n2i[x],
                                      self._data.df_exp.columns))
     
-        # Transition matrix
-        self._P = self.normalize(A)
+        # Generate the transition matrix by normalization
+        if normalize is None:
+            self._P = self.normalize(A)
+        else:
+            self._P = normalize(A)
+
+        try:
+            P = self._P
+            alpha = self._params.alpha
+            M0 = np.eye(P.shape[0]) - (1-alpha)*P
+            self._M = alpha * np.linalg.inv(M0)
+            self._exsol_avail = True
+        except np.linalg.LinAlgError:
+            self._exsol_avail = False
 
         # Create result object
         self._result = Result()
         
-    # end of def
-        
-    def compute(self):
-        print("Computing signal propagation ...")        
-        alpha = self._params.alpha
+    # end of def initialize
 
-        P = self._P
+    def compute(self):
         df_exp = self._data.df_exp  # Result of experiment
 
         # Simulation result
@@ -124,23 +139,26 @@ class SignalPropagation(sfa.base.Algorithm):
         
         b = self._b
 
-        if self._data.hasattr('inputs'): # Input condition
-            ind_inputs = [self._data.n2i(inp) for inp in self._data.inputs]
+        # Additional basal activity for node without any in-link.
+        #idx_no_inlink = ((P > 0).sum(axis=1) == 0)
+        #b[idx_no_inlink] += np.finfo(np.float).eps
+
+        if hasattr(self._data, 'inputs'): # Input condition
+            ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
             val_inputs = [val for val in self._data.inputs.values()]
             b[ind_inputs] = val_inputs
         # end of if
 
         if self._params.is_rel_change:
-            x_cnt, trjx_cnt = self.propagate(P, b, b, a=alpha, notrj=False)
-
+            x_cnt = self._propagate(b)
 
         # Main loop of the simulation
         for i, ind_ba in enumerate(self._ind_ba):
             ind_ba = self._ind_ba[i]
             b_store = b[ind_ba][:]
-            b[ind_ba] = self._val_ba[i] # Basal activity
+            b[ind_ba] = self._val_ba[i]  # Basal activity
 
-            x_exp, trjx_exp = self.propagate(P, b, b, a=alpha, notrj=False)
+            x_exp = self._propagate(b)
 
             # Result of a single condition
             if self._params.is_rel_change:  # Use relative change
@@ -203,7 +221,18 @@ class SignalPropagation(sfa.base.Algorithm):
         """
         return P
     # end of def normalize
-    
+
+    def _propagate(self, b):
+        if self._exsol_avail:
+            return self._M.dot(b)
+        else:
+            alpha = self._params.alpha
+            P = self._P
+            x_ss, _ = self.propagate(P, b, b, a=alpha)
+            return x_ss  # x at steady-state (i.e., staionary state)
+
+    # end of def _propagate
+
     def propagate(self,
                   P,
                   xi,
@@ -291,6 +320,6 @@ class SignalPropagation(sfa.base.Algorithm):
             return x_t2, num_iter
         else:
             return x_t2, np.array(trj_x)
-    # end of def
+    # end of def propagate
             
 # end of def class

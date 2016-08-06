@@ -20,7 +20,8 @@ __all_containers = ["AlgorithmSet",
                     "DataSet"]
 
 __all_utils = ["FrozenClass",
-               "read_sif",]
+               "read_sif",
+               "calc_accuracy"]
 
 
 __all__ += __all_containers

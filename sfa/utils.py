@@ -86,6 +86,17 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
     # end of else
 # end of def
 
+
+def calc_accuracy(df1, df2):
+    # Count the same signs between the results of df1 and df2
+    np.sign(df1) + np.sign(df2)
+    num_total = df1.count().sum()
+    diff_abs = np.abs( np.sign(df1) - np.sign(df2) )
+    num_cons = (diff_abs == 0).sum(axis=1).sum()  # Number of consensus
+
+    return (num_cons)/np.float(num_total)
+
+
 """
 def convert_networkx_digraph(adj, name_to_idx=None):
     from sys import modules
