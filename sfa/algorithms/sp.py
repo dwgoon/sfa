@@ -66,7 +66,7 @@ class Result(FrozenClass):
     def df_sim(self, val):
         self._df_sim = val
 
-# end of def class
+# end of def class Result
 
 class SignalPropagation(sfa.base.Algorithm):
     def __init__(self, abbr):
@@ -108,8 +108,7 @@ class SignalPropagation(sfa.base.Algorithm):
     
         # For mapping from the indices of adj. matrix to those of DataFrame
         # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = list(map(lambda x: n2i[x],
-                                     self._data.df_exp.columns))
+        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
     
         # Generate the transition matrix by normalization
         if normalize is None:

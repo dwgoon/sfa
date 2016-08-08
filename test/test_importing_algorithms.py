@@ -49,9 +49,9 @@ class TestImportingAlgorithms(unittest.TestCase):
         # end of for            
     # end of def test_create_algorithm
 
-    def test_algorithmset_load(self):
+    def test_algorithmset_create(self):
         """
-        Test AlgorithmSet.load
+        Test AlgorithmSet.create
         """
         algs = sfa.AlgorithmSet()
         algs.create("SP") # Single algorithm
@@ -60,8 +60,22 @@ class TestImportingAlgorithms(unittest.TestCase):
         algs.create(["GS", ]) # Algorithms in an iterable object
         self.assertTrue( len(algs) == 2 )
 
-        algs.create() # Load all algorithms
-        self.assertTrue( len(algs) == (len(self._algorithms)-1)  )
+        algs.create()  # Load all algorithms
+        self.assertTrue(len(algs) == (len(self._algorithms)-1))
+    # end of def
+
+    def test_algorithmset_singleton(self):
+        a1 = sfa.AlgorithmSet()
+        a1.create()
+        self.assertTrue(len(a1) != 0)
+
+        a2 = sfa.AlgorithmSet()
+        self.assertTrue(len(a1) != 0)
+
+        a2.create()
+        self.assertTrue(a1 is a2)
+
+    # end of def
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

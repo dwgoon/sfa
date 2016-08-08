@@ -15,7 +15,7 @@ import sfa.data
 from sfa.utils import Singleton
 
 
-class Container(ABC, collections.MutableMapping):
+class Container(ABC, collections.MutableMapping, Singleton):
     """
     A simple singleton class, which handles multiple objects with
     its hashable functionality (using dictionary).
@@ -91,7 +91,7 @@ http://stackoverflow.com/questions/3387691/python-how-to-perfectly-override-a-di
 # end of def class
 
 
-class AlgorithmSet(Container, Singleton):
+class AlgorithmSet(Container):
     _instance = None
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls, *args, **kwargs)
@@ -140,7 +140,7 @@ class AlgorithmSet(Container, Singleton):
 # end of class Algorithms
 
 
-class DataSet(Container, Singleton):
+class DataSet(Container):
     """
     The name of this class is similar to that of 'DataSet' in C#.
     The instance of this class handles multiple sfa.base.Data objects.
