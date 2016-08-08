@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-@author: dwlee
-"""
 
 import sfa
 from sfa import calc_accuracy

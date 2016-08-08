@@ -28,6 +28,32 @@ http://stackoverflow.com/questions/3603502/prevent-creating-new-attributes-outsi
 """
 # end of def FrozenClass
 
+class Singleton(object):
+    def __new__(cls, *args, **kw):
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kw)
+        return cls._instance
+
+"""
+class Singleton(type):
+    instance = None
+    def __call__(cls, *args, **kw):
+        print("%s.__call__"%(cls))
+        if not cls.instance:
+            cls.instance = super().__call__(*args, **kw)
+            print(cls.instance)
+        return cls.instance
+
+
+<References>
+
+[Singleton]
+---http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
+http://blog.thedigitalcatonline.com/blog/2014/09/01/python-3-oop-part-5-metaclasses/#.V6ie37iLShc
+"""
+# end of class Singleton
+
+
 def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
     dict_links = defaultdict(list)
     set_nodes = set()
