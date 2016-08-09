@@ -12,10 +12,7 @@ import sfa.base
 import sfa.algorithms
 import sfa.data
 
-from sfa.utils import Singleton
-
-
-class Container(ABC, collections.MutableMapping, Singleton):
+class Container(ABC, collections.MutableMapping):
     """
     A simple singleton class, which handles multiple objects with
     its hashable functionality (using dictionary).
