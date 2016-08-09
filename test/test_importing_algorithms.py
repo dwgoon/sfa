@@ -53,7 +53,7 @@ class TestImportingAlgorithms(unittest.TestCase):
         """
         Test AlgorithmSet.create
         """
-        algs = sfa.AlgorithmSet()
+        algs = sfa.AlgorithmSet.instance()
         algs.create("SP") # Single algorithm
         self.assertTrue( len(algs) == 1 )
 
@@ -65,11 +65,11 @@ class TestImportingAlgorithms(unittest.TestCase):
     # end of def
 
     def test_algorithmset_singleton(self):
-        a1 = sfa.AlgorithmSet()
+        a1 = sfa.AlgorithmSet.instance()
         a1.create()
         self.assertTrue(len(a1) != 0)
 
-        a2 = sfa.AlgorithmSet()
+        a2 = sfa.AlgorithmSet.instance()
         self.assertTrue(len(a1) != 0)
 
         a2.create()
