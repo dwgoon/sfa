@@ -43,7 +43,6 @@ class TestAlgorithmSP(unittest.TestCase):
 
         alg.params.initialize()
         alg.data = data
-        alg.initialize()
         alg.compute()
         acc = calc_accuracy(alg.result.df_sim, data.df_exp)
         self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
@@ -56,7 +55,6 @@ class TestAlgorithmSP(unittest.TestCase):
         alg.params.is_rel_change = True
         for abbr, data in borisov.items():
             alg.data = data
-            alg.initialize()
             alg.compute()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)

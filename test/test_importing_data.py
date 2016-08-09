@@ -11,7 +11,9 @@ import sfa.data
 
 class TestImportingData(unittest.TestCase):
 
-    def setUp(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self._data = {}
         
         # Directory path with the file pattern for algorithm modules
@@ -59,15 +61,14 @@ class TestImportingData(unittest.TestCase):
         Test DataSet.create
         """
         ds = sfa.DataSet()
-        ds.create("NELENDER_2008")  # Single data
-        self.assertTrue(len(ds) == 1)
+        ds.create()
 
-        ds.create(["MOLINELLI_2013", ])  # Specify data in an iterable object
-        self.assertTrue(len(ds) == 2)
-
-        ds.create("BORISOV_2009")
-        self.assertTrue(len(ds) == 3)
-        self.assertTrue(len(ds["BORISOV_2009"]) == 8)  # A collection of data
+        for key, elem in ds.items():
+            if isinstance(elem, dict):
+                for subkey, subelem in elem.items():
+                    self.assertEqual(subkey, subelem.abbr)
+            else:
+                self.assertEqual(key, elem.abbr)
 
     # end of def test_dataset_create
 
@@ -78,7 +79,7 @@ class TestImportingData(unittest.TestCase):
 
         ds2 = sfa.DataSet()
         ds2.create()
-        self.assertNotEqual(len(ds1), 0)
+        self.assertTrue(len(ds1) != 0)
         self.assertEqual(len(ds1), len(ds2))
         self.assertEqual(ds1, ds2)
     # end of def

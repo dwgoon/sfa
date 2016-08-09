@@ -71,7 +71,7 @@ class TestImportingAlgorithms(unittest.TestCase):
 
         a2 = sfa.AlgorithmSet()
         a2.create()
-        self.assertNotEqual(len(a1), 0)
+        self.assertTrue(len(a1) != 0)
         self.assertEqual(len(a1), len(a2))
         self.assertEqual(a1, a2)
 

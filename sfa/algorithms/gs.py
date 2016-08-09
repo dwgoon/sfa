@@ -2,28 +2,35 @@
 
 import sfa
 
-from ._propagation import Propagation
+from .sp import SignalPropagation
+
 
 def create_algorithm(abbr):
     return GaussianSmoothing(abbr)
 # end of def
 
 
-class GaussianSmoothing(Propagation):
+class GaussianSmoothing(SignalPropagation):
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Gaussian smoothing algorithm"       
 
-    def _propagate(self, b):
-        if self._exsol_avail:
-            return self._M.dot(b)
-        else:
-            alpha = self._params.alpha
-            P = self._P
-            x_ss, _ = self.propagate(P, b, b, a=alpha)
-            return x_ss  # x at steady-state (i.e., staionary state)
+    def _normalize(self, A):
+        return A  # No norm.
 
-    # end of def _propagate
+    def _prepare_exact_solution(self):
+        pass
 
-    def compute(self):
-        print("Computing Gaussian smoothing ...")
+    def propagate_exact(self, b):
+        pass
+
+    def propagate_iterative(self,
+                            P,
+                            xi,
+                            b,
+                            a=0.5,
+                            lim_iter=1000,
+                            tol=1e-5,
+                            notrj=True):
+        pass
+
