@@ -17,11 +17,11 @@ class TestAlgorithmSP(unittest.TestCase):
         print("This is calling setUp")
 
         # Create an object for signal propagation algorithm
-        self.algs = AlgorithmSet.instance()
+        self.algs = AlgorithmSet()
         self.algs.create("SP")
 
         # Create container for data.
-        self.ds = DataSet.instance()
+        self.ds = DataSet()
         self.ds.create("NELENDER_2008")
         self.ds.create("BORISOV_2009")
 

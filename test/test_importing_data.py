@@ -54,11 +54,11 @@ class TestImportingData(unittest.TestCase):
         self.assertEqual(data.df_exp.shape, (44, 25))
     # end of def test_data_size
 
-    def test_dataset_load(self):
+    def test_dataset_create(self):
         """
-        Test DataSet.load
+        Test DataSet.create
         """
-        ds = sfa.DataSet.instance()
+        ds = sfa.DataSet()
         ds.create("NELENDER_2008")  # Single data
         self.assertTrue(len(ds) == 1)
 
@@ -69,7 +69,19 @@ class TestImportingData(unittest.TestCase):
         self.assertTrue(len(ds) == 3)
         self.assertTrue(len(ds["BORISOV_2009"]) == 8)  # A collection of data
 
-    # end of def test_dataset_load
+    # end of def test_dataset_create
+
+    def test_dataset_singleton(self):
+        ds1 = sfa.DataSet()
+        ds1.create()
+        self.assertTrue(len(ds1) != 0)
+
+        ds2 = sfa.DataSet()
+        ds2.create()
+        self.assertNotEqual(len(ds1), 0)
+        self.assertEqual(len(ds1), len(ds2))
+        self.assertEqual(ds1, ds2)
+    # end of def
 
 # end of def class TestImportingData
 

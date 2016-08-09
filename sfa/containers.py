@@ -49,6 +49,9 @@ class Container(ABC, collections.MutableMapping):
     def __len__(self):
         return len(self._map)
 
+    def __str__(self):
+        return str(self._map)
+
     def keys(self):
         return self._map.keys()
 

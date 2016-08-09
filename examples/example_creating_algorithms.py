@@ -10,7 +10,7 @@ import sfa
 
 if __name__ == "__main__":
     
-    algs = sfa.AlgorithmSet.instance()
+    algs = sfa.AlgorithmSet()
     algs.create(["PW", "GS", "SP"])
 
     # Access with the id of algorithm
@@ -26,5 +26,3 @@ if __name__ == "__main__":
     # Iterate Algorithms object
     for alg, obj in algs.items():
         print(alg, obj)
-        
-    

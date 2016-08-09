@@ -11,8 +11,8 @@ from sfa import DataSet
 if __name__ == "__main__":
 
     # Create containers for algorithm and data.
-    algs = AlgorithmSet.instance()
-    ds = DataSet.instance()
+    algs = AlgorithmSet()
+    ds = DataSet()
 
     # Load an algorithm and a data.
     algs.create("SP")
