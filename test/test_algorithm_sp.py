@@ -10,11 +10,8 @@ from sfa import DataSet
 
 class TestAlgorithmSP(unittest.TestCase):
 
-    #def __init__(self, *args, **kwargs):
-    # super().__init__(*args, **kwargs)
     def __init__(self,  *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print("This is calling setUp")
 
         # Create an object for signal propagation algorithm
         self.algs = AlgorithmSet()

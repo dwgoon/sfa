@@ -1,11 +1,6 @@
 
 from abc import ABC, abstractmethod
-
-
-class Result(ABC):
-    pass
-
-# end of class Result
+from sfa.utils import FrozenClass
 
 
 class ContainerItem(ABC):
@@ -131,3 +126,20 @@ class Data(ContainerItem):
         return self._df_exp
 
 # end of class Data
+
+
+class Result(FrozenClass):
+
+    def __init__(self):
+        self._df_sim = None
+        self._freeze()
+
+    @property
+    def df_sim(self):
+        return self._df_sim
+
+    @df_sim.setter
+    def df_sim(self, val):
+        self._df_sim = val
+
+# end of def class Result
