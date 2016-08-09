@@ -6,6 +6,8 @@ from collections import defaultdict
 import numpy as np
 import networkx as nx
 
+from singleton.singleton import Singleton
+
 
 class FrozenClass(object):
 

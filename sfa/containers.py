@@ -12,6 +12,9 @@ import sfa.base
 import sfa.algorithms
 import sfa.data
 
+from sfa.utils import Singleton
+
+
 class Container(ABC, collections.MutableMapping):
     """
     A simple singleton class, which handles multiple objects with
@@ -87,7 +90,7 @@ http://stackoverflow.com/questions/3387691/python-how-to-perfectly-override-a-di
 """
 # end of def class
 
-
+@Singleton
 class AlgorithmSet(Container):
     _instance = None
     def __new__(cls, *args, **kwargs):
@@ -136,7 +139,7 @@ class AlgorithmSet(Container):
 
 # end of class Algorithms
 
-
+@Singleton
 class DataSet(Container):
     """
     The name of this class is similar to that of 'DataSet' in C#.

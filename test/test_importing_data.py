@@ -58,7 +58,7 @@ class TestImportingData(unittest.TestCase):
         """
         Test DataSet.load
         """
-        ds = sfa.DataSet()
+        ds = sfa.DataSet.instance()
         ds.create("NELENDER_2008")  # Single data
         self.assertTrue(len(ds) == 1)
 
