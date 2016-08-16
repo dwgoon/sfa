@@ -83,10 +83,11 @@ class SignalPropagation(sfa.base.Algorithm):
         if (self._data is None) or (not np.array_equal(self._data.A, obj.A)):
             # Matrix normalization for getting transition matrix
             self._P = self._normalize(obj.A)
-
+            self._check_dimension(self._P, "transition matrix")
             # Try to prepare the exact solution
             try:
                 self._M = self._prepare_exact_solution()
+                self._check_dimension(self._M, "exact solution matrix")
                 self._exsol_avail = True
             except np.linalg.LinAlgError:
                 self._exsol_avail = False
@@ -99,8 +100,7 @@ class SignalPropagation(sfa.base.Algorithm):
         n2i = self._data.n2i  # Name to index mapper
         df_ba = self._data.df_ba  # Basal activity
 
-        self._b = np.finfo(np.float).eps * np.ones(N)
-        # self._b = np.zeros(A.shape[0])
+        self._b = np.finfo(np.float).eps * np.ones(N)  # self._b = np.zeros(A.shape[0])
         self._ind_ba = []
         self._val_ba = []
         for i, row in enumerate(df_ba.iterrows()):
@@ -120,6 +120,13 @@ class SignalPropagation(sfa.base.Algorithm):
         # (arrange the indices of adj. matrix according to df_exp.columns)
         self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
     # end of @property def data
+
+    def _check_dimension(self, mat, mat_name):
+        # Check whether a given matrix is a square matrix.
+        if mat.shape[0] != mat.shape[1]:
+            raise ValueError(
+                "The %s should be square matrix."%(mat_name))
+    # end of def
 
     def _normalize(self, A, norm_in=True, norm_out=True):
 
@@ -287,18 +294,7 @@ class SignalPropagation(sfa.base.Algorithm):
         --------
         """
 
-        # Check whether A is a square matrix
-        if P.shape[0] != P.shape[1]:
-            raise ValueError(
-                "The P (stochastic matrix) should be square matrix.")
-
-        n = P.shape[0]  # Size of adjacency matrix
-
-        # Check the size of xi
-        if len(xi) != n:
-            raise ValueError("The dimension of the initial state " \
-                             "is not consistent with A (adjacency matrix).")
-
+        n = P.shape[0]
         # Initial values
         x0 = np.zeros((n,), dtype=np.float)
         x0[:] = xi
@@ -331,7 +327,7 @@ class SignalPropagation(sfa.base.Algorithm):
             return x_t2, num_iter
         else:
             return x_t2, np.array(trj_x)
-            # end of def propagate
+
     # end of def propagate
 
 # end of def class SignalPropagation
