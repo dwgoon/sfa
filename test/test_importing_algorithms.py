@@ -53,15 +53,15 @@ class TestImportingAlgorithms(unittest.TestCase):
         """
         Test AlgorithmSet.create
         """
-        algs = sfa.AlgorithmSet() #.instance()
-        algs.create("SP") # Single algorithm
-        self.assertTrue( len(algs) == 1 )
+        algs = sfa.AlgorithmSet()
+        algs.create()
 
-        algs.create(["GS", ]) # Algorithms in an iterable object
-        self.assertTrue( len(algs) == 2 )
-
-        algs.create()  # Load all algorithms
-        self.assertTrue(len(algs) == (len(self._algorithms)-1))
+        for key, elem in algs.items():
+            if isinstance(elem, dict):
+                for subkey, subelem in elem.items():
+                    self.assertEqual(subkey, subelem.abbr)
+            else:
+                self.assertEqual(key, elem.abbr)
     # end of def
 
     def test_algorithmset_singleton(self):

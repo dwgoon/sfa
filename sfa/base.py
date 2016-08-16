@@ -1,5 +1,10 @@
 
+
 from abc import ABC, abstractmethod
+
+import numpy as np
+import pandas as pd
+
 from sfa.utils import FrozenClass
 
 
@@ -77,14 +82,92 @@ class Algorithm(ContainerItem):
     def data(self, obj):
         self._data = obj
 
-    # Methods
-    def initialize(self):
+    def initialize(self, init_matrix=True, init_data=True):
+        if init_matrix:
+            self._initialize_matrix()
+
+        if init_data:
+            self._initialize_data()
+
+    def _initialize_matrix(self):
         pass
-    
-    @abstractmethod
+
+    def _initialize_data(self):
+        N = self._P.shape[0]  # Number of state variables
+        n2i = self._data.n2i  # Name to index mapper
+        df_ba = self._data.df_ba  # Basal activity
+
+        self._b = np.finfo(np.float).eps * np.ones(N)  # self._b = np.zeros(A.shape[0])
+        self._ind_ba = []
+        self._val_ba = []
+        for i, row in enumerate(df_ba.iterrows()):
+            row = row[1]
+            list_ind = []  # Indices
+            list_val = []  # Values
+            for target in df_ba.columns[row.nonzero()]:
+                list_ind.append(n2i[target])
+                list_val.append(row[target])
+            # end of for
+
+            self._ind_ba.append(list_ind)
+            self._val_ba.append(list_val)
+        # end of for
+
+        # For mapping from the indices of adj. matrix to those of DataFrame
+        # (arrange the indices of adj. matrix according to df_exp.columns)
+        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
+    # end of _initialize_data
+
     def compute(self):
         """Algorithm perform the computation with the given data"""
+        df_exp = self._data.df_exp  # Result of experiment
+
+        # Simulation result
+        sim_result = np.zeros(df_exp.shape, dtype=np.float)
+
+        b = self._b
+
+        if hasattr(self._data, 'inputs'):  # Input condition
+            ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
+            val_inputs = [val for val in self._data.inputs.values()]
+            b[ind_inputs] = val_inputs
+        # end of if
+
+        if self._params.is_rel_change:
+            x_cnt = self.propagate(b)
+
+        # Main loop of the simulation
+        for i, ind_ba in enumerate(self._ind_ba):
+            ind_ba = self._ind_ba[i]
+            b_store = b[ind_ba][:]
+            b[ind_ba] = self._val_ba[i]  # Basal activity
+
+            x_exp = self.propagate(b)
+
+            # Result of a single condition
+            if self._params.is_rel_change:  # Use relative change
+                rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
+                res_single = rel_change[self._iadj_to_idf]
+            else:
+                res_single = x_exp[self._iadj_to_idf]
+
+            sim_result[i, :] = res_single
+            b[ind_ba] = b_store
+        # end of for
+
+        df_sim = pd.DataFrame(sim_result,
+                              index=df_exp.index,
+                              columns=df_exp.columns)
+
+        # Get the result of elements in the columns of df_exp.
+        self._result.df_sim = df_sim[df_exp.columns]
     # end of def compute
+
+    @abstractmethod
+    def propagate(self):
+        raise NotImplementedError("propagate() of Algorithm "
+                                  "should be implemented")
+
         
 # end of class Algorithm        
 

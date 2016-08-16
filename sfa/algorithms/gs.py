@@ -38,7 +38,7 @@ class GaussianSmoothing(SignalPropagation):
         if np.linalg.det(M0) == 0:
             raise np.linalg.LinAlgError()
 
-        self._M = np.linalg.inv(M0) * (1-a)
+        return np.linalg.inv(M0) * (1-a)
 
     def propagate_exact(self, b):
         return self._M.dot(b)
@@ -104,5 +104,6 @@ class GaussianSmoothing(SignalPropagation):
             return x_t2, num_iter
         else:
             return x_t2, np.array(trj_x)
+    # end of def propagat_ierative
 
-
+# end of def class GaussianSmoothing

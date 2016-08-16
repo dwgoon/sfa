@@ -13,7 +13,8 @@ def create_algorithm(abbr):
 
 
 class ThisAlgorithm(sfa.base.Algorithm):
-    def compute(self):
+
+    def propagate(self):
         pass
     
 

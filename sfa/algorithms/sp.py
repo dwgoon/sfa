@@ -76,57 +76,29 @@ class SignalPropagation(sfa.base.Algorithm):
 
     @data.setter
     def data(self, obj):
-        if self._data is obj:  # Avoid redundant assignment
-            return
-
-        # Avoid redundant calculation of some linear algebra
-        if (self._data is None) or (not np.array_equal(self._data.A, obj.A)):
-            # Matrix normalization for getting transition matrix
-            self._P = self._normalize(obj.A)
-            self._check_dimension(self._P, "transition matrix")
-            # Try to prepare the exact solution
-            try:
-                self._M = self._prepare_exact_solution()
-                self._check_dimension(self._M, "exact solution matrix")
-                self._exsol_avail = True
-            except np.linalg.LinAlgError:
-                self._exsol_avail = False
-        # end of if
-        # end of if-else
-
         self._data = obj
 
-        N = self._P.shape[0]  # Number of state variables
-        n2i = self._data.n2i  # Name to index mapper
-        df_ba = self._data.df_ba  # Basal activity
-
-        self._b = np.finfo(np.float).eps * np.ones(N)  # self._b = np.zeros(A.shape[0])
-        self._ind_ba = []
-        self._val_ba = []
-        for i, row in enumerate(df_ba.iterrows()):
-            row = row[1]
-            list_ind = []  # Indices
-            list_val = []  # Values
-            for target in df_ba.columns[row.nonzero()]:
-                list_ind.append(n2i[target])
-                list_val.append(row[target])
-            # end of for
-
-            self._ind_ba.append(list_ind)
-            self._val_ba.append(list_val)
-        # end of for
-
-        # For mapping from the indices of adj. matrix to those of DataFrame
-        # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
     # end of @property def data
+
+    def _initialize_matrix(self):
+        # Matrix normalization for getting transition matrix
+        self._P = self._normalize(self._data.A)
+        self._check_dimension(self._P, "transition matrix")
+        # Try to prepare the exact solution
+        try:
+            self._M = self._prepare_exact_solution()
+            self._check_dimension(self._M, "exact solution matrix")
+            self._exsol_avail = True
+        except np.linalg.LinAlgError:
+            self._exsol_avail = False
+    # end of def _initialize_matrix
 
     def _check_dimension(self, mat, mat_name):
         # Check whether a given matrix is a square matrix.
         if mat.shape[0] != mat.shape[1]:
             raise ValueError(
                 "The %s should be square matrix."%(mat_name))
-    # end of def
+    # end of def _check_dimension
 
     def _normalize(self, A, norm_in=True, norm_out=True):
 
@@ -192,61 +164,15 @@ class SignalPropagation(sfa.base.Algorithm):
         return (1-a)*np.linalg.inv(M0)
     # end of def _prepare_exact_solution
 
-    def compute(self):
-        df_exp = self._data.df_exp  # Result of experiment
-
-        # Simulation result
-        sim_result = np.zeros(df_exp.shape, dtype=np.float)
-
-        b = self._b
-
-        if hasattr(self._data, 'inputs'):  # Input condition
-            ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
-            val_inputs = [val for val in self._data.inputs.values()]
-            b[ind_inputs] = val_inputs
-        # end of if
-
-        if self._params.is_rel_change:
-            x_cnt = self._propagate(b)
-
-        # Main loop of the simulation
-        for i, ind_ba in enumerate(self._ind_ba):
-            ind_ba = self._ind_ba[i]
-            b_store = b[ind_ba][:]
-            b[ind_ba] = self._val_ba[i]  # Basal activity
-
-            x_exp = self._propagate(b)
-
-            # Result of a single condition
-            if self._params.is_rel_change:  # Use relative change
-                res_single = ((x_exp - x_cnt) / np.abs(x_cnt))[
-                    self._iadj_to_idf]
-            else:
-                res_single = x_exp[self._iadj_to_idf]
-
-            sim_result[i, :] = res_single
-            b[ind_ba] = b_store
-        # end of for
-
-        df_sim = pd.DataFrame(sim_result,
-                              index=df_exp.index,
-                              columns=df_exp.columns)
-
-        # Get the result of elements in the columns of df_exp.
-        self._result.df_sim = df_sim[df_exp.columns]
-
-    # end of def compute
-
-    def _propagate(self, b):
+    def propagate(self, b):
         if self._exsol_avail:
             return self.propagate_exact(b)
         else:
             alpha = self._params.alpha
             P = self._P
-            b = self._b
             x_ss, _ = self.propagate_iterative(P, b, b, a=alpha)
             return x_ss  # x at steady-state (i.e., staionary state)
-    # end of def _propagate
+    # end of def propagate
 
     def propagate_exact(self, b):
         return self._M.dot(b)
