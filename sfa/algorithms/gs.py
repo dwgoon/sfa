@@ -105,12 +105,4 @@ class GaussianSmoothing(SignalPropagation):
         else:
             return x_t2, np.array(trj_x)
     # end of def propagat_ierative
-
-<<<<<<< HEAD
-
-    # end of def propagate_iterative
-
 # end of def class GaussianSmoothing
-=======
-# end of def class GaussianSmoothing
->>>>>>> 6591513... Implementing PathwayWiring

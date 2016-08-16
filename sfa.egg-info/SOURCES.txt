@@ -1,0 +1,12 @@
+setup.py
+sfa/__init__.py
+sfa/algorithms.py
+sfa/base.py
+sfa/manager.py
+sfa.egg-info/PKG-INFO
+sfa.egg-info/SOURCES.txt
+sfa.egg-info/dependency_links.txt
+sfa.egg-info/not-zip-safe
+sfa.egg-info/requires.txt
+sfa.egg-info/top_level.txt
+test/test_01.py
