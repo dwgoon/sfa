@@ -106,3 +106,6 @@ class GaussianSmoothing(SignalPropagation):
             return x_t2, np.array(trj_x)
 
 
+    # end of def propagate_iterative
+
+# end of def class GaussianSmoothing
