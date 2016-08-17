@@ -52,7 +52,7 @@ class ParameterSet(FrozenClass):
 # end of def class ParameterSet
 
 
-class SignalPropagation(sfa.base.Algorithm):
+class SignalPropagation(sfa.base.Propagation):
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Signal propagation algorithm"
@@ -80,25 +80,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
     # end of @property def data
 
-    def _initialize_matrix(self):
-        # Matrix normalization for getting transition matrix
-        self._P = self._normalize(self._data.A)
-        self._check_dimension(self._P, "transition matrix")
-        # Try to prepare the exact solution
-        try:
-            self._M = self._prepare_exact_solution()
-            self._check_dimension(self._M, "exact solution matrix")
-            self._exsol_avail = True
-        except np.linalg.LinAlgError:
-            self._exsol_avail = False
-    # end of def _initialize_matrix
 
-    def _check_dimension(self, mat, mat_name):
-        # Check whether a given matrix is a square matrix.
-        if mat.shape[0] != mat.shape[1]:
-            raise ValueError(
-                "The %s should be square matrix."%(mat_name))
-    # end of def _check_dimension
 
     def _normalize(self, A, norm_in=True, norm_out=True):
 
