@@ -14,7 +14,7 @@ def create_algorithm(abbr):
 
 class ThisAlgorithm(sfa.base.Algorithm):
 
-    def propagate(self):
+    def compute(self):
         pass
     
 

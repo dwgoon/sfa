@@ -54,9 +54,11 @@ class TestAlgorithmSP(unittest.TestCase):
 
         alg.params.initialize()
         alg.params.is_rel_change = True
+        alg.data = borisov["BORISOV_2009_AUC_CTRL"]
+        alg.initialize(init_data=False)
         for abbr, data in borisov.items():
             alg.data = data
-            alg.initialize()
+            alg.initialize(init_network=False)
             alg.compute()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)

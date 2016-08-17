@@ -51,7 +51,7 @@ def _create_single_data(abbr):
     except AttributeError: # if m is None
         raise ValueError("The wrong abbr. for Borisov 2009 data: %s"%(abbr))
 
-    fstr_ba_file = os.path.join(dpath, "ba.tsv"%(stim_type))
+    fstr_ba_file = os.path.join(dpath, "ba.tsv")
     df_ba = pd.read_table(fstr_ba_file,
                           header=0, index_col=0)
 

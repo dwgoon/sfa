@@ -129,7 +129,7 @@ class TestAlgorithmSP(unittest.TestCase):
             if i == 0:
                 alg.initialize()
             else:
-                alg.initialize(init_matrix=False)
+                alg.initialize(init_network=False)
 
             alg.compute()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)

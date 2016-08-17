@@ -52,7 +52,7 @@ class ParameterSet(FrozenClass):
 # end of def class ParameterSet
 
 
-class SignalPropagation(sfa.base.Propagation):
+class SignalPropagation(sfa.base.Algorithm):
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Signal propagation algorithm"
@@ -69,18 +69,107 @@ class SignalPropagation(sfa.base.Propagation):
         self._M = None  # A matrix for getting the exact solution.
 
         self._result = sfa.base.Result()
+    # end of def __init__
 
-    @property
-    def data(self):
-        return super().data
+    def _initialize_network(self):
+        # Matrix normalization for getting transition matrix
+        self._P = self._normalize(self._data.A)
+        self._check_dimension(self._P, "transition matrix")
+        # Try to prepare the exact solution
+        try:
+            self._M = self._prepare_exact_solution()
+            self._check_dimension(self._M, "exact solution matrix")
+            self._exsol_avail = True
+        except np.linalg.LinAlgError:
+            self._exsol_avail = False
+    # end of def _initialize_network
 
-    @data.setter
-    def data(self, obj):
-        self._data = obj
+    def _check_dimension(self, mat, mat_name):
+        # Check whether a given matrix is a square matrix.
+        if mat.shape[0] != mat.shape[1]:
+            raise ValueError("The %s should be square matrix."%(mat_name))
+    # end of def _check_dimension
 
-    # end of @property def data
+    def _initialize_data(self):
+        N = self._data.A.shape[0]  # Number of state variables
+        n2i = self._data.n2i  # Name to index mapper
+        df_ba = self._data.df_ba  # Basal activity
 
+        self._b = np.finfo(np.float).eps * np.ones(N)
+        self._inds_ba = []  # Indices (inds)
+        self._vals_ba = []  # Values (vals)
+        for i, row in enumerate(df_ba.iterrows()):
+            row = row[1]
+            list_ind = []  # Indices
+            list_val = []  # Values
+            for target in df_ba.columns[row.nonzero()]:
+                list_ind.append(n2i[target])
+                list_val.append(row[target])
+            # end of for
 
+            self._inds_ba.append(list_ind)
+            self._vals_ba.append(list_val)
+        # end of for
+
+        # For mapping from the indices of adj. matrix to those of DataFrame
+        # (arrange the indices of adj. matrix according to df_exp.columns)
+        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
+    # end of _initialize_data
+
+    def _apply_inputs(self, b):
+        if hasattr(self._data, 'inputs'):  # Input condition
+            ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
+            val_inputs = [val for val in self._data.inputs.values()]
+            b[ind_inputs] = val_inputs
+        # end of if
+    # end of def _apply_inputs
+
+    def compute(self):
+        """Algorithm perform the computation with the given data"""
+        df_exp = self._data.df_exp  # Result of experiment
+
+        # Simulation result
+        sim_result = np.zeros(df_exp.shape, dtype=np.float)
+
+        b = self._b
+
+        # if hasattr(self._data, 'inputs'):  # Input condition
+        #     ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
+        #     val_inputs = [val for val in self._data.inputs.values()]
+        #     b[ind_inputs] = val_inputs
+        # # end of if
+
+        if self._params.is_rel_change:
+            self._apply_inputs(b)
+            x_cnt = self.propagate(b)
+
+        # Main loop of the simulation
+        for i, ind_ba in enumerate(self._inds_ba):
+            ind_ba = self._inds_ba[i]
+            b_store = b[ind_ba][:]
+            self._apply_inputs(b) # Apply the input condition
+            b[ind_ba] = self._vals_ba[i]  # Basal activity
+
+            x_exp = self.propagate(b)
+
+            # Result of a single condition
+            if self._params.is_rel_change:  # Use relative change
+                rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
+                res_single = rel_change[self._iadj_to_idf]
+            else:
+                res_single = x_exp[self._iadj_to_idf]
+
+            sim_result[i, :] = res_single
+            b[ind_ba] = b_store
+        # end of for
+
+        df_sim = pd.DataFrame(sim_result,
+                              index=df_exp.index,
+                              columns=df_exp.columns)
+
+        # Get the result of elements in the columns of df_exp.
+        self._result.df_sim = df_sim[df_exp.columns]
+    # end of def compute
 
     def _normalize(self, A, norm_in=True, norm_out=True):
 

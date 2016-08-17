@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import pandas as pd
+import networkx as nx
 
 from sfa.utils import FrozenClass
 
@@ -82,14 +83,14 @@ class Algorithm(ContainerItem):
     def data(self, obj):
         self._data = obj
 
-    def initialize(self, init_matrix=True, init_data=True):
-        if init_matrix:
-            self._initialize_matrix()
+    def initialize(self, init_network=True, init_data=True):
+        if init_network:
+            self._initialize_network()
 
         if init_data:
             self._initialize_data()
 
-    def _initialize_matrix(self):
+    def _initialize_network(self):
         pass
 
     def _initialize_data(self):
@@ -99,197 +100,7 @@ class Algorithm(ContainerItem):
     def compute(self):
         raise NotImplementedError("compute() should be implemented")
 
-    @abstractmethod
-    def propagate(self):
-        raise NotImplementedError("propagate() should be implemented")
-
-        
 # end of class Algorithm        
-
-class Propagation(Algorithm):
-    @abstractmethod
-    def _normalize(self, A):
-        raise NotImplementedError("normalize() should be implemented")
-
-    def _initialize_matrix(self):
-        # Matrix normalization for getting transition matrix
-        self._P = self._normalize(self._data.A)
-        self._check_dimension(self._P, "transition matrix")
-        # Try to prepare the exact solution
-        try:
-            self._M = self._prepare_exact_solution()
-            self._check_dimension(self._M, "exact solution matrix")
-            self._exsol_avail = True
-        except np.linalg.LinAlgError:
-            self._exsol_avail = False
-    # end of def _initialize_matrix
-
-    def _check_dimension(self, mat, mat_name):
-        # Check whether a given matrix is a square matrix.
-        if mat.shape[0] != mat.shape[1]:
-            raise ValueError(
-                "The %s should be square matrix."%(mat_name))
-    # end of def _check_dimension
-
-    def _initialize_data(self):
-        N = self._data.A.shape[0]  # Number of state variables
-        n2i = self._data.n2i  # Name to index mapper
-        df_ba = self._data.df_ba  # Basal activity
-
-        self._b = np.finfo(np.float).eps * np.ones(N)
-        self._ind_ba = []
-        self._val_ba = []
-        for i, row in enumerate(df_ba.iterrows()):
-            row = row[1]
-            list_ind = []  # Indices
-            list_val = []  # Values
-            for target in df_ba.columns[row.nonzero()]:
-                list_ind.append(n2i[target])
-                list_val.append(row[target])
-            # end of for
-
-            self._ind_ba.append(list_ind)
-            self._val_ba.append(list_val)
-        # end of for
-
-        # For mapping from the indices of adj. matrix to those of DataFrame
-        # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
-    # end of _initialize_data
-
-    def compute(self):
-        """Algorithm perform the computation with the given data"""
-        df_exp = self._data.df_exp  # Result of experiment
-
-        # Simulation result
-        sim_result = np.zeros(df_exp.shape, dtype=np.float)
-
-        b = self._b
-
-        if hasattr(self._data, 'inputs'):  # Input condition
-            ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
-            val_inputs = [val for val in self._data.inputs.values()]
-            b[ind_inputs] = val_inputs
-        # end of if
-
-        if self._params.is_rel_change:
-            x_cnt = self.propagate(b)
-
-        # Main loop of the simulation
-        for i, ind_ba in enumerate(self._ind_ba):
-            ind_ba = self._ind_ba[i]
-            b_store = b[ind_ba][:]
-            b[ind_ba] = self._val_ba[i]  # Basal activity
-
-            x_exp = self.propagate(b)
-
-            # Result of a single condition
-            if self._params.is_rel_change:  # Use relative change
-                rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
-                res_single = rel_change[self._iadj_to_idf]
-            else:
-                res_single = x_exp[self._iadj_to_idf]
-
-            sim_result[i, :] = res_single
-            b[ind_ba] = b_store
-        # end of for
-
-        df_sim = pd.DataFrame(sim_result,
-                              index=df_exp.index,
-                              columns=df_exp.columns)
-
-        # Get the result of elements in the columns of df_exp.
-        self._result.df_sim = df_sim[df_exp.columns]
-    # end of def compute
-
-# end of def class Propagation
-
-
-class PathSearch(Algorithm):
-    def _initialize_matrix(self):
-        pass  # Nothing to do...
-    # end of def _initialize_matrix
-
-    def _check_dimension(self, mat, mat_name):
-        # Check whether a given matrix is a square matrix.
-        if mat.shape[0] != mat.shape[1]:
-            raise ValueError(
-                "The %s should be square matrix."%(mat_name))
-    # end of def _check_dimension
-
-    def _initialize_data(self):
-        N = self._data.A.shape[0]  # Number of state variables
-        df_ba = self._data.df_ba  # Basal activity
-
-        # Make mappers
-        self._n2i = self._data.n2i  # Name to index mapper
-        self._i2n = {index: name for name, index in self._n2i.items()}
-
-        self._b = np.zeros(N, dtype=np.float)
-        self._ind_ba = []
-        self._val_ba = []
-        for i, row in enumerate(df_ba.iterrows()):
-            row = row[1]
-            list_ind = []  # Indices
-            list_val = []  # Values
-            for target in df_ba.columns[row.nonzero()]:
-                list_ind.append(self._n2i[target])
-                list_val.append(row[target])
-            # end of for
-            self._ind_ba.append(list_ind)
-            self._val_ba.append(list_val)
-        # end of for
-
-        # For mapping from the indices of adj. matrix to those of DataFrame
-        # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = [self._n2i[x] for x in self._data.df_exp.columns]
-    # end of _initialize_data
-
-    def compute(self):
-        """Algorithm perform the computation with the given data"""
-        df_exp = self._data.df_exp  # Result of experiment
-
-        # Simulation result
-        sim_result = np.zeros(df_exp.shape, dtype=np.float)
-
-        b = self._b
-
-        if hasattr(self._data, 'inputs'):  # Input condition
-            ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
-            val_inputs = [val for val in self._data.inputs.values()]
-            b[ind_inputs] = val_inputs
-        # end of if
-
-        if self._params.is_rel_change:
-            x_cnt = self.propagate(b)
-
-        # Main loop of the simulation
-        for i, ind_ba in enumerate(self._ind_ba):
-            ind_ba = self._ind_ba[i]
-            b_store = b[ind_ba][:]
-            b[ind_ba] = self._val_ba[i]  # Basal activity
-
-            x_exp = self.propagate(b)
-
-            # Result of a single condition
-            if self._params.is_rel_change:  # Use relative change
-                rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
-                res_single = rel_change[self._iadj_to_idf]
-            else:
-                res_single = x_exp[self._iadj_to_idf]
-
-            sim_result[i, :] = res_single
-            b[ind_ba] = b_store
-        # end of for
-
-        df_sim = pd.DataFrame(sim_result,
-                              index=df_exp.index,
-                              columns=df_exp.columns)
-
-        # Get the result of elements in the columns of df_exp.
-        self._result.df_sim = df_sim[df_exp.columns]
-    # end of def compute
-
 
 
 class Data(ContainerItem):
@@ -305,26 +116,26 @@ class Data(ContainerItem):
 
     # Read-only members
     @property
-    def A(self): # Adjacency matrix
+    def A(self):  # Adjacency matrix
         return self._A
 
     @property
-    def n2i(self): # Name to index mapping (hashable)
+    def n2i(self):  # Name to index mapping (hashable)
         return self._n2i
 
     @property
-    def dg(self): # Directed graph object of NetworkX
+    def dg(self):  # Directed graph object of NetworkX
         return self._dg
 
     @property
-    def inputs(self): # Input conditions
+    def inputs(self):  # Input conditions
         return self._inputs
 
-    @property # DataFrame of basal activity
+    @property  # DataFrame of basal activity
     def df_ba(self):
         return self._df_ba
 
-    @property # DataFrame of experimental result
+    @property  # DataFrame of experimental result
     def df_exp(self):
         return self._df_exp
 

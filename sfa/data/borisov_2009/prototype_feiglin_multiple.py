@@ -11,8 +11,6 @@ from sysbio import read_sif
 from sysbio import get_idx_to_name
 from sysbio import convert_networkx_digraph
 
-from sysbio.other.feiglin import feiglin_wiring
-
 def calc_accuracy(df1, df2):
     # Count the same signs between the results of sim. and exp.
     np.sign(df1) + np.sign(df2)
@@ -102,7 +100,6 @@ if __name__ == "__main__":
 
     iadj_to_itb = list(map(lambda x: name_to_idx[x], tb_exp_res.columns))
 
-    b = np.zeros(N, dtype=np.float)
     names_ba = []
     vals_ba = []
     for i, row in enumerate(tb_conds.iterrows()):
