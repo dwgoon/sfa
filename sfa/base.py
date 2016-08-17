@@ -172,6 +172,15 @@ class Algorithm(ContainerItem):
 # end of class Algorithm        
 
 
+class Propagation(Algorithm):
+    pass
+
+
+class PathSearch(Algorithm):
+    pass
+
+
+
 class Data(ContainerItem):
     def __init__(self):
         super().__init__()
