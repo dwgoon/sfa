@@ -2,7 +2,6 @@
 
 import unittest
 
-import sfa
 from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet

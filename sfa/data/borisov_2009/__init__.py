@@ -79,10 +79,10 @@ class BorisovData(sfa.base.Data):
         dpath = os.path.dirname(__file__)
         fpath = os.path.join(dpath, "network.sif")
 
-        A, n2i = sfa.read_sif(fpath)
+        A, n2i, dg = sfa.read_sif(fpath, as_nx=True)
         self._A = A
         self._n2i = n2i
-        self._dg = sfa.read_sif(fpath, as_nx=True)
+        self._dg = dg
         self._inputs = inputs
         self._df_ba = df_ba
         self._df_exp = df_exp

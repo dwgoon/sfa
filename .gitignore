@@ -1,6 +1,6 @@
 **.pyc
 **/__pycache__/
 .idea
-.idea/*.*
+.idea/
 sfa.egg-info
-sfa.egg-info/*.*
+sfa.egg-info/

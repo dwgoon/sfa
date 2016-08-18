@@ -23,9 +23,10 @@ class ParameterSet(FrozenClass):
         self._freeze()
 
     def initialize(self):
-        self._max_path_length = 6
+        self._max_path_length = None
         self._weight = 0.5  # float value in (0, 1). The default value is 0.5.
         self._is_rel_change = False
+        self._no_inputs = True
 
     @property
     def max_path_length(self):
@@ -57,6 +58,16 @@ class ParameterSet(FrozenClass):
         if not isinstance(val, bool):
             raise TypeError("is_rel_change is bool type.")
         self._is_rel_change = val
+
+    @property
+    def no_inputs(self):
+        return self._no_inputs
+
+    @no_inputs.setter
+    def no_inputs(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("no_inputs is bool type.")
+        self._no_inputs = val
 # end of def class ParameterSet
 
 
@@ -111,13 +122,17 @@ class PathwayWiring(sfa.base.Algorithm):
 
         # For mapping from the indices of adj. matrix to those of DataFrame
         # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = [self._n2i[x] for x in
-                             self._data.df_exp.columns]
+        self._iadj_to_idf = [self._data._n2i[x]
+                                for x in self._data.df_exp.columns]
 
     # end of _initialize_data
 
     def _apply_inputs(self, names, vals):
-        if hasattr(self._data, 'inputs'):  # Input condition
+        if self._params.no_inputs:
+            return
+
+        # Input condition
+        if hasattr(self._data, 'inputs') and not self._data.inputs:
             names.extend(self._data.inputs.keys())
             vals.extend(self._data.inputs.values())
         # end of if
@@ -163,7 +178,7 @@ class PathwayWiring(sfa.base.Algorithm):
 
     def wire_single_path(self, dg, ba, path):
         F = ba
-        w = self._params
+        w = self._params.weight
         for i in range(len(path) - 1):
             src = path[i]
             tgt = path[i + 1]
@@ -173,7 +188,8 @@ class PathwayWiring(sfa.base.Algorithm):
         return F
 
     def wire_all_paths(self, dg, ba, src, tgt):
-        paths = nx.all_simple_paths(dg, src, tgt)
+        mpl = self._params.max_path_length
+        paths = nx.all_simple_paths(dg, src, tgt, mpl)
         E = 0
         # Calculate the F for each path
         for i, path in enumerate(paths):

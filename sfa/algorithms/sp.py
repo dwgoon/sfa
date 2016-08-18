@@ -117,7 +117,8 @@ class SignalPropagation(sfa.base.Algorithm):
     # end of _initialize_data
 
     def _apply_inputs(self, b):
-        if hasattr(self._data, 'inputs'):  # Input condition
+        # Input condition
+        if hasattr(self._data, 'inputs') and not self._data.inputs:
             ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
             val_inputs = [val for val in self._data.inputs.values()]
             b[ind_inputs] = val_inputs
