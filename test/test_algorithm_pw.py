@@ -7,7 +7,7 @@ from sfa import AlgorithmSet
 from sfa import DataSet
 
 
-class TestAlgorithmSP(unittest.TestCase):
+class TestAlgorithmPW(unittest.TestCase):
 
     def __init__(self,  *args, **kwargs):
         super().__init__(*args, **kwargs)

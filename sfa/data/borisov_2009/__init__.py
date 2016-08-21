@@ -48,7 +48,7 @@ def _create_single_data(abbr):
     m = p.match(abbr)
     try:
         data_type, stim_type = m.groups()
-    except AttributeError: # if m is None
+    except AttributeError:  # if m is None
         raise ValueError("The wrong abbr. for Borisov 2009 data: %s"%(abbr))
 
     fstr_ba_file = os.path.join(dpath, "ba.tsv")

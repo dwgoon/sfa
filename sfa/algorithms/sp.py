@@ -118,7 +118,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
     def _apply_inputs(self, b):
         # Input condition
-        if hasattr(self._data, 'inputs') and not self._data.inputs:
+        if hasattr(self._data, 'inputs') and self._data.inputs:
             ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
             val_inputs = [val for val in self._data.inputs.values()]
             b[ind_inputs] = val_inputs
@@ -148,7 +148,7 @@ class SignalPropagation(sfa.base.Algorithm):
         for i, ind_ba in enumerate(self._inds_ba):
             ind_ba = self._inds_ba[i]
             b_store = b[ind_ba][:]
-            self._apply_inputs(b) # Apply the input condition
+            self._apply_inputs(b)  # Apply the input condition
             b[ind_ba] = self._vals_ba[i]  # Basal activity
 
             x_exp = self.propagate(b)

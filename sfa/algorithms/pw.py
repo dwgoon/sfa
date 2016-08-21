@@ -132,7 +132,7 @@ class PathwayWiring(sfa.base.Algorithm):
             return
 
         # Input condition
-        if hasattr(self._data, 'inputs') and not self._data.inputs:
+        if hasattr(self._data, 'inputs') and self._data.inputs:
             names.extend(self._data.inputs.keys())
             vals.extend(self._data.inputs.values())
         # end of if
@@ -154,7 +154,7 @@ class PathwayWiring(sfa.base.Algorithm):
 
         # Main loop of the simulation
         for i, names_ba_se in enumerate(self._names_ba):
-            vals_ba_se = self._vals_ba[i]
+            vals_ba_se = self._vals_ba[i]  # 'se' means a 'single experiment'
             self._apply_inputs(names_ba_se, vals_ba_se)
             x_exp = self.wire(dg, names_ba_se, vals_ba_se, n2i)
 
