@@ -71,6 +71,14 @@ class SignalPropagation(sfa.base.Algorithm):
         self._result = sfa.base.Result()
     # end of def __init__
 
+    @property
+    def P(self):
+        return self._P
+
+    @P.setter
+    def P(self, mat):
+        self._P = mat
+
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
         self._P = self._normalize(self._data.A)
