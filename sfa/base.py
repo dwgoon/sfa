@@ -97,7 +97,7 @@ class Algorithm(ContainerItem):
         pass
 
     @abstractmethod
-    def compute(self):
+    def compute_panel(self):
         raise NotImplementedError("compute() should be implemented")
 
 # end of class Algorithm        

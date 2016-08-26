@@ -125,6 +125,7 @@ class PathwayWiring(sfa.base.Algorithm):
         self._iadj_to_idf = [self._data._n2i[x]
                                 for x in self._data.df_exp.columns]
 
+        self._i2n = {idx:name for name, idx in self._data._n2i.items()}
     # end of _initialize_data
 
     def _apply_inputs(self, names, vals):
@@ -138,9 +139,7 @@ class PathwayWiring(sfa.base.Algorithm):
         # end of if
     # end of def
 
-    def compute(self):
-        dg = self._data.dg
-        n2i = self._data.n2i
+    def compute_panel(self):
         df_exp = self._data.df_exp  # Result of experiment
 
         # Simulation result
@@ -150,13 +149,13 @@ class PathwayWiring(sfa.base.Algorithm):
             names_ba_se = []
             vals_ba_se = []
             self._apply_inputs(names_ba_se, vals_ba_se)
-            x_cnt = self.wire(dg, names_ba_se, vals_ba_se, n2i)
+            x_cnt = self.wire(names_ba_se, vals_ba_se)
 
         # Main loop of the simulation
         for i, names_ba_se in enumerate(self._names_ba):
             vals_ba_se = self._vals_ba[i]  # 'se' means a 'single experiment'
             self._apply_inputs(names_ba_se, vals_ba_se)
-            x_exp = self.wire(dg, names_ba_se, vals_ba_se, n2i)
+            x_exp = self.wire(names_ba_se, vals_ba_se)
 
             # Result of a single condition
             if self._params.is_rel_change:  # Use relative change
@@ -175,6 +174,16 @@ class PathwayWiring(sfa.base.Algorithm):
         # Get the result of elements in the columns of df_exp.
         self._result.df_sim = df_sim[df_exp.columns]
     # end of def compute
+
+    def compute(self, b):
+        i2n = self._i2n
+        names_ba_se = []
+        val_ba_se = []
+        for i, val in enumerate(b):
+            names_ba_se.append(i2n[i])
+            val_ba_se.append(val)
+        # end of for
+        return self.wire(names_ba_se, val_ba_se)
 
     def wire_single_path(self, dg, ba, path):
         F = ba
@@ -203,13 +212,15 @@ class PathwayWiring(sfa.base.Algorithm):
         #    E += F
         return E
 
-    def wire(self, dg, names_ba_se, val_ba_se, n2i):
+    def wire(self, names_ba_se, val_ba_se):
         """
-        dg: NetworkX.DiGraph object including information of signs and weights
         names_ba_se: names of basal activities in a single experiment
         val_ba_se: values of basal activities in a single experiment
-        n2i: name to index mapper
         """
+        dg = self._data.dg
+        n2i = self._data.n2i
+
+        # The combined effects
         CE = np.zeros((dg.number_of_nodes(),), dtype=np.float)
 
         for tgt in dg.nodes_iter():

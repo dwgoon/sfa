@@ -133,7 +133,7 @@ class SignalPropagation(sfa.base.Algorithm):
         # end of if
     # end of def _apply_inputs
 
-    def compute(self):
+    def compute_panel(self):
         """Algorithm perform the computation with the given data"""
         df_exp = self._data.df_exp  # Result of experiment
 
@@ -150,7 +150,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
         if self._params.is_rel_change:
             self._apply_inputs(b)
-            x_cnt = self.propagate(b)
+            x_cnt = self.compute(b)
 
         # Main loop of the simulation
         for i, ind_ba in enumerate(self._inds_ba):
@@ -159,7 +159,7 @@ class SignalPropagation(sfa.base.Algorithm):
             self._apply_inputs(b)  # Apply the input condition
             b[ind_ba] = self._vals_ba[i]  # Basal activity
 
-            x_exp = self.propagate(b)
+            x_exp = self.compute(b)
 
             # Result of a single condition
             if self._params.is_rel_change:  # Use relative change
@@ -244,20 +244,20 @@ class SignalPropagation(sfa.base.Algorithm):
         return (1-a)*np.linalg.inv(M0)
     # end of def _prepare_exact_solution
 
-    def propagate(self, b):
+    def compute(self, b):
         if self._exsol_avail:
-            return self.propagate_exact(b)
+            return self.compute_exact(b)
         else:
             alpha = self._params.alpha
             P = self._P
-            x_ss, _ = self.propagate_iterative(P, b, b, a=alpha)
+            x_ss, _ = self.compute_iterative(P, b, b, a=alpha)
             return x_ss  # x at steady-state (i.e., staionary state)
-    # end of def propagate
+    # end of def compute
 
-    def propagate_exact(self, b):
+    def compute_exact(self, b):
         return self._M.dot(b)
 
-    def propagate_iterative(self,
+    def compute_iterative(self,
                             P,
                             xi,
                             b,
@@ -334,6 +334,6 @@ class SignalPropagation(sfa.base.Algorithm):
         else:
             return x_t2, np.array(trj_x)
 
-    # end of def propagate
+    # end of def compute
 
 # end of def class SignalPropagation

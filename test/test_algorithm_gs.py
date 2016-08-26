@@ -66,7 +66,7 @@ class TestAlgorithmGS(unittest.TestCase):
         # Test #1
         alg.params.alpha = 0.5
         b = np.array([1.0, 0.0, 0.0])
-        x = alg.propagate(b)
+        x = alg.compute(b)
         self.assertAlmostEqual(x[0], 0.625)
         self.assertAlmostEqual(x[1], 0.25)
         self.assertAlmostEqual(x[2], 0.125)
@@ -75,7 +75,7 @@ class TestAlgorithmGS(unittest.TestCase):
         alg.params.alpha = 0.9
         alg.initialize(init_data=False)
         b = np.array([1.0, 0.0, 0.0])
-        x = alg.propagate(b)
+        x = alg.compute(b)
         self.assertAlmostEqual(x[0], 0.38928571)
         self.assertAlmostEqual(x[1], 0.32142857)
         self.assertAlmostEqual(x[2], 0.28928571)
@@ -94,7 +94,7 @@ class TestAlgorithmGS(unittest.TestCase):
         alg.params.alpha = 0.5
         alg.initialize()
         b = np.array([1.0, 0.5, 0.25])
-        x = alg.propagate(b)
+        x = alg.compute(b)
         self.assertAlmostEqual(x[0], 0.1875)
         self.assertAlmostEqual(x[1], 0.125)
         self.assertAlmostEqual(x[2], 0.1875)
@@ -103,7 +103,7 @@ class TestAlgorithmGS(unittest.TestCase):
         alg.params.alpha = 0.9
         alg.initialize(init_data=False)
         b = np.array([1.0, 0.5, 0.25])
-        x = alg.propagate(b)
+        x = alg.compute(b)
         self.assertAlmostEqual(x[0], 0.02572963)
         self.assertAlmostEqual(x[1], 0.02039588)
         self.assertAlmostEqual(x[2], 0.04335629)
@@ -114,7 +114,7 @@ class TestAlgorithmGS(unittest.TestCase):
 
         alg.data = data
         alg.initialize()
-        alg.compute()
+        alg.compute_panel()
         acc = calc_accuracy(alg.result.df_sim, data.df_exp)
         # self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
         print("[GS NELENDER] acc: ", acc)
@@ -131,7 +131,7 @@ class TestAlgorithmGS(unittest.TestCase):
             else:
                 alg.initialize(init_network=False)
 
-            alg.compute()
+            alg.compute_panel()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             #self.assertAlmostEqual(acc, self.solutions[abbr], 2)
             print("[GS %s] acc: %f"%(abbr, acc))
