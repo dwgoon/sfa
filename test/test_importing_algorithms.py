@@ -13,7 +13,9 @@ import sfa.algorithms
 
 class TestImportingAlgorithms(unittest.TestCase):
 
-    def setUp(self):
+    def __init__(self,  *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self._algorithms = []
         
         # Directory path with the file pattern for algorithm modules
