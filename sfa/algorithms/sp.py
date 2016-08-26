@@ -246,18 +246,18 @@ class SignalPropagation(sfa.base.Algorithm):
 
     def compute(self, b):
         if self._exsol_avail:
-            return self.compute_exact(b)
+            return self.propagate_exact(b)
         else:
             alpha = self._params.alpha
             P = self._P
-            x_ss, _ = self.compute_iterative(P, b, b, a=alpha)
+            x_ss, _ = self.propagate_iterative(P, b, b, a=alpha)
             return x_ss  # x at steady-state (i.e., staionary state)
     # end of def compute
 
-    def compute_exact(self, b):
+    def propagate_exact(self, b):
         return self._M.dot(b)
 
-    def compute_iterative(self,
+    def propagate_iterative(self,
                             P,
                             xi,
                             b,
