@@ -45,6 +45,7 @@ class TestAlgorithmGS(unittest.TestCase):
 
         self.solutions["NELENDER_2008"] = 0.77249
 
+        # TODO: Change the target results of GS (The above is those of SP)
         self.solutions["BORISOV_2009_AUC_CTRL"] = 0.69822
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.70583
         self.solutions["BORISOV_2009_AUC_I"] = 0.79205
@@ -133,7 +134,7 @@ class TestAlgorithmGS(unittest.TestCase):
 
             alg.compute_panel()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
-            #self.assertAlmostEqual(acc, self.solutions[abbr], 2)
+            self.assertAlmostEqual(acc, self.solutions[abbr], 2)
             print("[GS %s] acc: %f"%(abbr, acc))
 
         # end of for

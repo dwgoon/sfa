@@ -26,3 +26,18 @@ if __name__ == "__main__":
     # Iterate Algorithms object
     for alg, obj in algs.items():
         print(alg, obj)
+
+
+    ds = sfa.DataSet()
+    ds.create()
+    borisov = ds["BORISOV_2009"]["BORISOV_2009_AUC_EGF+I"]
+
+    alg_pw.data = borisov
+    alg_gs.data = borisov
+    alg_sp.data = borisov
+
+    alg_pw.initialize()
+    alg_gs.initialize()
+    alg_sp.initialize()
+
+    print()
