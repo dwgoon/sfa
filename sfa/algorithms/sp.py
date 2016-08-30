@@ -81,7 +81,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
-        self._P = self._normalize(self._data.A)
+        self._P = self.normalize(self._data.A)
         self._check_dimension(self._P, "transition matrix")
         # Try to prepare the exact solution
         try:
@@ -133,7 +133,7 @@ class SignalPropagation(sfa.base.Algorithm):
         # end of if
     # end of def _apply_inputs
 
-    def compute_panel(self):
+    def compute_batch(self):
         """Algorithm perform the computation with the given data"""
         df_exp = self._data.df_exp  # Result of experiment
 
@@ -180,7 +180,7 @@ class SignalPropagation(sfa.base.Algorithm):
         self._result.df_sim = df_sim[df_exp.columns]
     # end of def compute
 
-    def _normalize(self, A, norm_in=True, norm_out=True):
+    def normalize(self, A, norm_in=True, norm_out=True):
 
         # Check whether A is a square matrix
         if A.shape[0] != A.shape[1]:
@@ -221,7 +221,7 @@ class SignalPropagation(sfa.base.Algorithm):
         """
         return P
 
-    # end of def _normalize
+    # end of def normalize
 
     def _prepare_exact_solution(self):
         """

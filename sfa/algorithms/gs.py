@@ -16,7 +16,7 @@ class GaussianSmoothing(SignalPropagation):
         super().__init__(abbr)
         self._name = "Gaussian smoothing algorithm"       
 
-    def _normalize(self, A):
+    def normalize(self, A):
         return A  # No norm.
 
     def _prepare_exact_solution(self):

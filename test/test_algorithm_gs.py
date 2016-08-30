@@ -43,18 +43,17 @@ class TestAlgorithmGS(unittest.TestCase):
 
         self.solutions = {}
 
-        self.solutions["NELENDER_2008"] = 0.77249
+        self.solutions["NELENDER_2008"] = 0.650
 
-        # TODO: Change the target results of GS (The above is those of SP)
-        self.solutions["BORISOV_2009_AUC_CTRL"] = 0.69822
-        self.solutions["BORISOV_2009_AUC_EGF"] = 0.70583
-        self.solutions["BORISOV_2009_AUC_I"] = 0.79205
-        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.77430
+        self.solutions["BORISOV_2009_AUC_CTRL"] = 0.551
+        self.solutions["BORISOV_2009_AUC_EGF"] = 0.581
+        self.solutions["BORISOV_2009_AUC_I"] = 0.588
+        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.583
 
-        self.solutions["BORISOV_2009_SS_CTRL"] = 0.72527
-        self.solutions["BORISOV_2009_SS_EGF"] = 0.65765
-        self.solutions["BORISOV_2009_SS_I"] = 0.73119
-        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.66272
+        self.solutions["BORISOV_2009_SS_CTRL"] = 0.587
+        self.solutions["BORISOV_2009_SS_EGF"] = 0.537
+        self.solutions["BORISOV_2009_SS_I"] = 0.557
+        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.542
     # end of def
 
     def test_gs_simple_data_01(self):
@@ -115,7 +114,7 @@ class TestAlgorithmGS(unittest.TestCase):
 
         alg.data = data
         alg.initialize()
-        alg.compute_panel()
+        alg.compute_batch()
         acc = calc_accuracy(alg.result.df_sim, data.df_exp)
         # self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
         print("[GS NELENDER] acc: ", acc)
@@ -132,7 +131,7 @@ class TestAlgorithmGS(unittest.TestCase):
             else:
                 alg.initialize(init_network=False)
 
-            alg.compute_panel()
+            alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)
             print("[GS %s] acc: %f"%(abbr, acc))

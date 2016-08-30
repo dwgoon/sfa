@@ -43,7 +43,7 @@ class TestAlgorithmPW(unittest.TestCase):
         alg.params.initialize()
         alg.data = data
         alg.initialize()
-        alg.compute_panel()
+        alg.compute_batch()
         acc = calc_accuracy(alg.result.df_sim, data.df_exp)
         self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
 
@@ -58,7 +58,7 @@ class TestAlgorithmPW(unittest.TestCase):
         for abbr, data in borisov.items():
             alg.data = data
             alg.initialize(init_network=False)
-            alg.compute_panel()
+            alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)
         # end of for

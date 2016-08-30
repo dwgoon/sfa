@@ -139,7 +139,7 @@ class PathwayWiring(sfa.base.Algorithm):
         # end of if
     # end of def
 
-    def compute_panel(self):
+    def compute_batch(self):
         df_exp = self._data.df_exp  # Result of experiment
 
         # Simulation result

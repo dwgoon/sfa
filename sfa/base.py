@@ -1,6 +1,7 @@
 
 
 from abc import ABC, abstractmethod
+import copy
 
 import numpy as np
 import pandas as pd
@@ -61,6 +62,12 @@ class Algorithm(ContainerItem):
         self._params = None
         self._result = None
 
+    def copy(self, is_deep=False):
+        if is_deep:
+            copy.deepcopy(self)
+        else:
+            return copy.copy(self)
+
     # Read-only properties
     @property
     def result(self):
@@ -97,7 +104,7 @@ class Algorithm(ContainerItem):
         pass
 
     @abstractmethod
-    def compute_panel(self):
+    def compute_batch(self):
         raise NotImplementedError("compute() should be implemented")
 
 # end of class Algorithm        

@@ -53,7 +53,7 @@ if __name__ == "__main__":
     for abbr in borisov:
         data = ds["BORISOV_2009"][abbr]
         alg_sp.data = data
-        alg_sp.compute_panel()
+        alg_sp.compute_batch()
         acc = calc_accuracy(alg_sp.result.df_sim,
                             data.df_exp)
 

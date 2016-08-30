@@ -14,7 +14,7 @@ def create_algorithm(abbr):
 
 class ThisAlgorithm(sfa.base.Algorithm):
 
-    def compute_panel(self):
+    def compute_batch(self):
         pass
     
 
