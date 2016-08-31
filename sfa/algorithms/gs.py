@@ -21,7 +21,7 @@ class GaussianSmoothing(SignalPropagation):
 
     def _prepare_exact_solution(self):
         a = self._params.alpha
-        W = self._P
+        W = self._W
         Dw = np.diag(np.diag(W))
         Wn = W - Dw
         Wn_abs = np.abs(Wn)
@@ -44,26 +44,61 @@ class GaussianSmoothing(SignalPropagation):
         return self._M.dot(b)
 
     def propagate_iterative(self,
-                            P,
+                            W,
                             xi,
                             b,
                             a=0.5,
                             lim_iter=1000,
                             tol=1e-5,
-                            notrj=True):
-        n = P.shape[0]
+                            trj=False):
+        """
+        Network propagation calculation based on iteration.
+
+        Parameters
+        ------------------
+        W: numpy.ndarray
+           weight matrix (transition matrix)
+        xi: numpy.ndarray
+            Initial state
+        b: numpy.ndarray
+            Basal activity
+        a: real number (optional)
+            Propagation rate.
+        lim_iter: integer (optioanl)
+            Limitation of iterations for propagation.
+            Propagation terminates, when the iteration is reached.
+        tol: real number (optional)
+            Tolerance for terminating iteration
+            Iteration continues, if Frobenius norm of (x(t+1)-x(t)) is
+            greater than tol.
+        gettrj: bool (optional)
+            Determine whether trajectory of the state and propagation matrix
+            is returned. If gettrj is true, the trajectory is returned.
+
+        Returns
+        -------
+        xp: numpy.ndarray
+            State after propagation
+        trj_x: numpy.ndarray
+            Trajectory of the state transition
+
+        See also
+        --------
+        """
+
+        n = W.shape[0]
         # Initial values
         x0 = np.zeros((n,), dtype=np.float)
         x0[:] = xi
 
         x_t1 = x0.copy()
-        trj_x = []
 
-        # Record the initial states
-        trj_x.append(x_t1.copy())
+        if gettrj:
+            # Record the initial states
+            trj_x = []
+            trj_x.append(x_t1.copy())
 
         # To get Dc and W_ot
-        W = P
         Dw = np.diag(np.diag(W))
         Wn = W - Dw
         Wn_abs = np.abs(Wn)
@@ -93,16 +128,16 @@ class GaussianSmoothing(SignalPropagation):
                 break
 
             # Add the current state to the trajectory
-            if not notrj:
+            if gettrj:
                 trj_x.append(x_t2)
 
             # Update the state
             x_t1 = x_t2.copy()
         # end of for
 
-        if notrj is True:
+        if gettrj is False:
             return x_t2, num_iter
         else:
             return x_t2, np.array(trj_x)
-    # end of def propagat_ierative
+    # end of def propagate_iterative
 # end of def class GaussianSmoothing

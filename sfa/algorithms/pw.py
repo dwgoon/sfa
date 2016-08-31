@@ -196,23 +196,32 @@ class PathwayWiring(sfa.base.Algorithm):
         # end of for
         return F
 
-    def wire_all_paths(self, dg, ba, src, tgt):
+    def wire_all_paths(self, dg, ba, src, tgt, getpath=False):
         mpl = self._params.max_path_length
         paths = nx.all_simple_paths(dg, src, tgt, mpl)
         E = 0
+
+        if getpath:
+            list_paths = []
+
         # Calculate the F for each path
         for i, path in enumerate(paths):
             F = self.wire_single_path(dg, ba, path)
             E += F
+            if getpath:
+                list_paths.append(path)
         # end of for
 
         # Apply the effect of perturbation on the target itself
         # if ptb == tgt:
         #    F = calc_F(dg, [tgt], w)
         #    E += F
-        return E
+        if getpath:
+            return E, list_paths
+        else:
+            return E
 
-    def wire(self, names_ba_se, val_ba_se):
+    def wire(self, names_ba_se, val_ba_se, getpath=False):
         """
         names_ba_se: names of basal activities in a single experiment
         val_ba_se: values of basal activities in a single experiment
@@ -223,16 +232,28 @@ class PathwayWiring(sfa.base.Algorithm):
         # The combined effects
         CE = np.zeros((dg.number_of_nodes(),), dtype=np.float)
 
+        if getpath:
+            list_paths = []
+
         for tgt in dg.nodes_iter():
             Et = 0.0
             for i, src in enumerate(names_ba_se):
                 ba = val_ba_se[i]
                 # print(name_src, ba)
-                Et += self.wire_all_paths(dg, ba, src, tgt)
+                if getpath:
+                    E, paths = self.wire_all_paths(dg, ba, src, tgt, getpath)
+                    list_paths.extend(paths)
+                    Et += E
+                else:
+                    Et += self.wire_all_paths(dg, ba, src, tgt, getpath)
                 # end of for
             CE[n2i[tgt]] = Et
         # end of for
-        return CE
+
+        if getpath:
+            return CE, list_paths
+        else:
+            return CE
     # end of def wire
 
 # end of def class PathwayWiring

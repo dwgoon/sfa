@@ -63,7 +63,7 @@ class SignalPropagation(sfa.base.Algorithm):
         self._ind_ba = None
         self._val_ba = None
         self._iadj_to_idf = None
-        self._P = None
+        self._W = None
 
         self._exsol_avail = False  # The exact solution is available.
         self._M = None  # A matrix for getting the exact solution.
@@ -72,17 +72,17 @@ class SignalPropagation(sfa.base.Algorithm):
     # end of def __init__
 
     @property
-    def P(self):
-        return self._P
+    def W(self):
+        return self._W
 
-    @P.setter
-    def P(self, mat):
-        self._P = mat
+    @W.setter
+    def W(self, mat):
+        self._W = mat
 
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
-        self._P = self.normalize(self._data.A)
-        self._check_dimension(self._P, "transition matrix")
+        self._W = self.normalize(self._data.A)
+        self._check_dimension(self._W, "transition matrix")
         # Try to prepare the exact solution
         try:
             self._M = self._prepare_exact_solution()
@@ -103,6 +103,7 @@ class SignalPropagation(sfa.base.Algorithm):
         n2i = self._data.n2i  # Name to index mapper
         df_ba = self._data.df_ba  # Basal activity
 
+        #self._b = np.zeros(N, dtype=np.float)
         self._b = np.finfo(np.float).eps * np.ones(N)
         self._inds_ba = []  # Indices (inds)
         self._vals_ba = []  # Values (vals)
@@ -187,8 +188,8 @@ class SignalPropagation(sfa.base.Algorithm):
             raise ValueError(
                 "The A (adjacency matrix) should be square matrix.")
 
-        # Build propagation matrix (aka. transition matrix) P from A
-        P = A.copy()
+        # Build propagation matrix (aka. transition matrix) W from A
+        W = A.copy()
 
         # Norm. in-degree
         if norm_in == True:
@@ -199,7 +200,7 @@ class SignalPropagation(sfa.base.Algorithm):
             else:
                 Dc = 1 / np.sqrt(sum_col_A)
             # end of else
-            P = Dc * P  # This is not matrix multiplication
+            W = Dc * W  # This is not matrix multiplication
 
         # Norm. out-degree
         if norm_out == True:
@@ -210,16 +211,16 @@ class SignalPropagation(sfa.base.Algorithm):
             else:
                 Dr = 1 / np.sqrt(sum_row_A)
             # end of row
-            P = np.multiply(P, np.mat(Dr).T)
+            W = np.multiply(W, np.mat(Dr).T)
             # Converting np.mat to ndarray
             # does not cost a lot.
-            P = P.A
+            W = W.A
         # end of if
         """
         The normalization above is the same as the follows:
         >>> np.diag(Dr).dot(A.dot(np.diag(Dc)))
         """
-        return P
+        return W
 
     # end of def normalize
 
@@ -227,7 +228,7 @@ class SignalPropagation(sfa.base.Algorithm):
         """
         Prepare to get the matrix for the exact solution:
 
-        x(t+1) = a*P.dot(x(t)) + (1-a)*b, where a is alpha.
+        x(t+1) = a*W.dot(x(t)) + (1-a)*b, where a is alpha.
 
         When t -> inf, both x(t+1) and x(t) converges to the stationary state.
 
@@ -238,9 +239,9 @@ class SignalPropagation(sfa.base.Algorithm):
 
         This method is to get the matrix, M for preparing the exact solution
         """
-        P = self._P
+        W = self._W
         a = self._params.alpha
-        M0 = np.eye(P.shape[0]) - a*P
+        M0 = np.eye(W.shape[0]) - a*W
         return (1-a)*np.linalg.inv(M0)
     # end of def _prepare_exact_solution
 
@@ -249,8 +250,8 @@ class SignalPropagation(sfa.base.Algorithm):
             return self.propagate_exact(b)
         else:
             alpha = self._params.alpha
-            P = self._P
-            x_ss, _ = self.propagate_iterative(P, b, b, a=alpha)
+            W = self._W
+            x_ss, _ = self.propagate_iterative(W, b, b, a=alpha)
             return x_ss  # x at steady-state (i.e., staionary state)
     # end of def compute
 
@@ -258,20 +259,20 @@ class SignalPropagation(sfa.base.Algorithm):
         return self._M.dot(b)
 
     def propagate_iterative(self,
-                            P,
+                            W,
                             xi,
                             b,
                             a=0.5,
                             lim_iter=1000,
                             tol=1e-5,
-                            notrj=True):
+                            gettrj=False):
         """
         Network propagation calculation based on iteration.
 
         Parameters
         ------------------
-        P: numpy.ndarray
-            adjacency matrix (stochastic matrix)
+        W: numpy.ndarray
+           weight matrix (transition matrix)
         xi: numpy.ndarray
             Initial state
         b: numpy.ndarray
@@ -285,9 +286,9 @@ class SignalPropagation(sfa.base.Algorithm):
             Tolerance for terminating iteration
             Iteration continues, if Frobenius norm of (x(t+1)-x(t)) is
             greater than tol.
-        notrj: bool (optional)
+        gettrj: bool (optional)
             Determine whether trajectory of the state and propagation matrix
-            is returned. If notrj is true, the trajectories are not returned.
+            is returned. If gettrj is true, the trajectory is returned.
 
         Returns
         -------
@@ -300,36 +301,37 @@ class SignalPropagation(sfa.base.Algorithm):
         --------
         """
 
-        n = P.shape[0]
+        n = W.shape[0]
         # Initial values
         x0 = np.zeros((n,), dtype=np.float)
         x0[:] = xi
 
         x_t1 = x0.copy()
-        trj_x = []
 
-        # Record the initial states
-        trj_x.append(x_t1.copy())
+        if gettrj:
+            # Record the initial states
+            trj_x = []
+            trj_x.append(x_t1.copy())
 
         # Main loop
         num_iter = 0
         for i in range(lim_iter):
             # Main formula
-            x_t2 = a * P.dot(x_t1) + (1 - a) * b
+            x_t2 = a * W.dot(x_t1) + (1 - a) * b
             num_iter += 1
             # Check termination condition
             if np.linalg.norm(x_t2 - x_t1) <= tol:
                 break
 
             # Add the current state to the trajectory
-            if not notrj:
+            if gettrj:
                 trj_x.append(x_t2)
 
             # Update the state
             x_t1 = x_t2.copy()
         # end of for
 
-        if notrj is True:
+        if gettrj is False:
             return x_t2, num_iter
         else:
             return x_t2, np.array(trj_x)
