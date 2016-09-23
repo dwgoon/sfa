@@ -17,64 +17,139 @@ http://doi.org/10.1038/msb.2009.19
 
 import os
 import re
+import glob
 
 import pandas as pd
 
 import sfa
 import sfa.base
 
-p = re.compile("BORISOV_2009_(\S+)_(\S+)")
-
 
 def create_data(abbr=None):
     if abbr is None:  # Create all data objects
         data_mult = {}  # Multiple data
-        list_ba = ["CTRL", "EGF", "I", "EGF+I"]
-        for stim_type in list_ba:
-            abbr_auc = "BORISOV_2009_AUC_%s"%(stim_type)
-            abbr_ss = "BORISOV_2009_SS_%s"%(stim_type)
-            data_mult[abbr_auc] = _create_single_data(abbr_auc)
-            data_mult[abbr_ss] = _create_single_data(abbr_ss)
+        dpath = os.path.dirname(__file__)
+
+        fstr_file = os.path.join(dpath, 'exp_data', 'exp_*')
+        for abspath in glob.glob(fstr_file):
+            fname = os.path.basename(abspath)
+            data_obj = _create_single_data(abbr, fname=fname)
+            data_mult[data_obj.abbr] = data_obj
+
         # end of for
+
         return data_mult
-    else: # Create a single data object
+    else:  # Create a single data object
         return _create_single_data(abbr)
+
 # end of def
 
-
-def _create_single_data(abbr):
+def create_test_data():
+    data_mult = {}
     dpath = os.path.dirname(__file__)
 
-    m = p.match(abbr)
-    try:
-        data_type, stim_type = m.groups()
-    except AttributeError:  # if m is None
-        raise ValueError("The wrong abbr. for Borisov 2009 data: %s"%(abbr))
+    fstr_file = os.path.join(dpath, 'exp_data_test', 'exp_*')
+    for abspath in glob.glob(fstr_file):
+        fname = os.path.basename(abspath)
+        items = re.split("[_.]", fname)
 
-    fstr_ba_file = os.path.join(dpath, "ba.tsv")
-    df_ba = pd.read_table(fstr_ba_file,
-                          header=0, index_col=0)
+        data_type = items[1]
+        stim_type = items[2]
 
-    data_type = data_type.lower()
-    fstr_exp_file = os.path.join(dpath,
-                                 "exp_%s_%s.tsv"%(data_type, stim_type))
-    df_exp = pd.read_table(fstr_exp_file,
-                           header=0, index_col=0)
+        if 'EGF' in stim_type:
+            conc_EGF = 1
+        else:
+            conc_EGF = 0.0001
 
-    fstr_input_file = os.path.join(dpath, "inputs_%s.tsv" % (stim_type))
-    ser_inputs = pd.read_table(fstr_input_file,
-                               header=None, index_col=0, squeeze=True)
-    inputs = ser_inputs.to_dict()
+        if 'I' in stim_type:
+            conc_I = 1
+        else:
+            conc_I = 0.0001
 
-    return BorisovData(abbr, inputs, df_ba, df_exp)
+        #data_obj = #_create_single_data(abbr, fname=fname)
+        #data_mult[data_obj.abbr] = data_obj
+
+        str_exp_file = os.path.join(dpath, 'exp_data_test', fname)
+        df_exp = pd.read_table(str_exp_file,
+                               header=0,
+                               index_col=0)  # Load basal activity data
+
+        # Load basal activity data
+        str_ba_file = os.path.join(dpath, 'exp_data_test', 'ba.tsv')
+        df_ba = pd.read_table(str_ba_file,
+                              header=0,
+                              index_col=0)
+
+        abbr = "BORISOV_2009_%s_%s"%(data_type, stim_type)
+        data_obj = BorisovData(abbr, data_type, conc_EGF, conc_I, df_ba, df_exp)
+        data_mult[abbr] = data_obj
+    # end of for
+
+    return data_mult
+
+
+
+def _create_single_data(abbr=None, fname=None):
+    dpath = os.path.dirname(__file__)
+
+    if fname:
+        items = re.split('[._+]', fname)
+
+        data_type = items[1]
+        stim_EGF = items[2]
+        stim_I = items[3]
+
+        m = re.search("EGF((\d|d)+)", stim_EGF)
+        dconc_EGF = m.group(1)
+        conc_EGF = dconc_EGF.replace('d', '.')  # Use '.' instead of 'd'
+
+        # Fetch the concentration of I
+        m = re.search("I((\d|d)+)", stim_I)
+        dconc_I = m.group(1)
+        conc_I = dconc_I.replace('d', '.')  # Use '.' instead of 'd'
+        abbr = "%s_EGF=%s+I=%s"%(data_type, conc_EGF, conc_I)
+
+    elif abbr:  # Use abbr
+        items = re.split('[_+]', abbr)
+
+        data_type = items[1]
+        stim_EGF = items[2]
+        stim_I = items[3]
+
+        # Fetch the concentration of EGF
+        m = re.search("EGF=((\w|\.)+)", stim_EGF)
+        conc_EGF = m.group(1)
+        dconc_EGF = conc_EGF.replace('.', 'd')  # Use 'd' instead of '.'
+
+        # Fetch the concentration of I
+        m = re.search("I=((\w|\.)+)", stim_I)
+        conc_I = m.group(1)
+        dconc_I = conc_I.replace('.', 'd')  # Use 'd' instead of '.'
+
+        fname = "exp_%s_EGF%s+I%s.tsv" % (data_type, dconc_EGF, dconc_I)
+    else:
+        raise ValueError("One of abbr or fname should be given"
+                         "in %s._create_single_data()"%(__name__))
+    # end of if-else
+
+    str_exp_file = os.path.join(dpath, 'exp_data', fname)
+    df_exp = pd.read_table(str_exp_file,
+                           header=0, index_col=0)  # Load basal activity data
+
+    # Load basal activity data
+    str_ba_file = os.path.join(dpath, "ba.tsv")
+    df_ba = pd.read_table(str_ba_file,
+                          header=0,
+                          index_col=0)
+
+    return BorisovData(abbr, data_type, conc_EGF, conc_I, df_ba, df_exp)
 # end of def
 
 
 class BorisovData(sfa.base.Data):
-    def __init__(self, abbr, inputs, df_ba, df_exp):
+    def __init__(self, abbr, data_type, conc_EGF, conc_I, df_ba, df_exp):
         super().__init__()
         self._abbr = abbr
-        self._name = "Data generated from Borisov et al. ODE model (%s)"%(abbr)
 
         dpath = os.path.dirname(__file__)
         fpath = os.path.join(dpath, "network.sif")
@@ -83,8 +158,18 @@ class BorisovData(sfa.base.Data):
         self._A = A
         self._n2i = n2i
         self._dg = dg
-        self._inputs = inputs
         self._df_ba = df_ba
         self._df_exp = df_exp
+
+        # TODO: Set input by thresholding
+        inputs = {}
+        inputs['EGF'] = conc_EGF
+        inputs['I'] = conc_I
+        self._inputs = inputs
+
+        fstr_name = "BORISOV_2009_%s[EGF=%snM,I=%snM]"
+        str_name = fstr_name % (data_type, conc_EGF, conc_I)
+        self._name = str_name
+
     # end of def __init__
 # end of def class BorisovData

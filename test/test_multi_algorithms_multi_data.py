@@ -27,29 +27,29 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
 
         self.solutions = defaultdict(dict)
 
-        self.solutions["SP"]["BORISOV_2009_AUC_CTRL"] = 0.69822
+        self.solutions["SP"]["BORISOV_2009_AUC_LOW"] = 0.69822
         self.solutions["SP"]["BORISOV_2009_AUC_EGF"] = 0.70583
         self.solutions["SP"]["BORISOV_2009_AUC_I"] = 0.79205
         self.solutions["SP"]["BORISOV_2009_AUC_EGF+I"] = 0.77430
-        self.solutions["SP"]["BORISOV_2009_SS_CTRL"] = 0.72527
+        self.solutions["SP"]["BORISOV_2009_SS_LOW"] = 0.72527
         self.solutions["SP"]["BORISOV_2009_SS_EGF"] = 0.65765
         self.solutions["SP"]["BORISOV_2009_SS_I"] = 0.73119
         self.solutions["SP"]["BORISOV_2009_SS_EGF+I"] = 0.66272
 
         self.solutions["GS"]["BORISOV_2009_AUC_EGF"] = 0.581
-        self.solutions["GS"]["BORISOV_2009_AUC_CTRL"] = 0.551
+        self.solutions["GS"]["BORISOV_2009_AUC_LOW"] = 0.551
         self.solutions["GS"]["BORISOV_2009_AUC_I"] = 0.588
         self.solutions["GS"]["BORISOV_2009_AUC_EGF+I"] = 0.583
-        self.solutions["GS"]["BORISOV_2009_SS_CTRL"] = 0.587
+        self.solutions["GS"]["BORISOV_2009_SS_LOW"] = 0.587
         self.solutions["GS"]["BORISOV_2009_SS_EGF"] = 0.537
         self.solutions["GS"]["BORISOV_2009_SS_I"] = 0.557
         self.solutions["GS"]["BORISOV_2009_SS_EGF+I"] = 0.542
 
-        self.solutions["PW"]["BORISOV_2009_AUC_CTRL"] = 0.648
+        self.solutions["PW"]["BORISOV_2009_AUC_LOW"] = 0.648
         self.solutions["PW"]["BORISOV_2009_AUC_EGF"] = 0.689
         self.solutions["PW"]["BORISOV_2009_AUC_I"] = 0.732
         self.solutions["PW"]["BORISOV_2009_AUC_EGF+I"] = 0.704
-        self.solutions["PW"]["BORISOV_2009_SS_CTRL"] = 0.669
+        self.solutions["PW"]["BORISOV_2009_SS_LOW"] = 0.669
         self.solutions["PW"]["BORISOV_2009_SS_EGF"] = 0.647
         self.solutions["PW"]["BORISOV_2009_SS_I"] = 0.663
         self.solutions["PW"]["BORISOV_2009_SS_EGF+I"] = 0.638

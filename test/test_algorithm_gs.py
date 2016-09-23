@@ -45,12 +45,12 @@ class TestAlgorithmGS(unittest.TestCase):
 
         self.solutions["NELENDER_2008"] = 0.650
 
-        self.solutions["BORISOV_2009_AUC_CTRL"] = 0.551
+        self.solutions["BORISOV_2009_AUC_LOW"] = 0.551
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.581
         self.solutions["BORISOV_2009_AUC_I"] = 0.588
         self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.583
 
-        self.solutions["BORISOV_2009_SS_CTRL"] = 0.587
+        self.solutions["BORISOV_2009_SS_LOW"] = 0.587
         self.solutions["BORISOV_2009_SS_EGF"] = 0.537
         self.solutions["BORISOV_2009_SS_I"] = 0.557
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.542

@@ -6,6 +6,7 @@ from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet
 
+from sfa.data import borisov_2009
 
 class TestAlgorithmSP(unittest.TestCase):
 
@@ -49,7 +50,7 @@ class TestAlgorithmSP(unittest.TestCase):
 
     def test_sp_borisov(self):
         alg = self.algs["SP"]
-        borisov = self.ds["BORISOV_2009"]
+        borisov = borisov_2009.create_test_data() # self.ds["BORISOV_2009"]
 
         alg.params.initialize()
         alg.params.is_rel_change = True
@@ -60,6 +61,7 @@ class TestAlgorithmSP(unittest.TestCase):
             alg.initialize(init_network=False)
             alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
+            print (acc, self.solutions[abbr])
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)
         # end of for
     # end of def

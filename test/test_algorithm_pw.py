@@ -25,12 +25,12 @@ class TestAlgorithmPW(unittest.TestCase):
 
         self.solutions["NELENDER_2008"] = 0.798
 
-        self.solutions["BORISOV_2009_AUC_CTRL"] = 0.648
+        self.solutions["BORISOV_2009_AUC_LOW"] = 0.648
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.689
         self.solutions["BORISOV_2009_AUC_I"] = 0.732
         self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.704
 
-        self.solutions["BORISOV_2009_SS_CTRL"] = 0.669
+        self.solutions["BORISOV_2009_SS_LOW"] = 0.669
         self.solutions["BORISOV_2009_SS_EGF"] = 0.647
         self.solutions["BORISOV_2009_SS_I"] = 0.663
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.638
@@ -53,7 +53,7 @@ class TestAlgorithmPW(unittest.TestCase):
 
         alg.params.initialize()
         #alg.params.is_rel_change = True
-        alg.data = borisov["BORISOV_2009_AUC_CTRL"]
+        alg.data = borisov["BORISOV_2009_AUC_LOW"]
         alg.initialize(init_data=False)
         for abbr, data in borisov.items():
             alg.data = data
