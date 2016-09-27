@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import sys
+if sys.version_info <= (2, 8):
+    from builtins import super
 
 import os
 import re
 import importlib
 import collections
 
-from abc import ABC, abstractmethod
+#from abc import ABC, abstractmethod
+import abc
+import six
 
 import sfa.base
 import sfa.algorithms
@@ -15,7 +20,10 @@ import sfa.data
 from sfa.utils import Singleton
 
 
-class Container(ABC, collections.MutableMapping):
+#class Container(ABC, collections.MutableMapping):
+
+@six.add_metaclass(abc.ABCMeta)
+class Container(collections.MutableMapping):
     """
     A simple singleton class, which handles multiple objects with
     its hashable functionality (using dictionary).
@@ -75,12 +83,14 @@ class Container(ABC, collections.MutableMapping):
             self._crate_all()
     # end of def create
 
-    @abstractmethod
+    #@abstractmethod
+    @abc.abstractmethod
     def _create_single(self, key):
         """Create a single object"""
     # end of def
 
-    @abstractmethod
+    #@abstractmethod
+    @abc.abstractmethod
     def _crate_all(self):
         """Create all objects"""
     # end of def
@@ -111,7 +121,10 @@ class AlgorithmSet(Container):
 
     def _create_single(self, key):
         key_low = key.lower()
-        fstr_module_path = "%s.%s" % (sfa.algorithms.__package__,
+        #fstr_module_path = "%s.%s" % (sfa.algorithms.__package__,
+        #                              key_low)
+
+        fstr_module_path = "%s.%s" % (sfa.algorithms.__name__,
                                       key_low)
 
         _key= key.upper()  # We use captial characters for the key.
@@ -166,7 +179,8 @@ class DataSet(Container):
         key_items = key.split("_")
         key_1st, key_2nd = key_items[:2]
         mod_name = "%s_%s"%(key_1st.lower(), key_2nd.lower())
-        fstr_module_path = "%s.%s" % (sfa.data.__package__, mod_name)
+        #fstr_module_path = "%s.%s" % (sfa.data.__package__, mod_name)
+        fstr_module_path = "%s.%s" % (sfa.data.__name__, mod_name)
 
         _key = key.upper()
         if _key in self._map:  # Avoid redundant importing

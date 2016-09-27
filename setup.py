@@ -12,6 +12,7 @@ setup(name='sfa',
       license='MIT',
       packages=['sfa'],
       install_requires=[
+      	  'six',
           'numpy',
           'networkx',
 	  'pandas',

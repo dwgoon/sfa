@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import sys
+if sys.version_info <= (2, 8):
+    from builtins import super
+
 import unittest
 
 from sfa import calc_accuracy

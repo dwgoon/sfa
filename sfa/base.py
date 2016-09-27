@@ -1,7 +1,12 @@
+import sys
+if sys.version_info <= (2, 8):
+    from builtins import super
 
-
-from abc import ABC, abstractmethod
+# from abc import ABC, abstractmethod
+import abc
 import copy
+
+import six
 
 import numpy as np
 import pandas as pd
@@ -9,8 +14,9 @@ import networkx as nx
 
 from sfa.utils import FrozenClass
 
-
-class ContainerItem(ABC):
+@six.add_metaclass(abc.ABCMeta)
+#class ContainerItem(ABC):
+class ContainerItem():
     def __init__(self, abbr=None, name=None):
         """
         abbr: Abbreviation (or symbol) representing this item
@@ -103,7 +109,8 @@ class Algorithm(ContainerItem):
     def _initialize_data(self):
         pass
 
-    @abstractmethod
+    #@abstractmethod
+    @abc.abstractmethod
     def compute_batch(self):
         raise NotImplementedError("compute() should be implemented")
 

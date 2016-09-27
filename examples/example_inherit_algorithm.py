@@ -1,4 +1,8 @@
 
+import sys
+if sys.version_info <= (2, 8):
+    from builtins import super
+
 import sfa
 
 from sfa.algorithms.gs import GaussianSmoothing

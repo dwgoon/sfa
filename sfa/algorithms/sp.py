@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-@author: dwlee
-"""
+
+import sys
+if sys.version_info <= (2, 8):
+    from builtins import super
 
 import numpy as np
 import pandas as pd
