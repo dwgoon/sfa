@@ -66,6 +66,7 @@ class SignalPropagation(sfa.base.Algorithm):
         self._iadj_to_idf = None
         self._W = None
 
+        self._exsol_forbidden = False
         self._exsol_avail = False  # The exact solution is available.
         self._M = None  # A matrix for getting the exact solution.
 
@@ -80,17 +81,30 @@ class SignalPropagation(sfa.base.Algorithm):
     def W(self, mat):
         self._W = mat
 
+    @property
+    def exsol_forbidden(self):
+        return self._exsol_forbidden
+
+    @exsol_forbidden.setter
+    def exsol_forbidden(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("exsol_forbidden should be boolean type.")
+
+        self._exsol_forbidden = val
+
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
         self._W = self.normalize(self._data.A)
         self._check_dimension(self._W, "transition matrix")
-        # Try to prepare the exact solution
-        try:
-            self._M = self._prepare_exact_solution()
-            self._check_dimension(self._M, "exact solution matrix")
-            self._exsol_avail = True
-        except np.linalg.LinAlgError:
-            self._exsol_avail = False
+
+        if self._exsol_forbidden:
+            # Try to prepare the exact solution
+            try:
+                self._M = self._prepare_exact_solution()
+                self._check_dimension(self._M, "exact solution matrix")
+                self._exsol_avail = True
+            except np.linalg.LinAlgError:
+                self._exsol_avail = False
     # end of def _initialize_network
 
     def _check_dimension(self, mat, mat_name):
@@ -247,13 +261,14 @@ class SignalPropagation(sfa.base.Algorithm):
     # end of def _prepare_exact_solution
 
     def compute(self, b):
-        if self._exsol_avail:
-            return self.propagate_exact(b)
-        else:
+        if self._exsol_forbidden is True or self._exsol_avail is False:
             alpha = self._params.alpha
             W = self._W
             x_ss, _ = self.propagate_iterative(W, b, b, a=alpha)
-            return x_ss  # x at steady-state (i.e., staionary state)
+            return x_ss  # x at steady-state (i.e., stationary state)
+        else:
+            return self.propagate_exact(b)
+
     # end of def compute
 
     def propagate_exact(self, b):

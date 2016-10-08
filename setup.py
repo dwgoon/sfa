@@ -13,8 +13,9 @@ setup(name='sfa',
       packages=['sfa'],
       install_requires=[
       	  'six',
+          'future',
           'numpy',
           'networkx',
-	  'pandas',
+	      'pandas',
       ],
       zip_safe=False,)
