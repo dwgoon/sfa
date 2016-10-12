@@ -29,18 +29,18 @@ class TestAlgorithmSP(unittest.TestCase):
 
         self.solutions["NELENDER_2008"] = 0.77249
 
-        self.solutions["BORISOV_2009_AUC_CTRL"] = 0.69822
+        self.solutions["BORISOV_2009_AUC_LOW"] = 0.69822
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.70583
         self.solutions["BORISOV_2009_AUC_I"] = 0.79205
         self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.77430
 
-        self.solutions["BORISOV_2009_SS_CTRL"] = 0.72527
+        self.solutions["BORISOV_2009_SS_LOW"] = 0.72527
         self.solutions["BORISOV_2009_SS_EGF"] = 0.65765
         self.solutions["BORISOV_2009_SS_I"] = 0.73119
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.66272
-    # end of def
+    # end of def __init__
 
-    def test_sp_nelender(self):
+    def test_nelender(self):
         alg = self.algs["SP"]
         data = self.ds["NELENDER_2008"]
 
@@ -51,13 +51,13 @@ class TestAlgorithmSP(unittest.TestCase):
         acc = calc_accuracy(alg.result.df_sim, data.df_exp)
         self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
 
-    def test_sp_borisov(self):
+    def test_borisov(self):
         alg = self.algs["SP"]
-        borisov = borisov_2009.create_test_data() # self.ds["BORISOV_2009"]
+        borisov = borisov_2009.create_test_data()
 
         alg.params.initialize()
         alg.params.is_rel_change = True
-        alg.data = borisov["BORISOV_2009_AUC_CTRL"]
+        alg.data = borisov["BORISOV_2009_AUC_LOW"]
         alg.initialize(init_data=False)
         for abbr, data in borisov.items():
             alg.data = data

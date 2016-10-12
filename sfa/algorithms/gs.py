@@ -53,7 +53,7 @@ class GaussianSmoothing(SignalPropagation):
                             a=0.5,
                             lim_iter=1000,
                             tol=1e-5,
-                            trj=False):
+                            get_trj=False):
         """
         Network propagation calculation based on iteration.
 
@@ -74,9 +74,9 @@ class GaussianSmoothing(SignalPropagation):
             Tolerance for terminating iteration
             Iteration continues, if Frobenius norm of (x(t+1)-x(t)) is
             greater than tol.
-        gettrj: bool (optional)
+        get_trj: bool (optional)
             Determine whether trajectory of the state and propagation matrix
-            is returned. If gettrj is true, the trajectory is returned.
+            is returned. If get_trj is true, the trajectory is returned.
 
         Returns
         -------
@@ -96,7 +96,7 @@ class GaussianSmoothing(SignalPropagation):
 
         x_t1 = x0.copy()
 
-        if gettrj:
+        if get_trj:
             # Record the initial states
             trj_x = []
             trj_x.append(x_t1.copy())
@@ -131,14 +131,14 @@ class GaussianSmoothing(SignalPropagation):
                 break
 
             # Add the current state to the trajectory
-            if gettrj:
+            if get_trj:
                 trj_x.append(x_t2)
 
             # Update the state
             x_t1 = x_t2.copy()
         # end of for
 
-        if gettrj is False:
+        if get_trj is False:
             return x_t2, num_iter
         else:
             return x_t2, np.array(trj_x)

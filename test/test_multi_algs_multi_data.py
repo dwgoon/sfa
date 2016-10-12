@@ -12,6 +12,7 @@ from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet
 from sfa.algorithms.sp import SignalPropagation
+from sfa.data import borisov_2009
 
 
 class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
@@ -25,8 +26,7 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
 
 
         # Create container for data.
-        self.ds = DataSet()
-        self.ds.create("BORISOV_2009")
+        self.ds = borisov_2009.create_test_data()
 
         self.solutions = defaultdict(dict)
 
@@ -65,7 +65,7 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
         res = defaultdict(dict) # np.zeros((len(algs), len(ds)), dtype=np.float)
 
         for alg_name, alg in algs.items():
-            for data_name, data in ds["BORISOV_2009"].items():
+            for data_name, data in ds.items():
                 alg.data = data
                 if isinstance(alg, SignalPropagation):
                     alg.params.is_rel_change = True

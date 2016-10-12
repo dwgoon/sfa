@@ -131,15 +131,25 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
 # end of def
 
 
-def calc_accuracy(df1, df2):
-    # Count the same signs between the results of df1 and df2
+def calc_accuracy(df1, df2, get_cons=False):
+    """
+    Count the same sign of each element between df1 and df2
+
+    df1: Left pandas.DataFrame to be compared
+    df2: Right pandas.DataFrame to be compared
+    getcons: decide whether to return consensus array in DataFrame or not
+    """
     np.sign(df1) + np.sign(df2)
     num_total = df1.count().sum()
-    diff_abs = np.abs( np.sign(df1) - np.sign(df2) )
-    num_cons = (diff_abs == 0).sum(axis=1).sum()  # Number of consensus
-
-    return (num_cons)/np.float(num_total)
-
+    diff_abs = np.abs(np.sign(df1) - np.sign(df2))
+    consensus = (diff_abs == 0)
+    num_cons = consensus.sum(axis=1).sum()  # Number of consensus
+    acc = (num_cons) / np.float(num_total)  # Accuracy
+    if get_cons:
+        return acc, consensus
+    else:
+        return acc
+# end of def
 
 """
 def convert_networkx_digraph(adj, name_to_idx=None):

@@ -10,6 +10,8 @@ from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet
 
+from sfa.data import borisov_2009
+
 
 class TestAlgorithmPW(unittest.TestCase):
 
@@ -38,9 +40,9 @@ class TestAlgorithmPW(unittest.TestCase):
         self.solutions["BORISOV_2009_SS_EGF"] = 0.647
         self.solutions["BORISOV_2009_SS_I"] = 0.663
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.638
-    # end of def
+    # end of def __init__
 
-    def test_sp_nelender(self):
+    def test_nelender(self):
         alg = self.algs["PW"]
         data = self.ds["NELENDER_2008"]
 
@@ -51,9 +53,9 @@ class TestAlgorithmPW(unittest.TestCase):
         acc = calc_accuracy(alg.result.df_sim, data.df_exp)
         self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
 
-    def test_sp_borisov(self):
+    def test_borisov(self):
         alg = self.algs["PW"]
-        borisov = self.ds["BORISOV_2009"]
+        borisov = borisov_2009.create_test_data()
 
         alg.params.initialize()
         #alg.params.is_rel_change = True

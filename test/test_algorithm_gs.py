@@ -14,6 +14,8 @@ import sfa.base
 from sfa import AlgorithmSet
 from sfa import DataSet
 
+from sfa.data import borisov_2009
+
 
 class SimpleData(sfa.base.Data):
     def __init__(self):
@@ -57,9 +59,9 @@ class TestAlgorithmGS(unittest.TestCase):
         self.solutions["BORISOV_2009_SS_EGF"] = 0.537
         self.solutions["BORISOV_2009_SS_I"] = 0.557
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.542
-    # end of def
+    # end of def __init__
 
-    def test_gs_simple_data_01(self):
+    def test_simple_data_01(self):
 
         sdata = SimpleData()
         alg = self.algs["GS"]
@@ -70,20 +72,20 @@ class TestAlgorithmGS(unittest.TestCase):
         alg.params.alpha = 0.5
         b = np.array([1.0, 0.0, 0.0])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.625)
-        self.assertAlmostEqual(x[1], 0.25)
-        self.assertAlmostEqual(x[2], 0.125)
+        self.assertAlmostEqual(x[0], 0.625, 4)
+        self.assertAlmostEqual(x[1], 0.25, 4)
+        self.assertAlmostEqual(x[2], 0.125, 4)
 
         # Test #2
         alg.params.alpha = 0.9
         alg.initialize(init_data=False)
         b = np.array([1.0, 0.0, 0.0])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.38928571)
-        self.assertAlmostEqual(x[1], 0.32142857)
-        self.assertAlmostEqual(x[2], 0.28928571)
+        self.assertAlmostEqual(x[0], 0.38928571, 4)
+        self.assertAlmostEqual(x[1], 0.32142857, 4)
+        self.assertAlmostEqual(x[2], 0.28928571, 4)
 
-    def test_gs_simple_data_02(self):
+    def test_simple_data_02(self):
 
         sdata = SimpleData()
 
@@ -98,20 +100,20 @@ class TestAlgorithmGS(unittest.TestCase):
         alg.initialize()
         b = np.array([1.0, 0.5, 0.25])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.1875)
-        self.assertAlmostEqual(x[1], 0.125)
-        self.assertAlmostEqual(x[2], 0.1875)
+        self.assertAlmostEqual(x[0], 0.1875, 4)
+        self.assertAlmostEqual(x[1], 0.125, 4)
+        self.assertAlmostEqual(x[2], 0.1875, 4)
 
         # Test #2
         alg.params.alpha = 0.9
         alg.initialize(init_data=False)
         b = np.array([1.0, 0.5, 0.25])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.02572963)
-        self.assertAlmostEqual(x[1], 0.02039588)
-        self.assertAlmostEqual(x[2], 0.04335629)
+        self.assertAlmostEqual(x[0], 0.02572963, 4)
+        self.assertAlmostEqual(x[1], 0.02039588, 4)
+        self.assertAlmostEqual(x[2], 0.04335629, 4)
 
-    def test_gs_nelender(self):
+    def test_nelender(self):
         alg = self.algs["GS"]
         data = self.ds["NELENDER_2008"]
 
@@ -122,9 +124,9 @@ class TestAlgorithmGS(unittest.TestCase):
         # self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
         print("[GS NELENDER] acc: ", acc)
 
-    def test_gs_borisov(self):
+    def test_borisov(self):
         alg = self.algs["GS"]
-        borisov = self.ds["BORISOV_2009"]
+        borisov = borisov_2009.create_test_data()
 
         alg.params.is_rel_change = True
         for i, (abbr, data) in enumerate(borisov.items()):

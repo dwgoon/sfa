@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     ds = sfa.DataSet()
     ds.create("BORISOV_2009")
-    data = ds["BORISOV_2009"]["BORISOV_2009_AUC_EGF+I"]
+    data = ds["BORISOV_2009"]["AUC_EGF=1+I=100"]
 
 
     for abbr, alg in algs.items():
