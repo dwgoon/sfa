@@ -15,12 +15,17 @@ def create_algorithm(abbr):
 
 
 class GaussianSmoothing(SignalPropagation):
+
+    class ParameterSet(SignalPropagation.ParameterSet):
+        def initialize(self):
+            super().initialize()
+            self._apply_weight_norm = False
+
+    # end of class ParameterSet
+
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Gaussian smoothing algorithm"       
-
-    def normalize(self, A):
-        return A  # No norm.
 
     def _prepare_exact_solution(self):
         a = self._params.alpha
@@ -124,7 +129,7 @@ class GaussianSmoothing(SignalPropagation):
         num_iter = 0
         for i in range(lim_iter):
             # Main formula
-            x_t2 = Dc.dot(a * W_ot.dot(x_t1) + (1 - a) * b)
+            x_t2 = Dc.dot(a*W_ot.dot(x_t1) + (1-a) * b)
             num_iter += 1
             # Check termination condition
             if np.linalg.norm(x_t2 - x_t1) <= tol:

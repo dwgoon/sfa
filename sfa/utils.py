@@ -131,6 +131,49 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
 # end of def
 
 
+def normalize(A, norm_in=True, norm_out=True):
+    # Check whether A is a square matrix
+    if A.shape[0] != A.shape[1]:
+        raise ValueError(
+            "The A (adjacency matrix) should be square matrix.")
+
+    # Build propagation matrix (aka. transition matrix) W from A
+    W = A.copy()
+
+    # Norm. in-degree
+    if norm_in == True:
+        sum_col_A = np.abs(A).sum(axis=0)
+        sum_col_A[sum_col_A == 0] = 1
+        if norm_out == False:
+            Dc = 1 / sum_col_A
+        else:
+            Dc = 1 / np.sqrt(sum_col_A)
+        # end of else
+        W = Dc * W  # This is not matrix multiplication
+
+    # Norm. out-degree
+    if norm_out == True:
+        sum_row_A = np.abs(A).sum(axis=1)
+        sum_row_A[sum_row_A == 0] = 1
+        if norm_in == False:
+            Dr = 1 / sum_row_A
+        else:
+            Dr = 1 / np.sqrt(sum_row_A)
+        # end of row
+        W = np.multiply(W, np.mat(Dr).T)
+        # Converting np.mat to ndarray
+        # does not cost a lot.
+        W = W.A
+    # end of if
+    """
+    The normalization above is the same as the follows:
+    >>> np.diag(Dr).dot(A.dot(np.diag(Dc)))
+    """
+    return W
+
+
+# end of def normalize
+
 def calc_accuracy(df1, df2, get_cons=False):
     """
     Count the same sign of each element between df1 and df2
@@ -139,10 +182,12 @@ def calc_accuracy(df1, df2, get_cons=False):
     df2: Right pandas.DataFrame to be compared
     getcons: decide whether to return consensus array in DataFrame or not
     """
+
     np.sign(df1) + np.sign(df2)
-    num_total = df1.count().sum()
-    diff_abs = np.abs(np.sign(df1) - np.sign(df2))
+    num_total = df1.shape[0]*df1.shape[1]
+    diff_abs = np.abs(np.sign(df1) - np.sign(df2))    
     consensus = (diff_abs == 0)
+    
     num_cons = consensus.sum(axis=1).sum()  # Number of consensus
     acc = (num_cons) / np.float(num_total)  # Accuracy
     if get_cons:
@@ -151,46 +196,19 @@ def calc_accuracy(df1, df2, get_cons=False):
         return acc
 # end of def
 
-"""
-def convert_networkx_digraph(adj, name_to_idx=None):
-    from sys import modules
-    try:
-        nx = modules["networkx"]
-    except:
-        nx = __import__("networkx")
 
-    dg = nx.DiGraph()
+def get_akey(d):
+    """
+    Get a key from a given dictionary.
+    It returns the first key in d.keys().
+    """
+    return next( iter(d.keys()) )
 
-    if name_to_idx is not None:
-        idx_to_name = len(name_to_idx)*['']
-        for key, val in name_to_idx.items():
-            idx_to_name[val] = key
 
-        for i, row in enumerate(adj):
-            tgt = idx_to_name[i]
-            for j, sign in enumerate(row):
-                if sign == 0:
-                    continue
-                # end of if
-                src = idx_to_name[j]
-                if sign>0:
-                    dg.add_edge(src, tgt, sign=+1)
-                else:
-                    dg.add_edge(src, tgt, sign=-1)
-            # end of for
-        # end of for
-    else:
-        for i, row in enumerate(adj):
-            for j, sign in enumerate(row):
-                if sign == 0:
-                    continue
-                # end of if
-                if sign>0:
-                    dg.add_edge(j, i, sign=+1)
-                else:
-                    dg.add_edge(j, i, sign=-1)
-            # end of for
-        # end of for
-    # end of else
-    return dg
-"""
+def get_avalue(d):
+    """
+    Get a value from a given dictionary.
+    It returns the value designated by sfa.get_akey().
+    """
+    akey = next( iter(d.keys()) )
+    return d[akey]

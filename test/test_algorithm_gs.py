@@ -78,7 +78,7 @@ class TestAlgorithmGS(unittest.TestCase):
 
         # Test #2
         alg.params.alpha = 0.9
-        alg.initialize(init_data=False)
+        alg.initialize(data=False)
         b = np.array([1.0, 0.0, 0.0])
         x = alg.compute(b)
         self.assertAlmostEqual(x[0], 0.38928571, 4)
@@ -95,6 +95,8 @@ class TestAlgorithmGS(unittest.TestCase):
         alg = self.algs["GS"]
         alg.data = sdata
 
+        alg.params.initialize()
+
         # Test #1
         alg.params.alpha = 0.5
         alg.initialize()
@@ -106,7 +108,7 @@ class TestAlgorithmGS(unittest.TestCase):
 
         # Test #2
         alg.params.alpha = 0.9
-        alg.initialize(init_data=False)
+        alg.initialize(data=False)
         b = np.array([1.0, 0.5, 0.25])
         x = alg.compute(b)
         self.assertAlmostEqual(x[0], 0.02572963, 4)
@@ -118,29 +120,29 @@ class TestAlgorithmGS(unittest.TestCase):
         data = self.ds["NELENDER_2008"]
 
         alg.data = data
+        alg.params.initialize()
         alg.initialize()
         alg.compute_batch()
         acc = calc_accuracy(alg.result.df_sim, data.df_exp)
-        # self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
-        print("[GS NELENDER] acc: ", acc)
+        self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
+
 
     def test_borisov(self):
         alg = self.algs["GS"]
         borisov = borisov_2009.create_test_data()
 
-        alg.params.is_rel_change = True
+        alg.params.initialize()
+        alg.params.use_rel_change = True
         for i, (abbr, data) in enumerate(borisov.items()):
             alg.data = data
             if i == 0:
                 alg.initialize()
             else:
-                alg.initialize(init_network=False)
+                alg.initialize(network=False)
 
             alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)
-            print("[GS %s] acc: %f"%(abbr, acc))
-
         # end of for
     # end of def
 

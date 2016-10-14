@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
 
     for abbr, alg in algs.items():
-        alg.params.is_rel_change = True
+        alg.params.use_rel_change = True
         alg.data = data
         alg.initialize()
         alg.compute_batch()

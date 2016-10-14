@@ -7,57 +7,101 @@ if sys.version_info <= (2, 8):
 import numpy as np
 import pandas as pd
 
+
 import sfa.base
-from sfa.utils import FrozenClass
+import sfa.utils
+#from sfa.utils import normalize
+#from sfa.utils import FrozenClass
 
 
 def create_algorithm(abbr):
     return SignalPropagation(abbr)
 # end of def
 
-class ParameterSet(FrozenClass):
-    """
-    Parameters of SignalPropagation algorithm.
-    """
-
-    def __init__(self):
-        self.initialize()
-        self._freeze()
-
-    def initialize(self):
-        self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
-        self._is_rel_change = False
-
-    @property
-    def alpha(self):
-        return self._alpha
-
-    @alpha.setter
-    def alpha(self, val):
-        if not isinstance(val, float):
-            raise TypeError("alpha is a float type value in (0,1).")
-        elif (val <= 0.0) or (val >= 1.0):
-            raise ValueError("alpha should be within (0,1).")
-        else:
-            self._alpha = val
-
-    @property
-    def is_rel_change(self):
-        return self._is_rel_change
-
-    @is_rel_change.setter
-    def is_rel_change(self, val):
-        if not isinstance(val, bool):
-            raise TypeError("is_rel_change is bool type.")
-        self._is_rel_change = val
-# end of def class ParameterSet
-
 
 class SignalPropagation(sfa.base.Algorithm):
+
+    class ParameterSet(sfa.utils.FrozenClass):
+        """
+        Parameters of SignalPropagation algorithm.
+        """
+        def __init__(self):
+            self.initialize()
+            self._freeze()
+
+        def initialize(self):
+            self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
+            self._apply_weight_norm = True
+            self._use_rel_change = False
+            self._exsol_forbidden = False
+            self._lim_iter = 1000
+
+        @property
+        def alpha(self):
+            return self._alpha
+
+        @alpha.setter
+        def alpha(self, val):
+            if not isinstance(val, float):
+                raise TypeError("alpha should be a float type value in (0,1).")
+            elif (val <= 0.0) or (val >= 1.0):
+                raise ValueError("alpha should be within (0,1).")
+            else:
+                self._alpha = val
+
+        @property
+        def apply_weight_norm(self):
+            return self._apply_weight_norm
+
+        @apply_weight_norm.setter
+        def apply_weight_norm(self, val):
+            if not isinstance(val, bool):
+                raise TypeError(
+                    "apply_weight_norm should be a bool type value.")
+            self._apply_weight_norm = val
+
+        @property
+        def use_rel_change(self):
+            return self._use_rel_change
+
+        @use_rel_change.setter
+        def use_rel_change(self, val):
+            if not isinstance(val, bool):
+                raise TypeError("use_rel_change should be a bool type value.")
+            self._use_rel_change = val
+
+        @property
+        def exsol_forbidden(self):
+            return self._exsol_forbidden
+
+        @exsol_forbidden.setter
+        def exsol_forbidden(self, val):
+            if not isinstance(val, bool):
+                raise TypeError("exsol_forbidden should be boolean type.")
+
+            self._exsol_forbidden = val
+
+        @property
+        def lim_iter(self):
+            return self._lim_iter
+
+        @lim_iter.setter
+        def lim_iter(self, val):
+            if not isinstance(val, int):
+                raise TypeError("lim_iter is a integer type value.")
+            elif val < 0:
+                raise ValueError("lim_iter should be greater than 0.")
+            else:
+                self._lim_iter = val
+
+    # end of def class ParameterSet
+
+
+
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Signal propagation algorithm"
-        self._params = ParameterSet()
+        self._params = self.ParameterSet()
 
         # The following members are assigned the instances in initialize()
         self._b = None
@@ -65,13 +109,22 @@ class SignalPropagation(sfa.base.Algorithm):
         self._val_ba = None
         self._iadj_to_idf = None
         self._W = None
+        self._b = None
 
-        self._exsol_forbidden = False
         self._exsol_avail = False  # The exact solution is available.
         self._M = None  # A matrix for getting the exact solution.
 
         self._result = sfa.base.Result()
     # end of def __init__
+
+    @property
+    def b(self):
+        return self._b
+
+    @b.setter
+    def b(self, vec):
+        self._b = vec
+
 
     @property
     def W(self):
@@ -81,23 +134,16 @@ class SignalPropagation(sfa.base.Algorithm):
     def W(self, mat):
         self._W = mat
 
-    @property
-    def exsol_forbidden(self):
-        return self._exsol_forbidden
-
-    @exsol_forbidden.setter
-    def exsol_forbidden(self, val):
-        if not isinstance(val, bool):
-            raise TypeError("exsol_forbidden should be boolean type.")
-
-        self._exsol_forbidden = val
-
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
-        self._W = self.normalize(self._data.A)
+        if self._params.apply_weight_norm:
+            self._W = sfa.utils.normalize(self._data.A)
+        else:
+            self._W = self._data.A
+
         self._check_dimension(self._W, "transition matrix")
 
-        if self._exsol_forbidden:
+        if self.params.exsol_forbidden:
             # Try to prepare the exact solution
             try:
                 self._M = self._prepare_exact_solution()
@@ -112,14 +158,17 @@ class SignalPropagation(sfa.base.Algorithm):
         if mat.shape[0] != mat.shape[1]:
             raise ValueError("The %s should be square matrix."%(mat_name))
     # end of def _check_dimension
-
-    def _initialize_data(self):
+            
+    def _initialize_basal_activity(self):
         N = self._data.A.shape[0]  # Number of state variables
+        self._b = self._b = np.finfo(np.float).eps * np.ones(N)
+    # end of def
+        
+    def _initialize_data(self):
+        
         n2i = self._data.n2i  # Name to index mapper
         df_ba = self._data.df_ba  # Basal activity
 
-        #self._b = np.zeros(N, dtype=np.float)
-        self._b = np.finfo(np.float).eps * np.ones(N)
         self._inds_ba = []  # Indices (inds)
         self._vals_ba = []  # Values (vals)
         for i, row in enumerate(df_ba.iterrows()):
@@ -158,13 +207,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
         b = self._b
 
-        # if hasattr(self._data, 'inputs'):  # Input condition
-        #     ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
-        #     val_inputs = [val for val in self._data.inputs.values()]
-        #     b[ind_inputs] = val_inputs
-        # # end of if
-
-        if self._params.is_rel_change:
+        if self._params.use_rel_change:
             self._apply_inputs(b)
             x_cnt = self.compute(b)
 
@@ -178,8 +221,8 @@ class SignalPropagation(sfa.base.Algorithm):
             x_exp = self.compute(b)
 
             # Result of a single condition
-            if self._params.is_rel_change:  # Use relative change
-                rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
+            if self._params.use_rel_change:  # Use relative change
+                rel_change = ((x_exp - x_cnt)/np.abs(x_cnt))
                 res_single = rel_change[self._iadj_to_idf]
             else:
                 res_single = x_exp[self._iadj_to_idf]
@@ -195,49 +238,6 @@ class SignalPropagation(sfa.base.Algorithm):
         # Get the result of elements in the columns of df_exp.
         self._result.df_sim = df_sim[df_exp.columns]
     # end of def compute
-
-    def normalize(self, A, norm_in=True, norm_out=True):
-
-        # Check whether A is a square matrix
-        if A.shape[0] != A.shape[1]:
-            raise ValueError(
-                "The A (adjacency matrix) should be square matrix.")
-
-        # Build propagation matrix (aka. transition matrix) W from A
-        W = A.copy()
-
-        # Norm. in-degree
-        if norm_in == True:
-            sum_col_A = np.abs(A).sum(axis=0)
-            sum_col_A[sum_col_A == 0] = 1
-            if norm_out == False:
-                Dc = 1 / sum_col_A
-            else:
-                Dc = 1 / np.sqrt(sum_col_A)
-            # end of else
-            W = Dc * W  # This is not matrix multiplication
-
-        # Norm. out-degree
-        if norm_out == True:
-            sum_row_A = np.abs(A).sum(axis=1)
-            sum_row_A[sum_row_A == 0] = 1
-            if norm_in == False:
-                Dr = 1 / sum_row_A
-            else:
-                Dr = 1 / np.sqrt(sum_row_A)
-            # end of row
-            W = np.multiply(W, np.mat(Dr).T)
-            # Converting np.mat to ndarray
-            # does not cost a lot.
-            W = W.A
-        # end of if
-        """
-        The normalization above is the same as the follows:
-        >>> np.diag(Dr).dot(A.dot(np.diag(Dc)))
-        """
-        return W
-
-    # end of def normalize
 
     def _prepare_exact_solution(self):
         """
@@ -261,10 +261,13 @@ class SignalPropagation(sfa.base.Algorithm):
     # end of def _prepare_exact_solution
 
     def compute(self, b):
-        if self._exsol_forbidden is True or self._exsol_avail is False:
+        if self.params.exsol_forbidden is True \
+           or self._exsol_avail is False:
             alpha = self._params.alpha
             W = self._W
-            x_ss, _ = self.propagate_iterative(W, b, b, a=alpha)
+            lim_iter = self._params.lim_iter
+            x_ss, _ = self.propagate_iterative(W, b, b, a=alpha,
+                                               lim_iter=lim_iter)
             return x_ss  # x at steady-state (i.e., stationary state)
         else:
             return self.propagate_exact(b)
@@ -281,7 +284,7 @@ class SignalPropagation(sfa.base.Algorithm):
                             a=0.5,
                             lim_iter=1000,
                             tol=1e-5,
-                            gettrj=False):
+                            get_trj=False):
         """
         Network propagation calculation based on iteration.
 
@@ -302,9 +305,9 @@ class SignalPropagation(sfa.base.Algorithm):
             Tolerance for terminating iteration
             Iteration continues, if Frobenius norm of (x(t+1)-x(t)) is
             greater than tol.
-        gettrj: bool (optional)
+        get_trj: bool (optional)
             Determine whether trajectory of the state and propagation matrix
-            is returned. If gettrj is true, the trajectory is returned.
+            is returned. If get_trj is true, the trajectory is returned.
 
         Returns
         -------
@@ -324,7 +327,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
         x_t1 = x0.copy()
 
-        if gettrj:
+        if get_trj:
             # Record the initial states
             trj_x = []
             trj_x.append(x_t1.copy())
@@ -340,18 +343,19 @@ class SignalPropagation(sfa.base.Algorithm):
                 break
 
             # Add the current state to the trajectory
-            if gettrj:
+            if get_trj:
                 trj_x.append(x_t2)
 
             # Update the state
             x_t1 = x_t2.copy()
         # end of for
 
-        if gettrj is False:
+        if get_trj is False:
             return x_t2, num_iter
         else:
             return x_t2, np.array(trj_x)
 
     # end of def compute
+
 
 # end of def class SignalPropagation

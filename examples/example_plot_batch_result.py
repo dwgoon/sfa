@@ -15,7 +15,7 @@ if __name__ == '__main__':
     ds.create("BORISOV_2009")
     data = ds["BORISOV_2009"]["AUC_EGF=1+I=100"]
 
-    alg.params.is_rel_change = True
+    alg.params.use_rel_change = True
     alg.data = data
     alg.initialize()
     alg.compute_batch()

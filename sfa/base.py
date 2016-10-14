@@ -8,14 +8,10 @@ import copy
 
 import six
 
-import numpy as np
-import pandas as pd
-import networkx as nx
+import sfa.utils
 
-from sfa.utils import FrozenClass
 
 @six.add_metaclass(abc.ABCMeta)
-#class ContainerItem(ABC):
 class ContainerItem():
     def __init__(self, abbr=None, name=None):
         """
@@ -96,20 +92,29 @@ class Algorithm(ContainerItem):
     def data(self, obj):
         self._data = obj
 
-    def initialize(self, init_network=True, init_data=True):
-        if init_network:
+    def initialize(self, network=True, ba=True, data=True):
+
+        if network:
             self._initialize_network()
 
-        if init_data:
+        if ba:
+            self._initialize_basal_activity()
+
+        if data:
             self._initialize_data()
 
+    def _initialize_params(self):
+        pass
+
     def _initialize_network(self):
+        pass
+
+    def _initialize_basal_activity(self):
         pass
 
     def _initialize_data(self):
         pass
 
-    #@abstractmethod
     @abc.abstractmethod
     def compute_batch(self):
         raise NotImplementedError("compute() should be implemented")
@@ -126,7 +131,6 @@ class Data(ContainerItem):
         self._inputs= None
         self._df_ba = None
         self._df_exp = None
-
 
     # Read-only members
     @property
@@ -156,7 +160,7 @@ class Data(ContainerItem):
 # end of class Data
 
 
-class Result(FrozenClass):
+class Result(sfa.utils.FrozenClass):
 
     def __init__(self):
         self._df_sim = None

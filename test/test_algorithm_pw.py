@@ -58,12 +58,12 @@ class TestAlgorithmPW(unittest.TestCase):
         borisov = borisov_2009.create_test_data()
 
         alg.params.initialize()
-        #alg.params.is_rel_change = True
+        #alg.params.use_rel_change = True
         alg.data = borisov["BORISOV_2009_AUC_LOW"]
-        alg.initialize(init_data=False)
+        alg.initialize(data=False)
         for abbr, data in borisov.items():
             alg.data = data
-            alg.initialize(init_network=False)
+            alg.initialize(network=False)
             alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)

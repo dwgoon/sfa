@@ -44,7 +44,6 @@ class TestAlgorithmSP(unittest.TestCase):
         alg = self.algs["SP"]
         data = self.ds["NELENDER_2008"]
 
-        alg.params.initialize()
         alg.data = data
         alg.initialize()
         alg.compute_batch()
@@ -56,15 +55,14 @@ class TestAlgorithmSP(unittest.TestCase):
         borisov = borisov_2009.create_test_data()
 
         alg.params.initialize()
-        alg.params.is_rel_change = True
+        alg.params.use_rel_change = True
         alg.data = borisov["BORISOV_2009_AUC_LOW"]
-        alg.initialize(init_data=False)
+        alg.initialize(data=False)
         for abbr, data in borisov.items():
             alg.data = data
-            alg.initialize(init_network=False)
+            alg.initialize(network=False)
             alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
-            print (acc, self.solutions[abbr])
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)
         # end of for
     # end of def

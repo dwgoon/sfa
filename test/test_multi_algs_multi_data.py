@@ -11,8 +11,8 @@ import pandas as pd
 from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet
-from sfa.algorithms.sp import SignalPropagation
 from sfa.data import borisov_2009
+from sfa.algorithms.sp import SignalPropagation
 
 
 class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
@@ -22,8 +22,7 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
 
         # Create an object for signal propagation algorithm
         self.algs = AlgorithmSet()
-        self.algs.create()
-
+        self.algs.create(["SP", "GS", "PW"])
 
         # Create container for data.
         self.ds = borisov_2009.create_test_data()
@@ -62,13 +61,17 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
         algs = self.algs
         ds = self.ds
 
-        res = defaultdict(dict) # np.zeros((len(algs), len(ds)), dtype=np.float)
+        res = defaultdict(dict)
+
+        for alg in algs.values():
+            alg.params.initialize()
+
+        algs["SP"].params.use_rel_change = True
+        algs["GS"].params.use_rel_change = True
 
         for alg_name, alg in algs.items():
             for data_name, data in ds.items():
                 alg.data = data
-                if isinstance(alg, SignalPropagation):
-                    alg.params.is_rel_change = True
                 alg.initialize()
                 alg.compute_batch()
                 acc = calc_accuracy(alg.result.df_sim, data.df_exp)

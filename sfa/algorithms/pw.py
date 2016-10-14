@@ -30,6 +30,9 @@ class ParameterSet(FrozenClass):
         self._weight = 0.5  # float value in (0, 1). The default value is 0.5.
         self._is_rel_change = False
         self._no_inputs = True
+        self._use_local_weight = False
+        self._apply_weight_norm = False
+
 
     @property
     def max_path_length(self):
@@ -59,7 +62,7 @@ class ParameterSet(FrozenClass):
     @is_rel_change.setter
     def is_rel_change(self, val):
         if not isinstance(val, bool):
-            raise TypeError("is_rel_change is bool type.")
+            raise TypeError("use_rel_change is bool type.")
         self._is_rel_change = val
 
     @property
@@ -71,6 +74,26 @@ class ParameterSet(FrozenClass):
         if not isinstance(val, bool):
             raise TypeError("no_inputs is bool type.")
         self._no_inputs = val
+
+    @property
+    def use_local_weight(self):
+        return self._use_local_weight
+
+    @use_local_weight.setter
+    def use_local_weight(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("use_local_weight is bool type.")
+        self._use_local_weight = val
+
+    @property
+    def apply_weight_norm(self):
+        return self._apply_weight_norm
+
+    @apply_weight_norm.setter
+    def apply_weight_norm(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("apply_weight_norm should be a bool type value.")
+        self._apply_weight_norm = val
 # end of def class ParameterSet
 
 
@@ -89,25 +112,40 @@ class PathwayWiring(sfa.base.Algorithm):
         self._result = sfa.base.Result()
     # end of def __init__
 
+    @property
+    def W(self):
+        return self._W
+
+    @W.setter
+    def W(self, mat):
+        self._W = mat
+
     def _initialize_network(self):
-        """
-        w = self._params.weight
-        dg = self._data.dg
+        self._dg = self._data.dg  # Initialization of dg
         A = self._data.A
         n2i = self._data.n2i
 
-        # Assign weights for the edges
-        for edge in dg.edges():
-            src, tgt = edge
-            sign = A[n2i[tgt], n2i[src]]
-            dg.edge[src][tgt]['weight'] = sign*w
-        """
-        pass
+        if self._params.apply_weight_norm:
+            self._W = sfa.utils.normalize(A)
+
+        if self._params.use_local_weight:
+            for edge in self._dg.edges():
+                src, tgt = edge
+                isrc = n2i[src]
+                itgt = n2i[tgt]
+                self._dg.edge[src][tgt]['weight'] = self._W[itgt, isrc]
+        else:  # Use global weight
+            # Assign weights for the edges
+            for edge in self._dg.edges():
+                src, tgt = edge
+                self._dg.edge[src][tgt]['weight'] = self._params.weight
+        # end of if-else
     # end of def _initialize_network
 
     def _initialize_data(self):
         # N = self._data.A.shape[0]  # Number of state variables
         df_ba = self._data.df_ba  # Basal activity
+        n2i = self.data.n2i
 
         self._names_ba = []
         self._vals_ba = []
@@ -125,10 +163,9 @@ class PathwayWiring(sfa.base.Algorithm):
 
         # For mapping from the indices of adj. matrix to those of DataFrame
         # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = [self._data._n2i[x]
-                                for x in self._data.df_exp.columns]
+        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
 
-        self._i2n = {idx:name for name, idx in self._data._n2i.items()}
+        self._i2n = {idx: name for name, idx in n2i.items()}
     # end of _initialize_data
 
     def _apply_inputs(self, names, vals):
@@ -190,12 +227,13 @@ class PathwayWiring(sfa.base.Algorithm):
 
     def wire_single_path(self, dg, ba, path):
         F = ba
-        w = self._params.weight
         for i in range(len(path) - 1):
             src = path[i]
             tgt = path[i + 1]
             sign = dg.edge[src][tgt]['sign']
+            w = dg.edge[src][tgt]['weight']
             F *= (sign*w)
+
         # end of for
         return F
 
@@ -229,7 +267,7 @@ class PathwayWiring(sfa.base.Algorithm):
         names_ba_se: names of basal activities in a single experiment
         val_ba_se: values of basal activities in a single experiment
         """
-        dg = self._data.dg
+        dg = self._dg
         n2i = self._data.n2i
 
         # The combined effects
