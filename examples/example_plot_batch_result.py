@@ -26,6 +26,6 @@ if __name__ == '__main__':
                                   get_cons=True)
 
     brt = BatchResultTable(alg.data, cons)
-    brt.figure.set_size_inches(4, 8)
-    brt.figure.savefig("BORISOV_2009_AUC_EGF=1+I=100.png", dpi=300)
+    brt.fig.set_size_inches(4, 8)
+    brt.fig.savefig("BORISOV_2009_AUC_EGF=1+I=100.png", dpi=300)
     plt.show()
