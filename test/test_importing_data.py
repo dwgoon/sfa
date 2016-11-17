@@ -35,7 +35,7 @@ class TestImportingData(unittest.TestCase):
     # end of def test_create_data
 
     def test_data_size(self):
-        data = self.ds["BORISOV_2009"]["AUC_EGF=1+I=100"]
+        data = sfa.get_avalue(self.ds["BORISOV_2009"])
         self.assertEqual(data.df_exp.shape, (66, 13))
 
         data = self.ds["MOLINELLI_2013"]

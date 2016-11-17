@@ -43,12 +43,12 @@ class TestAlgorithmGS(unittest.TestCase):
 
         # Create container for data.
         self.ds = DataSet()
-        self.ds.create("NELENDER_2008")
+        self.ds.create("NELANDER_2008")
         self.ds.create("BORISOV_2009")
 
         self.solutions = {}
 
-        self.solutions["NELENDER_2008"] = 0.650
+        self.solutions["NELANDER_2008"] = 0.650
 
         self.solutions["BORISOV_2009_AUC_LOW"] = 0.551
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.581
@@ -115,9 +115,9 @@ class TestAlgorithmGS(unittest.TestCase):
         self.assertAlmostEqual(x[1], 0.02039588, 4)
         self.assertAlmostEqual(x[2], 0.04335629, 4)
 
-    def test_nelender(self):
+    def test_nelander(self):
         alg = self.algs["GS"]
-        data = self.ds["NELENDER_2008"]
+        data = self.ds["NELANDER_2008"]
 
         alg.data = data
         alg.params.initialize()

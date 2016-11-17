@@ -8,98 +8,113 @@ from functools import reduce
 import numpy as np
 
 import sfa
-from .sp import SignalPropagation
+from .gs import GaussianSmoothing
 
 
 def create_algorithm(abbr):
-    return GaussianSmoothing(abbr)
+    return NormalizedGaussianSmoothing(abbr)
 # end of def
 
 
-class GaussianSmoothing(SignalPropagation):
+class NormalizedGaussianSmoothing(GaussianSmoothing):
 
-    class ParameterSet(SignalPropagation.ParameterSet):
+    class ParameterSet(GaussianSmoothing.ParameterSet):
         def initialize(self):
             super().initialize()
-            self._apply_weight_norm = False
-
     # end of class ParameterSet
-
 
     def __init__(self, abbr):
         super().__init__(abbr)
-        self._name = "Gaussian smoothing algorithm"
-        self._weight_matrix_invalidated = True
+        self._name = "Normalized gaussian smoothing algorithm"
 
-    @property
-    def W(self):
-        return self._W
+    def _prepare_solution_common(self):
+        """
+        Perform the calculation the common parts
+        in preparing the exact and iterative solutions.
+        """
 
-    @W.setter
-    def W(self, mat):
-        self._W = mat
-        self._weight_matrix_invalidated = True
-    # end of W.setter
+        W = self._W
+        diag_W = np.diag(W)
+        Dw = np.diag(diag_W)
+        Wn = W - Dw
+        n = W.shape[0]
+
+        Wn_abs = np.abs(Wn)
+
+        D_in = Wn_abs.sum(axis=1)
+        D_out = Wn_abs.sum(axis=0)
+
+        sqrt_D_in = np.sqrt(D_in)
+        sqrt_D_out = np.sqrt(D_out)
+
+        pad_sqrt_D_in = sqrt_D_in.copy()
+        pad_sqrt_D_out = sqrt_D_out.copy()
+
+        pad_sqrt_D_in[sqrt_D_in == 0] = 1
+        pad_sqrt_D_out[sqrt_D_out == 0] = 1
+
+
+        # The effect of self-loop
+        D_tot = D_in + D_out
+        inv_D_tot = D_tot.copy()
+        inv_D_tot[D_tot == 0] = 1.0
+        inv_D_tot = 1.0 / inv_D_tot #np.diag(1.0 / inv_D_tot)
+
+        #Ds = reduce(np.dot, [(np.eye(n) - np.sign(Dw)) ** 2,
+        #                     np.abs(Dw),
+        #                     inv_D_tot])
+
+        # Element-wise multiplication of three vectors (numpy.ndarray)
+        Ds = ((1 - np.sign(diag_W))**2 * np.abs(diag_W) * inv_D_tot)
+
+        # Sum. of in-links effects
+        S_in = np.sign(D_in)
+
+        # Sum. of out-links effects
+        S_out = np.sign(D_out)
+
+        """
+        Normalization of weight matrix
+        Inverse of square root of in-degree and out-degree (ISD)
+        i.e.,) ISD_in  = (sqrt(in-degree))^-1
+               ISD_out = (sqrt(out-degree))^-1
+        """
+        ISD_in = np.diag(1.0 / pad_sqrt_D_in)
+        ISD_out = np.diag(1.0 / pad_sqrt_D_out)
+
+        Wn_norm = reduce(np.dot, [ISD_in, Wn, ISD_out])
+
+        return Ds, S_in, S_out, Wn_norm
+    # end of def
 
     def _prepare_exact_solution(self):
         a = self._params.alpha
-        W = self._W
-        Dw = np.diag(np.diag(W))
-        Wn = W - Dw
-        Wn_abs = np.abs(Wn)
-        n = W.shape[0]
+        [Ds, S_in, S_out, Wn_norm] = self._prepare_solution_common()
+        Ds = np.diag(Ds)
+        S_in = np.diag(S_in)
+        S_out = np.diag(S_out)
 
-        # The effect of self-loop
-        Ds = ((np.eye(n) - np.sign(Dw)) ** 2).dot(np.abs(Dw))
-        # Sum. of in-links effects
-        S_in = np.diag(Wn_abs.sum(axis=1))
-        # Sum. of out-links effects
-        S_out = np.diag(Wn_abs.sum(axis=0))
-
-        M0 = a*((Ds+S_in+S_out) - (Wn+Wn.T)) + (1-a)*np.eye(n)
+        n = Wn_norm.shape[0]
+        M0 = a*((Ds+S_in+S_out) - (Wn_norm+Wn_norm.T)) + (1-a)*np.eye(n)
 
         if np.linalg.det(M0) == 0:
             raise np.linalg.LinAlgError()
 
-        self._M =  np.linalg.inv(M0) * (1-a)
+        self._M = np.linalg.inv(M0) * (1-a)
         self._weight_matrix_invalidated = False
 
-    # end of def _prepare_exact_solution
+        # end of def _prepare_exact_solution
 
     def _prepare_iterative_solution(self):
         # To get Dc and W_ot
-        W = self.W
         a = self._params.alpha
-        diag_W = np.diag(W)
-        Dw = np.diag(diag_W)
-        Wn = W - Dw
-        Wn_abs = np.abs(Wn)
-
-        # The effect of self-loop
-        Ds = ((1-np.sign(diag_W))**2)*np.abs(diag_W)
-
-        # Sum. of in-links effects
-        S_in = Wn_abs.sum(axis=1)
-
-        # Sum. of out-links effects
-        S_out = Wn_abs.sum(axis=0)
+        [Ds, S_in, S_out, Wn_norm] = self._prepare_solution_common()
 
         # Coefficient matrix
-        self._Dc = np.diag(1.0/(a*(Ds+S_in+S_out) + (1-a)))
-
-        """
-        The above calculation is the same as the following:
-        (the above calculation does not use the inversion,
-         which can be simply achieved by division of every element)
-
-        Ds = ((np.eye(n) - np.sign(Dw)) ** 2).dot(np.abs(Dw))
-        S_in = np.diag(Wn_abs.sum(axis=1))
-        S_out = np.diag(Wn_abs.sum(axis=0))
-        Dc = np.linalg.inv(a*(Ds+S_in+S_out) + (1-a)*np.eye(n))
-        """
+        self._Dc = np.diag(1.0 / (a*(Ds+S_in+S_out) + (1-a)))
 
         # W(original + transposed) = Wn + Wn.T
-        self._W_ot = Wn + Wn.T
+        self._W_ot = Wn_norm + Wn_norm.T
 
         self._weight_matrix_invalidated = False
     # end of def _prepare_iterative_solution
@@ -178,7 +193,7 @@ class GaussianSmoothing(SignalPropagation):
         num_iter = 0
         for i in range(lim_iter):
             # Main formula
-            x_t2 = Dc.dot(a*W_ot.dot(x_t1) + (1-a) * b)
+            x_t2 = Dc.dot(a * W_ot.dot(x_t1) + (1 - a) * b)
             num_iter += 1
             # Check termination condition
             if np.linalg.norm(x_t2 - x_t1) <= tol:
@@ -197,4 +212,4 @@ class GaussianSmoothing(SignalPropagation):
         else:
             return x_t2, np.array(trj_x)
     # end of def propagate_iterative
-# end of def class GaussianSmoothing
+# end of def class NormalizedGaussianSmoothing

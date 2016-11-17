@@ -16,94 +16,96 @@ def create_algorithm(abbr):
 # end of def
 
 
-class ParameterSet(FrozenClass):
-    """
-    Parameters of SignalPropagation algorithm.
-    """
-
-    def __init__(self):
-        self.initialize()
-        self._freeze()
-
-    def initialize(self):
-        self._max_path_length = None
-        self._weight = 0.5  # float value in (0, 1). The default value is 0.5.
-        self._is_rel_change = False
-        self._no_inputs = True
-        self._use_local_weight = False
-        self._apply_weight_norm = False
-
-
-    @property
-    def max_path_length(self):
-        return self._max_path_length
-
-    @max_path_length.setter
-    def max_path_length(self, val):
-        self._max_path_length = val
-
-    @property
-    def weight(self):
-        return self._weight
-
-    @weight.setter
-    def weight(self, val):
-        if not isinstance(val, float):
-            raise TypeError("weight is a float type value in (0,1).")
-        elif (val <= 0.0) or (val >= 1.0):
-            raise ValueError("weight should be within (0,1).")
-        else:
-            self._weight = val
-
-    @property
-    def is_rel_change(self):
-        return self._is_rel_change
-
-    @is_rel_change.setter
-    def is_rel_change(self, val):
-        if not isinstance(val, bool):
-            raise TypeError("use_rel_change is bool type.")
-        self._is_rel_change = val
-
-    @property
-    def no_inputs(self):
-        return self._no_inputs
-
-    @no_inputs.setter
-    def no_inputs(self, val):
-        if not isinstance(val, bool):
-            raise TypeError("no_inputs is bool type.")
-        self._no_inputs = val
-
-    @property
-    def use_local_weight(self):
-        return self._use_local_weight
-
-    @use_local_weight.setter
-    def use_local_weight(self, val):
-        if not isinstance(val, bool):
-            raise TypeError("use_local_weight is bool type.")
-        self._use_local_weight = val
-
-    @property
-    def apply_weight_norm(self):
-        return self._apply_weight_norm
-
-    @apply_weight_norm.setter
-    def apply_weight_norm(self, val):
-        if not isinstance(val, bool):
-            raise TypeError("apply_weight_norm should be a bool type value.")
-        self._apply_weight_norm = val
-# end of def class ParameterSet
 
 
 class PathwayWiring(sfa.base.Algorithm):
+
+    class ParameterSet(FrozenClass):
+        """
+        Parameters of PathwayWiring algorithm.
+        """
+
+        def __init__(self):
+            self.initialize()
+            self._freeze()
+
+        def initialize(self):
+            self._max_path_length = None
+            self._weight = 0.5  # float value in (0, 1). The default value is 0.5.
+            self._use_rel_change = False
+            self._no_inputs = True
+            self._use_local_weight = False
+            self._apply_weight_norm = False
+
+        @property
+        def max_path_length(self):
+            return self._max_path_length
+
+        @max_path_length.setter
+        def max_path_length(self, val):
+            self._max_path_length = val
+
+        @property
+        def weight(self):
+            return self._weight
+
+        @weight.setter
+        def weight(self, val):
+            if not isinstance(val, float):
+                raise TypeError("weight is a float type value in (0,1).")
+            elif (val <= 0.0) or (val >= 1.0):
+                raise ValueError("weight should be within (0,1).")
+            else:
+                self._weight = val
+
+        @property
+        def use_rel_change(self):
+            return self._use_rel_change
+
+        @use_rel_change.setter
+        def use_rel_change(self, val):
+            if not isinstance(val, bool):
+                raise TypeError("use_rel_change is bool type.")
+            self._use_rel_change = val
+
+        @property
+        def no_inputs(self):
+            return self._no_inputs
+
+        @no_inputs.setter
+        def no_inputs(self, val):
+            if not isinstance(val, bool):
+                raise TypeError("no_inputs is bool type.")
+            self._no_inputs = val
+
+        @property
+        def use_local_weight(self):
+            return self._use_local_weight
+
+        @use_local_weight.setter
+        def use_local_weight(self, val):
+            if not isinstance(val, bool):
+                raise TypeError("use_local_weight is bool type.")
+            self._use_local_weight = val
+
+        @property
+        def apply_weight_norm(self):
+            return self._apply_weight_norm
+
+        @apply_weight_norm.setter
+        def apply_weight_norm(self, val):
+            if not isinstance(val, bool):
+                raise TypeError(
+                    "apply_weight_norm should be a bool type value.")
+            self._apply_weight_norm = val
+
+    # end of def class ParameterSet
 
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Feiglin's pathway wiring algorithm"
 
-        self._params = ParameterSet()
+        self._params = PathwayWiring.ParameterSet()
 
         # The following members are assigned the instances in initialize()
         self._names_ba = None
@@ -185,7 +187,7 @@ class PathwayWiring(sfa.base.Algorithm):
         # Simulation result
         sim_result = np.zeros(df_exp.shape, dtype=np.float)
 
-        if self._params.is_rel_change:
+        if self._params.use_rel_change:
             names_ba_se = []
             vals_ba_se = []
             self._apply_inputs(names_ba_se, vals_ba_se)
@@ -198,7 +200,7 @@ class PathwayWiring(sfa.base.Algorithm):
             x_exp = self.wire(names_ba_se, vals_ba_se)
 
             # Result of a single condition
-            if self._params.is_rel_change:  # Use relative change
+            if self._params.use_rel_change:  # Use relative change
                 rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
                 res_single = rel_change[self._iadj_to_idf]
             else:

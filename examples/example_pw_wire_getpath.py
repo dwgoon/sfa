@@ -11,8 +11,8 @@ if __name__ == "__main__":
     alg = algs["PW"]
 
     ds = sfa.DataSet()
-    ds.create("NELENDER_2008")
-    data = ds["NELENDER_2008"]
+    ds.create("NELANDER_2008")
+    data = ds["NELANDER_2008"]
 
     alg.data = data
     CE, paths = alg.wire(["EGFR"], [1.0], getpath=True)

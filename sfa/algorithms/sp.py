@@ -137,19 +137,20 @@ class SignalPropagation(sfa.base.Algorithm):
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
         if self._params.apply_weight_norm:
-            self._W = sfa.utils.normalize(self._data.A)
+            self.W = sfa.utils.normalize(self._data.A)
         else:
-            self._W = self._data.A
+            self.W = self._data.A
 
-        self._check_dimension(self._W, "transition matrix")
+        self._check_dimension(self.W, "transition matrix")
 
-        if self.params.exsol_forbidden:
+        if not self.params.exsol_forbidden:
             # Try to prepare the exact solution
             try:
-                self._M = self._prepare_exact_solution()
+                self._prepare_exact_solution()
                 self._check_dimension(self._M, "exact solution matrix")
                 self._exsol_avail = True
             except np.linalg.LinAlgError:
+                self._prepare_iterative_solution()
                 self._exsol_avail = False
     # end of def _initialize_network
 
@@ -257,14 +258,18 @@ class SignalPropagation(sfa.base.Algorithm):
         W = self._W
         a = self._params.alpha
         M0 = np.eye(W.shape[0]) - a*W
-        return (1-a)*np.linalg.inv(M0)
+        self._M = (1-a)*np.linalg.inv(M0)
     # end of def _prepare_exact_solution
+
+    def _prepare_iterative_solution(self):
+        pass
+    # end of def _prepare_iterative_solution
 
     def compute(self, b):
         if self.params.exsol_forbidden is True \
            or self._exsol_avail is False:
             alpha = self._params.alpha
-            W = self._W
+            W = self.W
             lim_iter = self._params.lim_iter
             x_ss, _ = self.propagate_iterative(W, b, b, a=alpha,
                                                lim_iter=lim_iter)

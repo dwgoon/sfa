@@ -12,7 +12,8 @@ http://doi.org/10.1038/msb.2009.19
 - The experimental data was generated using ODE model of Borisov et al.
   (It is hypothesized that the ODE model is quite well constructed enough to be
   a substitute for real experimental data).
-- The directed network was created by Daewon Lee.
+- The directed network was created by Daewon Lee (dwl@kaist.ac.kr).
+- - The units of EGF and insulin (I) stimulation are nM.
 """
 
 import sys
@@ -99,26 +100,28 @@ def _create_single_data(abbr=None, fname=None):
     if fname:
         items = re.split('[._+]', fname)
 
-        data_type = items[1]
-        stim_EGF = items[2]
-        stim_I = items[3]
+        sim_duration = items[1]
+        data_type = items[2]
+        stim_EGF = items[3]
+        stim_I = items[4]
 
-        m = re.search("EGF((\d|d)+)", stim_EGF)
+        m = re.search("EGF=((\d|d)+)", stim_EGF)
         dconc_EGF = m.group(1)
         conc_EGF = dconc_EGF.replace('d', '.')  # Use '.' instead of 'd'
 
         # Fetch the concentration of I
-        m = re.search("I((\d|d)+)", stim_I)
+        m = re.search("I=((\d|d)+)", stim_I)
         dconc_I = m.group(1)
         conc_I = dconc_I.replace('d', '.')  # Use '.' instead of 'd'
-        abbr = "%s_EGF=%s+I=%s"%(data_type, conc_EGF, conc_I)
+        abbr = "%s_%s_EGF=%s+I=%s"%(sim_duration, data_type, conc_EGF, conc_I)
 
     elif abbr:  # Use abbr
         items = re.split('[_+]', abbr)
 
-        data_type = items[1]
-        stim_EGF = items[2]
-        stim_I = items[3]
+        sim_duration = items[1]
+        data_type = items[2]
+        stim_EGF = items[3]
+        stim_I = items[4]
 
         # Fetch the concentration of EGF
         m = re.search("EGF=((\w|\.)+)", stim_EGF)
@@ -130,7 +133,7 @@ def _create_single_data(abbr=None, fname=None):
         conc_I = m.group(1)
         dconc_I = conc_I.replace('.', 'd')  # Use 'd' instead of '.'
 
-        fname = "exp_%s_EGF%s+I%s.tsv" % (data_type, dconc_EGF, dconc_I)
+        fname = "exp_%s_%s_EGF=%s+I=%s.tsv" % (sim_duration, data_type, dconc_EGF, dconc_I)
     else:
         raise ValueError("One of abbr or fname should be given"
                          "in %s._create_single_data()"%(__name__))
@@ -138,7 +141,7 @@ def _create_single_data(abbr=None, fname=None):
 
     str_exp_file = os.path.join(dpath, 'exp_data', fname)
     df_exp = pd.read_table(str_exp_file,
-                           header=0, index_col=0)  # Load basal activity data
+                           header=0, index_col=0)
 
     # Load basal activity data
     str_ba_file = os.path.join(dpath, "ba.tsv")

@@ -24,12 +24,12 @@ class TestAlgorithmPW(unittest.TestCase):
 
         # Create container for data.
         self.ds = DataSet()
-        self.ds.create("NELENDER_2008")
+        self.ds.create("NELANDER_2008")
         self.ds.create("BORISOV_2009")
 
         self.solutions = {}
 
-        self.solutions["NELENDER_2008"] = 0.798
+        self.solutions["NELANDER_2008"] = 0.804 #0.798
 
         self.solutions["BORISOV_2009_AUC_LOW"] = 0.648
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.689
@@ -42,9 +42,9 @@ class TestAlgorithmPW(unittest.TestCase):
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.638
     # end of def __init__
 
-    def test_nelender(self):
+    def test_nelander(self):
         alg = self.algs["PW"]
-        data = self.ds["NELENDER_2008"]
+        data = self.ds["NELANDER_2008"]
 
         alg.params.initialize()
         alg.data = data

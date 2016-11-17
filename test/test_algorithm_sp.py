@@ -22,12 +22,12 @@ class TestAlgorithmSP(unittest.TestCase):
 
         # Create container for data.
         self.ds = DataSet()
-        self.ds.create("NELENDER_2008")
+        self.ds.create("NELANDER_2008")
         self.ds.create("BORISOV_2009")
 
         self.solutions = {}
 
-        self.solutions["NELENDER_2008"] = 0.77249
+        self.solutions["NELANDER_2008"] = 0.76719  # 0.77249
 
         self.solutions["BORISOV_2009_AUC_LOW"] = 0.69822
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.70583
@@ -40,9 +40,9 @@ class TestAlgorithmSP(unittest.TestCase):
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.66272
     # end of def __init__
 
-    def test_nelender(self):
+    def test_nelander(self):
         alg = self.algs["SP"]
-        data = self.ds["NELENDER_2008"]
+        data = self.ds["NELANDER_2008"]
 
         alg.data = data
         alg.initialize()

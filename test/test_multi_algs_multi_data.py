@@ -58,7 +58,8 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
     # end of def __init__
 
     def test_multiple(self):
-        algs = self.algs
+        algs = {abbr: self.algs[abbr] for abbr in self.solutions}
+        print (algs)
         ds = self.ds
 
         res = defaultdict(dict)
