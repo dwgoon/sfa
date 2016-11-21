@@ -15,7 +15,7 @@ def create_algorithm(abbr):
     return PathwayWiring(abbr)
 # end of def
 
-
+np.seterr(all='raise')
 
 
 class PathwayWiring(sfa.base.Algorithm):
@@ -33,7 +33,7 @@ class PathwayWiring(sfa.base.Algorithm):
             self._max_path_length = None
             self._weight = 0.5  # float value in (0, 1). The default value is 0.5.
             self._use_rel_change = False
-            self._no_inputs = True
+            self._no_inputs = False
             self._use_local_weight = False
             self._apply_weight_norm = False
 
@@ -192,6 +192,7 @@ class PathwayWiring(sfa.base.Algorithm):
             vals_ba_se = []
             self._apply_inputs(names_ba_se, vals_ba_se)
             x_cnt = self.wire(names_ba_se, vals_ba_se)
+            x_cnt[x_cnt==0] = np.finfo(float).eps
 
         # Main loop of the simulation
         for i, names_ba_se in enumerate(self._names_ba):
@@ -201,6 +202,7 @@ class PathwayWiring(sfa.base.Algorithm):
 
             # Result of a single condition
             if self._params.use_rel_change:  # Use relative change
+                x_exp[x_exp==0] = np.finfo(float).eps
                 rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
                 res_single = rel_change[self._iadj_to_idf]
             else:

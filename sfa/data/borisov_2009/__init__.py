@@ -170,8 +170,8 @@ class BorisovData(sfa.base.Data):
 
         # TODO: Set input by thresholding
         inputs = {}
-        inputs['EGF'] = conc_EGF
-        inputs['I'] = conc_I
+        inputs['EGF'] = float(conc_EGF)
+        inputs['I'] = float(conc_I)
         self._inputs = inputs
 
         fstr_name = "BORISOV_2009_%s[EGF=%snM,I=%snM]"

@@ -15,8 +15,9 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create("PW")
-    alg = algs["PW"]
+    algs.create("CPS")
+    alg = algs["CPS"]
+
 
     ds.create("BORISOV_2009")
 
@@ -24,7 +25,11 @@ if __name__ == "__main__":
     It needs to assign one of the data
     for initializing the common network structure only once.
     """
+
+    alg.params.initialize()
     alg.params.use_rel_change = True
+    #alg.params.apply_weight_norm = True
+
     alg.data = sfa.get_avalue(ds["BORISOV_2009"])
 
     # Initialize the network and matrices only once
@@ -46,11 +51,11 @@ if __name__ == "__main__":
         
 
     df = pd.DataFrame.from_dict(results, orient='index')
-    df.columns = ['PW']
-    
-    #df_sort = df.sort_values(by='PW')
-    #print(df_sort)
+    df.columns = ['CPS']
+    df = df.sort_index()
 
-    print(df)
-    df.to_csv("pw_borisov_2009.tsv", sep="\t")
-# end of main
+    df_sort = df.sort_values(by='CPS')
+    print (df_sort)
+    #print(df)
+    #df.to_csv("cps_borisov_2009.tsv", sep="\t")
+    

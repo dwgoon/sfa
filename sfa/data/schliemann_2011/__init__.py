@@ -110,7 +110,7 @@ class SchliemannData(sfa.base.Data):
         self._df_exp = df_exp
 
         inputs = {}
-        inputs['TNF'] = conc_I
+        inputs['TNF'] = float(conc_I)
         self._inputs = inputs
 
         fstr_name = "SCHLIEMANN_2011_%s[I=%snM]"

@@ -41,6 +41,9 @@ class NelenderData(sfa.base.Data):
         self._df_exp = pd.read_table(os.path.join(dpath, "exp.tsv"),
                                      header=0, index_col=0)
 
+        inputs = {}
+        inputs['EGF'] = 1.0
+        self._inputs = inputs
     # end of def __init__
 
 

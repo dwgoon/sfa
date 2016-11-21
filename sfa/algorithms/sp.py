@@ -10,8 +10,6 @@ import pandas as pd
 
 import sfa.base
 import sfa.utils
-#from sfa.utils import normalize
-#from sfa.utils import FrozenClass
 
 
 def create_algorithm(abbr):
@@ -35,6 +33,8 @@ class SignalPropagation(sfa.base.Algorithm):
             self._use_rel_change = False
             self._exsol_forbidden = False
             self._lim_iter = 1000
+            self._no_inputs = False
+
 
         @property
         def alpha(self):
@@ -94,6 +94,15 @@ class SignalPropagation(sfa.base.Algorithm):
             else:
                 self._lim_iter = val
 
+        @property
+        def no_inputs(self):
+            return self._no_inputs
+
+        @no_inputs.setter
+        def no_inputs(self, val):
+            if not isinstance(val, bool):
+                raise TypeError("no_inputs is bool type.")
+            self._no_inputs = val
     # end of def class ParameterSet
 
 
@@ -191,6 +200,9 @@ class SignalPropagation(sfa.base.Algorithm):
     # end of _initialize_data
 
     def _apply_inputs(self, b):
+        if self._params.no_inputs:
+            return
+
         # Input condition
         if hasattr(self._data, 'inputs') and self._data.inputs:
             ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
@@ -360,7 +372,7 @@ class SignalPropagation(sfa.base.Algorithm):
         else:
             return x_t2, np.array(trj_x)
 
-    # end of def compute
+    # end of def propagate_iterative
 
 
 # end of def class SignalPropagation

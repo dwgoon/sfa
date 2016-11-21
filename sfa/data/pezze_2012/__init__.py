@@ -110,7 +110,7 @@ class PezzeData(sfa.base.Data):
         self._df_exp = df_exp
 
         inputs = {}
-        inputs['I/IGF'] = conc_I
+        inputs['I/IGF'] = float(conc_I)
         self._inputs = inputs
 
         fstr_name = "PEZZE_2011_%s[I=%snM]"

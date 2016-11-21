@@ -25,10 +25,6 @@ if __name__ == "__main__":
         alg.data = data
         alg.params.use_rel_change = True
         alg.initialize()
-
-        # Do not perform initializing network and matrices multiple times
-        alg.initialize(network=False)
-
         alg.compute_batch()
         acc = calc_accuracy(alg.result.df_sim,
                             data.df_exp)

@@ -10,10 +10,8 @@ import pandas as pd
 
 import sfa
 from sfa import calc_accuracy
-import sfa.base
 from sfa import AlgorithmSet
 from sfa import DataSet
-
 from sfa.data import borisov_2009
 
 
@@ -32,15 +30,15 @@ class SimpleData(sfa.base.Data):
 
         self._dg = None  # nx.DiGraph()
 
-class TestAlgorithmGS(unittest.TestCase):
+class TestAlgorithmCPS(unittest.TestCase):
 
     def __init__(self,  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Create an object for signal propagation algorithm
         self.algs = AlgorithmSet()
-        self.algs.create("GS")
-        self.alg = self.algs["GS"]
+        self.algs.create("CPS")
+        self.alg = self.algs["CPS"]
 
         # Create container for data.
         self.ds = DataSet()
@@ -49,17 +47,17 @@ class TestAlgorithmGS(unittest.TestCase):
 
         self.solutions = {}
 
-        self.solutions["NELANDER_2008"] = 0.650
+        self.solutions["NELANDER_2008"] = 0.767
 
-        self.solutions["BORISOV_2009_AUC_LOW"] = 0.551
-        self.solutions["BORISOV_2009_AUC_EGF"] = 0.581
-        self.solutions["BORISOV_2009_AUC_I"] = 0.588
-        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.583
+        self.solutions["BORISOV_2009_AUC_LOW"] = 0.692308
+        self.solutions["BORISOV_2009_AUC_EGF"] = 0.704987
+        self.solutions["BORISOV_2009_AUC_I"] = 0.788673
+        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.772612
 
-        self.solutions["BORISOV_2009_SS_LOW"] = 0.587
-        self.solutions["BORISOV_2009_SS_EGF"] = 0.537
-        self.solutions["BORISOV_2009_SS_I"] = 0.557
-        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.542
+        self.solutions["BORISOV_2009_SS_LOW"] = 0.719358
+        self.solutions["BORISOV_2009_SS_EGF"] = 0.654269
+        self.solutions["BORISOV_2009_SS_I"] = 0.727811
+        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.662722
     # end of def __init__
 
     def test_simple_data_01(self):
@@ -73,48 +71,63 @@ class TestAlgorithmGS(unittest.TestCase):
         alg.params.alpha = 0.5
         b = np.array([1.0, 0.0, 0.0])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.625, 4)
-        self.assertAlmostEqual(x[1], 0.25, 4)
-        self.assertAlmostEqual(x[2], 0.125, 4)
+        self.assertAlmostEqual(x[0], 1.0, 4)
+        self.assertAlmostEqual(x[1], 0.5, 4)
+        self.assertAlmostEqual(x[2], 0.25, 4)
 
         # Test #2
         alg.params.alpha = 0.9
         alg.initialize(data=False)
         b = np.array([1.0, 0.0, 0.0])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.38928571, 4)
-        self.assertAlmostEqual(x[1], 0.32142857, 4)
-        self.assertAlmostEqual(x[2], 0.28928571, 4)
+        self.assertAlmostEqual(x[0], 1.0, 4)
+        self.assertAlmostEqual(x[1], 0.9, 4)
+        self.assertAlmostEqual(x[2], 0.81, 4)
 
     def test_simple_data_02(self):
 
         sdata = SimpleData()
 
-        sdata._A[0, 0] = -1
-        sdata._A[1, 1] = -1
+        sdata._A[1, 0] = -1
+        sdata._A[2, 1] = -1
 
         alg = self.alg
         alg.data = sdata
-
-        alg.params.initialize()
+        alg.initialize()
 
         # Test #1
         alg.params.alpha = 0.5
-        alg.initialize()
-        b = np.array([1.0, 0.5, 0.25])
+        b = np.array([1.0, 0.0, 0.0])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.1875, 4)
-        self.assertAlmostEqual(x[1], 0.125, 4)
-        self.assertAlmostEqual(x[2], 0.1875, 4)
+        self.assertAlmostEqual(x[0], 1.0, 4)
+        self.assertAlmostEqual(x[1], -0.5, 4)
+        self.assertAlmostEqual(x[2], 0.25, 4)
 
         # Test #2
         alg.params.alpha = 0.9
         alg.initialize(data=False)
-        b = np.array([1.0, 0.5, 0.25])
+        b = np.array([1.0, 0.0, 0.0])
         x = alg.compute(b)
-        self.assertAlmostEqual(x[0], 0.02572963, 4)
-        self.assertAlmostEqual(x[1], 0.02039588, 4)
-        self.assertAlmostEqual(x[2], 0.04335629, 4)
+        self.assertAlmostEqual(x[0], 1.0, 4)
+        self.assertAlmostEqual(x[1], -0.9, 4)
+        self.assertAlmostEqual(x[2], 0.81, 4)
+
+    def test_simple_data_03(self):
+        sdata = SimpleData()
+
+        sdata._A[0, 2] = 1
+
+        alg = self.alg
+        alg.params.initialize()  # Use the default alpha value
+        alg.data = sdata
+        alg.initialize()
+        b = np.array([1.0, 0.0, 0.0])
+        x = alg.compute(b)
+
+        self.assertAlmostEqual(x[0], 1.14285714, 4)
+        self.assertAlmostEqual(x[1], 0.571428575, 4)
+        self.assertAlmostEqual(x[2], 0.28571428, 4)
+
 
     def test_nelander(self):
         alg = self.alg
@@ -145,7 +158,7 @@ class TestAlgorithmGS(unittest.TestCase):
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)
         # end of for
-    # end of def
+    #end of def
 
 
 if __name__ == "__main__":

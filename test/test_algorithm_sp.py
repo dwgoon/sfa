@@ -5,10 +5,10 @@ if sys.version_info <= (2, 8):
 
 import unittest
 
+import sfa
 from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet
-
 from sfa.data import borisov_2009
 
 class TestAlgorithmSP(unittest.TestCase):
@@ -56,7 +56,7 @@ class TestAlgorithmSP(unittest.TestCase):
 
         alg.params.initialize()
         alg.params.use_rel_change = True
-        alg.data = borisov["BORISOV_2009_AUC_LOW"]
+        alg.data = sfa.get_avlaue(borisov)
         alg.initialize(data=False)
         for abbr, data in borisov.items():
             alg.data = data

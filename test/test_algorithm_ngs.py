@@ -32,7 +32,7 @@ class SimpleData(sfa.base.Data):
 
         self._dg = None  # nx.DiGraph()
 
-class TestAlgorithmGS(unittest.TestCase):
+class TestAlgorithmNGS(unittest.TestCase):
 
     def __init__(self,  *args, **kwargs):
         super().__init__(*args, **kwargs)
