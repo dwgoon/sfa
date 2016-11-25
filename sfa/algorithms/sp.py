@@ -122,6 +122,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
         self._exsol_avail = False  # The exact solution is available.
         self._M = None  # A matrix for getting the exact solution.
+        self._weight_matrix_invalidated = True
 
         self._result = sfa.base.Result()
     # end of def __init__
@@ -134,7 +135,6 @@ class SignalPropagation(sfa.base.Algorithm):
     def b(self, vec):
         self._b = vec
 
-
     @property
     def W(self):
         return self._W
@@ -142,6 +142,8 @@ class SignalPropagation(sfa.base.Algorithm):
     @W.setter
     def W(self, mat):
         self._W = mat
+        self._weight_matrix_invalidated = True
+    # end of W.setter
 
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
@@ -171,7 +173,8 @@ class SignalPropagation(sfa.base.Algorithm):
             
     def _initialize_basal_activity(self):
         N = self._data.A.shape[0]  # Number of state variables
-        self._b = self._b = np.finfo(np.float).eps * np.ones(N)
+        self._b = np.zeros(N)
+        #self._b = np.finfo(np.float).eps * np.ones(N)
     # end of def
         
     def _initialize_data(self):
@@ -223,6 +226,8 @@ class SignalPropagation(sfa.base.Algorithm):
         if self._params.use_rel_change:
             self._apply_inputs(b)
             x_cnt = self.compute(b)
+            # x_cnt[x_cnt==0] = np.finfo(float).eps
+
 
         # Main loop of the simulation
         for i, ind_ba in enumerate(self._inds_ba):
@@ -235,7 +240,16 @@ class SignalPropagation(sfa.base.Algorithm):
 
             # Result of a single condition
             if self._params.use_rel_change:  # Use relative change
-                rel_change = ((x_exp - x_cnt)/np.abs(x_cnt))
+                #x_exp[x_exp==0] = np.finfo(float).eps
+                x_diff = (x_exp - x_cnt)
+                #denom_x_cnt = x_cnt.copy()
+                #idx_nz = np.where(np.logical_and(x_diff != 0, x_cnt == 0))[0]
+                #denom_x_cnt[idx_nz] = np.finfo(float).eps
+                #print ("denom: ", denom_x_cnt)
+                #rel_change = np.zeros_like(x_exp)                
+                #rel_change[idx_nz] = x_diff[idx_nz]/np.abs(denom_x_cnt[idx_nz])
+                #rel_change = x_diff/np.abs(x_cnt)
+                rel_change = x_diff
                 res_single = rel_change[self._iadj_to_idf]
             else:
                 res_single = x_exp[self._iadj_to_idf]
@@ -292,6 +306,9 @@ class SignalPropagation(sfa.base.Algorithm):
     # end of def compute
 
     def propagate_exact(self, b):
+        if self._weight_matrix_invalidated:
+            self._prepare_exact_solution()
+            
         return self._M.dot(b)
 
     def propagate_iterative(self,
@@ -317,7 +334,9 @@ class SignalPropagation(sfa.base.Algorithm):
             Propagation rate.
         lim_iter: integer (optioanl)
             Limitation of iterations for propagation.
-            Propagation terminates, when the iteration is reached.
+            Propagation terminates, when the iterat
+
+            ion is reached.
         tol: real number (optional)
             Tolerance for terminating iteration
             Iteration continues, if Frobenius norm of (x(t+1)-x(t)) is

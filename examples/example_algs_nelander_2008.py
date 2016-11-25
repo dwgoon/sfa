@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import pandas as pd
 
 import sfa
@@ -16,6 +17,14 @@ if __name__ == "__main__":
 
     # Load an algorithm and a data.
     algs.create()
+
+    # Normalized CPS
+    algs["NCPS"] = copy.deepcopy(algs["CPS"])
+    algs["NCPS"].params.apply_weight_norm = True
+
+    algs["NAPS"] = copy.deepcopy(algs["PW"])
+    algs["NAPS"].params.initialize()
+    algs["NAPS"].params.apply_weight_norm = True
 
     ds.create("NELANDER_2008")
     data = ds["NELANDER_2008"]

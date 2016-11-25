@@ -120,6 +120,9 @@ class NormalizedGaussianSmoothing(GaussianSmoothing):
     # end of def _prepare_iterative_solution
 
     def propagate_exact(self, b):
+        if self._weight_matrix_invalidated:
+            self._prepare_exact_solution()
+
         return self._M.dot(b)
 
     def propagate_iterative(self,

@@ -28,14 +28,22 @@ class ContainerItem():
         class_name = self.__class__.__name__
         return "%s object" % (class_name)
 
-    # Read-only properties
     @property
     def abbr(self):
         return self._abbr
 
+    @abbr.setter
+    def abbr(self, val):
+        self._abbr =val
+
     @property
     def name(self):
         return self._name
+
+    @name.setter
+    def name(self, val):
+        self._name = val
+
 
 
 class Algorithm(ContainerItem):
@@ -153,9 +161,17 @@ class Data(ContainerItem):
     def df_ba(self):
         return self._df_ba
 
+    @df_ba.setter  # DataFrame of basal activity
+    def df_ba(self, df):
+        self._df_ba = df
+
     @property  # DataFrame of experimental result
     def df_exp(self):
         return self._df_exp
+
+    @df_exp.setter
+    def df_exp(self, df):
+        self._df_exp = df
 
 # end of class Data
 

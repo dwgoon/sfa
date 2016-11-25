@@ -29,17 +29,6 @@ class GaussianSmoothing(SignalPropagation):
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Gaussian smoothing algorithm"
-        self._weight_matrix_invalidated = True
-
-    @property
-    def W(self):
-        return self._W
-
-    @W.setter
-    def W(self, mat):
-        self._W = mat
-        self._weight_matrix_invalidated = True
-    # end of W.setter
 
     def _prepare_exact_solution(self):
         a = self._params.alpha
@@ -63,7 +52,6 @@ class GaussianSmoothing(SignalPropagation):
 
         self._M =  np.linalg.inv(M0) * (1-a)
         self._weight_matrix_invalidated = False
-
     # end of def _prepare_exact_solution
 
     def _prepare_iterative_solution(self):
@@ -100,11 +88,13 @@ class GaussianSmoothing(SignalPropagation):
 
         # W(original + transposed) = Wn + Wn.T
         self._W_ot = Wn + Wn.T
-
         self._weight_matrix_invalidated = False
     # end of def _prepare_iterative_solution
 
     def propagate_exact(self, b):
+        if self._weight_matrix_invalidated:
+            self._prepare_exact_solution()
+
         return self._M.dot(b)
 
     def propagate_iterative(self,

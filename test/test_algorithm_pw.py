@@ -60,7 +60,7 @@ class TestAlgorithmPW(unittest.TestCase):
 
         alg.params.initialize()
         alg.params.no_inputs = True
-        alg.data = alg.data = sfa.get_avlaue(borisov)
+        alg.data = alg.data = sfa.get_avalue(borisov)
         alg.initialize(data=False)
         for abbr, data in borisov.items():
             alg.data = data

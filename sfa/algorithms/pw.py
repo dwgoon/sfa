@@ -58,6 +58,16 @@ class PathwayWiring(sfa.base.Algorithm):
             else:
                 self._weight = val
 
+
+        # alpha is an alias of weight.
+        @property
+        def alpha(self):
+            return self.weight
+
+        @alpha.setter
+        def alpha(self, val):
+            self.weight = val
+
         @property
         def use_rel_change(self):
             return self._use_rel_change
@@ -111,6 +121,9 @@ class PathwayWiring(sfa.base.Algorithm):
         self._names_ba = None
         self._vals_ba = None
         self._iadj_to_idf = None
+
+        self._weight_matrix_invalidated = True
+
         self._result = sfa.base.Result()
     # end of def __init__
 
@@ -121,6 +134,8 @@ class PathwayWiring(sfa.base.Algorithm):
     @W.setter
     def W(self, mat):
         self._W = mat
+        self._weight_matrix_invalidated = True
+
 
     def _initialize_network(self):
         self._dg = self._data.dg  # Initialization of dg
@@ -142,6 +157,8 @@ class PathwayWiring(sfa.base.Algorithm):
                 src, tgt = edge
                 self._dg.edge[src][tgt]['weight'] = self._params.weight
         # end of if-else
+
+        self._weight_matrix_invalidated = True
     # end of def _initialize_network
 
     def _initialize_data(self):
@@ -192,7 +209,7 @@ class PathwayWiring(sfa.base.Algorithm):
             vals_ba_se = []
             self._apply_inputs(names_ba_se, vals_ba_se)
             x_cnt = self.wire(names_ba_se, vals_ba_se)
-            x_cnt[x_cnt==0] = np.finfo(float).eps
+            #x_cnt[x_cnt==0] = np.finfo(float).eps
 
         # Main loop of the simulation
         for i, names_ba_se in enumerate(self._names_ba):
@@ -202,8 +219,8 @@ class PathwayWiring(sfa.base.Algorithm):
 
             # Result of a single condition
             if self._params.use_rel_change:  # Use relative change
-                x_exp[x_exp==0] = np.finfo(float).eps
-                rel_change = ((x_exp - x_cnt) / np.abs(x_cnt))
+                #x_exp[x_exp==0] = np.finfo(float).eps
+                rel_change = x_exp - x_cnt #((x_exp - x_cnt) / np.abs(x_cnt))
                 res_single = rel_change[self._iadj_to_idf]
             else:
                 res_single = x_exp[self._iadj_to_idf]
@@ -241,32 +258,33 @@ class PathwayWiring(sfa.base.Algorithm):
         # end of for
         return F
 
-    def wire_all_paths(self, dg, ba, src, tgt, getpath=False):
+    def wire_all_paths(self, dg, ba, src, tgt, get_path=False):
         mpl = self._params.max_path_length
         paths = nx.all_simple_paths(dg, src, tgt, mpl)
         E = 0
 
-        if getpath:
+        if get_path:
             list_paths = []
 
         # Calculate the F for each path
         for i, path in enumerate(paths):
             F = self.wire_single_path(dg, ba, path)
             E += F
-            if getpath:
+            if get_path:
                 list_paths.append(path)
         # end of for
 
         # Apply the effect of perturbation on the target itself
-        # if ptb == tgt:
-        #    F = calc_F(dg, [tgt], w)
+        # if src == tgt:
+        #    F = self.wire_single_path(dg, ba, [tgt])
         #    E += F
-        if getpath:
+
+        if get_path:
             return E, list_paths
         else:
             return E
 
-    def wire(self, names_ba_se, val_ba_se, getpath=False):
+    def wire(self, names_ba_se, val_ba_se, get_path=False):
         """
         names_ba_se: names of basal activities in a single experiment
         val_ba_se: values of basal activities in a single experiment
@@ -277,25 +295,27 @@ class PathwayWiring(sfa.base.Algorithm):
         # The combined effects
         CE = np.zeros((dg.number_of_nodes(),), dtype=np.float)
 
-        if getpath:
+        if get_path:
             list_paths = []
 
         for tgt in dg.nodes_iter():
             Et = 0.0
             for i, src in enumerate(names_ba_se):
+                if src == tgt:
+                    continue
+                
                 ba = val_ba_se[i]
-                # print(name_src, ba)
-                if getpath:
-                    E, paths = self.wire_all_paths(dg, ba, src, tgt, getpath)
+                if get_path:
+                    E, paths = self.wire_all_paths(dg, ba, src, tgt, get_path)
                     list_paths.extend(paths)
                     Et += E
                 else:
-                    Et += self.wire_all_paths(dg, ba, src, tgt, getpath)
+                    Et += self.wire_all_paths(dg, ba, src, tgt, get_path)
                 # end of for
             CE[n2i[tgt]] = Et
         # end of for
 
-        if getpath:
+        if get_path:
             return CE, list_paths
         else:
             return CE

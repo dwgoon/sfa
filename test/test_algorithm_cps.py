@@ -49,15 +49,15 @@ class TestAlgorithmCPS(unittest.TestCase):
 
         self.solutions["NELANDER_2008"] = 0.767
 
-        self.solutions["BORISOV_2009_AUC_LOW"] = 0.692308
-        self.solutions["BORISOV_2009_AUC_EGF"] = 0.704987
-        self.solutions["BORISOV_2009_AUC_I"] = 0.788673
-        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.772612
+        self.solutions["BORISOV_2009_AUC_LOW"] = 0.680473 #0.692308
+        self.solutions["BORISOV_2009_AUC_EGF"] = 0.720202 #0.704987
+        self.solutions["BORISOV_2009_AUC_I"] = 0.770076 #0.788673
+        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.742180 #0.772612
 
-        self.solutions["BORISOV_2009_SS_LOW"] = 0.719358
-        self.solutions["BORISOV_2009_SS_EGF"] = 0.654269
-        self.solutions["BORISOV_2009_SS_I"] = 0.727811
-        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.662722
+        self.solutions["BORISOV_2009_SS_LOW"] = 0.702451 #0.719358
+        self.solutions["BORISOV_2009_SS_EGF"] = 0.661031 #0.654269
+        self.solutions["BORISOV_2009_SS_I"] = 0.697379 #0.727811
+        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.650887 #0.662722
     # end of def __init__
 
     def test_simple_data_01(self):

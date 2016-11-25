@@ -9,7 +9,6 @@ import re
 import importlib
 import collections
 
-#from abc import ABC, abstractmethod
 import abc
 import six
 
@@ -19,8 +18,6 @@ import sfa.data
 
 from sfa.utils import Singleton
 
-
-#class Container(ABC, collections.MutableMapping):
 
 @six.add_metaclass(abc.ABCMeta)
 class Container(collections.MutableMapping):
@@ -83,13 +80,11 @@ class Container(collections.MutableMapping):
             self._crate_all()
     # end of def create
 
-    #@abstractmethod
     @abc.abstractmethod
     def _create_single(self, key):
         """Create a single object"""
     # end of def
 
-    #@abstractmethod
     @abc.abstractmethod
     def _crate_all(self):
         """Create all objects"""
@@ -121,13 +116,10 @@ class AlgorithmSet(Container):
 
     def _create_single(self, key):
         key_low = key.lower()
-        #fstr_module_path = "%s.%s" % (sfa.algorithms.__package__,
-        #                              key_low)
-
         fstr_module_path = "%s.%s" % (sfa.algorithms.__name__,
                                       key_low)
 
-        _key= key.upper()  # We use captial characters for the key.
+        _key = key.upper()  # We use captital characters for the key.
         if _key in self._map:  # Avoid redundant importing
             return
 
@@ -140,7 +132,7 @@ class AlgorithmSet(Container):
         self._map[_key] = alg
 
         # For testing purpose
-        print("%s has been created." % (mod.__name__))
+        print("%s algorithm has been created." % (_key))
 
     def _crate_all(self):
         """
@@ -179,7 +171,6 @@ class DataSet(Container):
         key_items = key.split("_")
         key_1st, key_2nd = key_items[:2]
         mod_name = "%s_%s"%(key_1st.lower(), key_2nd.lower())
-        #fstr_module_path = "%s.%s" % (sfa.data.__package__, mod_name)
         fstr_module_path = "%s.%s" % (sfa.data.__name__, mod_name)
 
         _key = key.upper()
@@ -209,7 +200,7 @@ class DataSet(Container):
         # end of if
 
         # For testing purpose
-        print("%s has been created." % (_key))
+        print("%s data has been created." % (_key))
     # end of def _create_single
 
     def _crate_all(self):

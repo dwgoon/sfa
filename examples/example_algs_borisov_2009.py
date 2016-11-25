@@ -17,14 +17,18 @@ if __name__ == "__main__":
     # Load an algorithm and a data.
     algs.create()
     ds.create("BORISOV_2009")
+    mult_data = ds["BORISOV_2009"]  # Multiple data
 
     # Normalized CPS
     algs["NCPS"] = copy.deepcopy(algs["CPS"])
     algs["NCPS"].params.apply_weight_norm = True
 
+    algs["NAPS"] = copy.deepcopy(algs["PW"])
+    algs["NAPS"].params.initialize()
+    algs["NAPS"].params.apply_weight_norm = True
+
     dfs = []
     for alg_abbr, alg in algs.items():
-        mult_data = ds["BORISOV_2009"]  # Multiple data
 
         alg.params.use_rel_change = True
         alg.data = sfa.get_avalue(mult_data)
@@ -53,6 +57,8 @@ if __name__ == "__main__":
     # end of for
 
     df = pd.concat(dfs, axis=1)
+    df = df[["PW", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"]]
+    df.rename(columns={'PW': 'APS',}, inplace=True)
     df_sort = df.sort_index()
     df_sort.to_csv("algs_borisov_2009.tsv", sep="\t")
 # end of main

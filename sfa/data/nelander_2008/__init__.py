@@ -36,7 +36,7 @@ class NelenderData(sfa.base.Data):
         self._A = A
         self._n2i = n2i
         self._dg = dg
-        self._df_ba = pd.read_table(os.path.join(dpath, "ba.tsv"),
+        self._df_ba = pd.read_table(os.path.join(dpath, "ba_sub.tsv"),
                                     header=0, index_col=0)
         self._df_exp = pd.read_table(os.path.join(dpath, "exp.tsv"),
                                      header=0, index_col=0)

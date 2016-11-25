@@ -47,6 +47,7 @@ class CyclicPathSummation(SignalPropagation):
     def _prepare_iterative_solution(self):
         self.params.exsol_forbidden = True
         self._exsol_avail = False
+        self._weight_matrix_invalidated = False
     # end of def _prepare_iterative_solution
 
     def compute(self, b):

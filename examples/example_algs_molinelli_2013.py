@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import pandas as pd
 
 import sfa
@@ -14,26 +15,48 @@ if __name__ == "__main__":
     algs = AlgorithmSet()
     ds = DataSet()
 
-    # Load an algorithm and a data.
-    algs.create()
-
     ds.create("MOLINELLI_2013")
     data = ds["MOLINELLI_2013"]
 
+    #data.df_ba.drop(data.df_ba.columns[:17], axis=1, inplace=True)
+    #data.df_exp.drop(data.df_exp.columns[17:], axis=1, inplace=True)
+
+
+    # Load an algorithm and a data.
+    algs.create()
+
+    # Normalized CPS
+    algs["SPN"] = copy.deepcopy(algs["SP"])
+    algs["SPN"].params.apply_weight_norm = False
+    algs["SPN"].abbr = "SPN"
+
+    # Normalized CPS
+    algs["NCPS"] = copy.deepcopy(algs["CPS"])
+    algs["NCPS"].params.apply_weight_norm = True
+    algs["NCPS"].abbr = "NCPS"
+    #algs["NCPS"].params.lim_iter = 10000
+
+    algs["NAPS"] = copy.deepcopy(algs["PW"])
+    algs["NAPS"].params.initialize()
+    algs["NAPS"].params.apply_weight_norm = True
+    algs["NAPS"].abbr = "NAPS"
+
+
     results = {}
-    for abbr, alg in algs.items():
-        alg.data = data
+    for abbr, alg in algs.items():        
         alg.params.use_rel_change = True
+        alg.data = data
         alg.initialize()
 
-        # Do not perform initializing network and matrices multiple times
-        alg.initialize(network=False)
-
         alg.compute_batch()
-        acc = calc_accuracy(alg.result.df_sim,
-                            data.df_exp)
+        #df_sim = alg.result.df_sim.ix[:, :17]
+        df_sim = alg.result.df_sim
+        acc, cons = calc_accuracy(df_sim,
+                                  data.df_exp,
+                                  get_cons=True)
 
         results[abbr] = acc
+        print ("%s: %.3f"%(abbr, acc))
     # end of for
         
 

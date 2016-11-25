@@ -16,8 +16,8 @@ if __name__ == "__main__":
 
     # Load an algorithm and a data.
     algs.create()
-    ds.create("PEZZE_2012")
-    mult_data = ds["PEZZE_2012"]  # Multiple data
+    ds.create("SCHLIEMANN_2011")
+    mult_data = ds["SCHLIEMANN_2011"]  # Multiple data
 
     # Normalized CPS
     algs["NCPS"] = copy.deepcopy(algs["CPS"])
@@ -60,5 +60,5 @@ if __name__ == "__main__":
     df = pd.concat(dfs, axis=1)
     df = df[["PW", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"]]
     df_sort = df.sort_index()
-    df_sort.to_csv("algs_pezze_2012.tsv", sep="\t")
+    df_sort.to_csv("algs_schliemann_2011.tsv", sep="\t")
 # end of main
