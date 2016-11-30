@@ -69,8 +69,7 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
 
         algs["SP"].params.use_rel_change = True
         algs["GS"].params.use_rel_change = True
-        algs["PW"].params.no_inputs\
-            = True
+        algs["PW"].params.no_inputs = True
 
         for alg_name, alg in algs.items():
             for data_name, data in ds.items():

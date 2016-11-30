@@ -139,6 +139,8 @@ class Data(ContainerItem):
         self._inputs= None
         self._df_ba = None
         self._df_exp = None
+        self._df_ptb = None
+
 
     # Read-only members
     @property
@@ -172,6 +174,14 @@ class Data(ContainerItem):
     @df_exp.setter
     def df_exp(self, df):
         self._df_exp = df
+
+    @property  # DataFrame of perturbation type and value
+    def df_ptb(self):
+        return self._df_ptb
+
+    @df_ptb.setter
+    def df_ptb(self, df):
+        self._df_ptb = df
 
 # end of class Data
 

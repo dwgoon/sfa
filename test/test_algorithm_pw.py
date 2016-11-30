@@ -29,17 +29,17 @@ class TestAlgorithmPW(unittest.TestCase):
 
         self.solutions = {}
 
-        self.solutions["NELANDER_2008"] = 0.804
+        self.solutions["NELANDER_2008"] = 0.793
 
         self.solutions["BORISOV_2009_AUC_LOW"] = 0.647
-        self.solutions["BORISOV_2009_AUC_EGF"] = 0.688
-        self.solutions["BORISOV_2009_AUC_I"] = 0.732
-        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.704
+        self.solutions["BORISOV_2009_AUC_EGF"] = 0.680
+        self.solutions["BORISOV_2009_AUC_I"] = 0.723
+        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.695
 
         self.solutions["BORISOV_2009_SS_LOW"] = 0.669
-        self.solutions["BORISOV_2009_SS_EGF"] = 0.646
-        self.solutions["BORISOV_2009_SS_I"] = 0.662
-        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.638
+        self.solutions["BORISOV_2009_SS_EGF"] = 0.637
+        self.solutions["BORISOV_2009_SS_I"] = 0.652
+        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.627
     # end of def __init__
 
     def test_nelander(self):

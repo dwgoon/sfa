@@ -39,7 +39,7 @@ class TestImportingData(unittest.TestCase):
         self.assertEqual(data.df_exp.shape, (66, 13))
 
         data = self.ds["MOLINELLI_2013"]
-        self.assertEqual(data.df_exp.shape, (44, 25))
+        self.assertEqual(data.df_exp.shape, (33, 17))
     # end of def test_data_size
 
 
