@@ -113,10 +113,9 @@ class SignalPropagation(sfa.base.Algorithm):
         self._params = self.ParameterSet()
 
         # The following members are assigned the instances in initialize()
-        self._b = None
-        self._ind_ba = None
-        self._val_ba = None
-        self._iadj_to_idf = None
+        #self._ind_ba = None
+        #self._val_ba = None
+        #self._iadj_to_idf = None
         self._W = None
         self._b = None
 
@@ -148,9 +147,9 @@ class SignalPropagation(sfa.base.Algorithm):
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix
         if self._params.apply_weight_norm:
-            self.W = sfa.utils.normalize(self._data.A)
+            self.W = sfa.utils.normalize(self.data.A)
         else:
-            self.W = self._data.A
+            self.W = self.data.A
 
         self._check_dimension(self.W, "transition matrix")
 
@@ -172,34 +171,34 @@ class SignalPropagation(sfa.base.Algorithm):
     # end of def _check_dimension
             
     def _initialize_basal_activity(self):
-        N = self._data.A.shape[0]  # Number of state variables
+        N = self.data.A.shape[0]  # Number of state variables
         self._b = np.zeros(N)
         #self._b = np.finfo(np.float).eps * np.ones(N)
     # end of def
         
     def _initialize_data(self):
-        
-        n2i = self._data.n2i  # Name to index mapper
-        df_conds = self._data.df_conds  # Basal activity
-
-        self._inds_ba = []  # Indices (inds)
-        self._vals_ba = []  # Values (vals)
-        for i, row in enumerate(df_conds.iterrows()):
-            row = row[1]
-            list_ind = []  # Indices
-            list_val = []  # Values
-            for target in df_conds.columns[row.nonzero()]:
-                list_ind.append(n2i[target])
-                list_val.append(row[target])
-            # end of for
-
-            self._inds_ba.append(list_ind)
-            self._vals_ba.append(list_val)
-        # end of for
-
-        # For mapping from the indices of adj. matrix to those of DataFrame
-        # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
+        # n2i = self._data.n2i  # Name to index mapper
+        # df_conds = self._data.df_conds  # Basal activity
+        #
+        # self._inds_ba = []  # Indices (inds)
+        # self._vals_ba = []  # Values (vals)
+        # for i, row in enumerate(df_conds.iterrows()):
+        #     row = row[1]
+        #     list_ind = []  # Indices
+        #     list_val = []  # Values
+        #     for target in df_conds.columns[row.nonzero()]:
+        #         list_ind.append(n2i[target])
+        #         list_val.append(row[target])
+        #     # end of for
+        #
+        #     self._inds_ba.append(list_ind)
+        #     self._vals_ba.append(list_val)
+        # # end of for
+        #
+        # # For mapping from the indices of adj. matrix to those of DataFrame
+        # # (arrange the indices of adj. matrix according to df_exp.columns)
+        # self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
+        pass
     # end of _initialize_data
 
     def _apply_inputs(self, b):
@@ -207,16 +206,30 @@ class SignalPropagation(sfa.base.Algorithm):
             return
 
         # Input condition
-        if hasattr(self._data, 'inputs') and self._data.inputs:
-            ind_inputs = [self._data.n2i[inp] for inp in self._data.inputs]
-            val_inputs = [val for val in self._data.inputs.values()]
+        if hasattr(self.data, 'inputs') and self.data.inputs:
+            ind_inputs = [self.data.n2i[inp] for inp in self.data.inputs]
+            val_inputs = [val for val in self.data.inputs.values()]
             b[ind_inputs] = val_inputs
         # end of if
     # end of def _apply_inputs
 
+    def _apply_perturbations(self, targets, names, vals, dg):
+        for target in targets:
+            type_ptb = self.data.df_ptb.ix[target, "Type"]
+            val_ptb = self.data.df_ptb.ix[target, "Value"]
+            if type_ptb == 'node':
+                names.append(target)
+                vals.append(val_ptb)
+            elif type_ptb == 'link':
+                for downstream, attr in dg.edge[target].items():
+                    attr["weight"] *= val_ptb
+            else:
+                raise ValueError("Undefined perturbation type: %s"%(type_ptb))
+
+
     def compute_batch(self):
         """Algorithm perform the computation with the given data"""
-        df_exp = self._data.df_exp  # Result of experiment
+        df_exp = self.data.df_exp  # Result of experiment
 
         # Simulation result
         sim_result = np.zeros(df_exp.shape, dtype=np.float)
@@ -230,10 +243,12 @@ class SignalPropagation(sfa.base.Algorithm):
 
 
         # Main loop of the simulation
-        for i, ind_ba in enumerate(self._inds_ba):
-            ind_ba = self._inds_ba[i]
-            b_store = b[ind_ba][:]
+        for i, targets_ptb in enumerate(self.data.names_ptb):
+            #ind_ba = self._inds_ba[i]
+            #b_store = b[ind_ba][:]
             self._apply_inputs(b)  # Apply the input condition
+            self._apply_perturbations()
+
             b[ind_ba] = self._vals_ba[i]  # Basal activity
 
             x_exp = self.compute(b)
@@ -274,10 +289,10 @@ class SignalPropagation(sfa.base.Algorithm):
 
         When t -> inf, both x(t+1) and x(t) converges to the stationary state.
 
-        Then, s = aP*s + (1-a)b
-              (I-aP)*s = (1-a)b
-              s = (I-aP)^-1 * (1-a)b
-              s = M*b, where M is (1-a)(I-aP)^-1.
+        Then, s = aW*s + (1-a)b
+              (I-aW)*s = (1-a)b
+              s = (I-aW)^-1 * (1-a)b
+              s = M*b, where M is (1-a)(I-aW)^-1.
 
         This method is to get the matrix, M for preparing the exact solution
         """

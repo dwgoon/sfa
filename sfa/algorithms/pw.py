@@ -118,9 +118,9 @@ class PathwayWiring(sfa.base.Algorithm):
         self._params = PathwayWiring.ParameterSet()
 
         # The following members are assigned the instances in initialize()
-        self._names_ba = None
-        self._vals_ba = None
-        self._iadj_to_idf = None
+        #self._names_ba = None
+        #self._vals_ba = None
+        #self._iadj_to_idf = None
 
         self._weight_matrix_invalidated = True
 
@@ -199,16 +199,18 @@ class PathwayWiring(sfa.base.Algorithm):
         # end of if
     # end of def
 
-    def _apply_perturbation(self, idx, dg, names, vals):
-        for target in names:
-            type_ptb = self._data.types_ptb[idx]
+    def _apply_perturbations(self, targets, names, vals, dg):
+        for target in targets:
+            type_ptb = self.data.df_ptb.ix[target, "Type"]
+            val_ptb = self.data.df_ptb.ix[target, "Value"]
             if type_ptb == 'node':
-                vals.append(self._data.vals_ptb[idx])
+                names.append(target)
+                vals.append(val_ptb)
             elif type_ptb == 'link':
-                for dg.edge[target]
-                vals.extend(self._data.vals_ptb[i])
+                for downstream, attr in dg.edge[target].items():
+                    attr["weight"] *= val_ptb
             else:
-                raise ValueError("Undefiend perturbation type: %s"%(type_ptb))
+                raise ValueError("Undefined perturbation type: %s"%(type_ptb))
 
     def compute_batch(self):
         df_exp = self._data.df_exp  # Result of experiment
@@ -220,22 +222,20 @@ class PathwayWiring(sfa.base.Algorithm):
             names_ba_se = []
             vals_ba_se = []
             self._apply_inputs(names_ba_se, vals_ba_se)
-            x_cnt = self.wire(names_ba_se, vals_ba_se)
+            x_cnt = self.wire(self._dg, names_ba_se, vals_ba_se)
             #x_cnt[x_cnt==0] = np.finfo(float).eps
         # end of if
 
         # Main loop of the simulation
-        for i, names_ba_se in enumerate(self._data.names_ptb):
-            self._apply_inputs(names_ba_se, vals_ba_se)
-
-            self._dg_ptb = self._dg.copy()
+        for i, targets_ptb in enumerate(self._data.names_ptb):
+            dg_ptb = self._dg.copy()
+            names_ba_se = []
             vals_ba_se = []  # 'se' means a 'single experiment'
-            self._apply_perturbations(i,
-                                      self._dg_ptb,
-                                      names_ba_se,
-                                      vals_ba_se)
+            self._apply_inputs(names_ba_se, vals_ba_se)
+            self._apply_perturbations(targets_ptb,
+                                      names_ba_se, vals_ba_se, dg_ptb)
 
-            x_exp = self.wire(names_ba_se, vals_ba_se)
+            x_exp = self.wire(dg_ptb, names_ba_se, vals_ba_se)
 
             # Result of a single condition
             if self._params.use_rel_change:  # Use relative change

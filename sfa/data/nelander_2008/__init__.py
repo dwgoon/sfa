@@ -47,27 +47,15 @@ class NelenderData(sfa.base.Data):
         self._inputs = inputs
         self._df_ptb = pd.read_table(dpath_ptb, index_col=0)
 
-        
-        # N = self._data.A.shape[0]  # Number of state variables
-        #df_conds = self._data.df_conds  # Basal activity
-        #n2i = self.data.n2i
-
         self._names_ptb = []
-        self._vals_ptb = []
-        self._types_ptb = []
         for i, row in enumerate(self._df_conds.iterrows()):
             row = row[1]
             list_name = []  # Target names
-            list_val = []  # Values
-            list_type = []  # Perturbation types
             for target in self._df_conds.columns[row.nonzero()]:
                 list_name.append(target)
-                list_val.append(self._df_ptb.ix[target, 'Value'])
-                list_type.append(self._df_ptb.ix[target, 'Type'])
             # end of for
             self._names_ptb.append(list_name)
-            self._vals_ptb.append(list_val)
-            self._types_ptb.append(list_type)
+
         # end of for
 
         # For mapping from the indices of adj. matrix to those of DataFrame

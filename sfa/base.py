@@ -142,8 +142,6 @@ class Data(ContainerItem):
         self._df_exp = None
         self._df_ptb = None
         self._names_ptb = None
-        self._vals_ptb = None
-        self._types_ptb = None
         self._iadj_to_idf = None
 
     # Read-only members
