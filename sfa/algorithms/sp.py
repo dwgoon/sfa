@@ -180,15 +180,15 @@ class SignalPropagation(sfa.base.Algorithm):
     def _initialize_data(self):
         
         n2i = self._data.n2i  # Name to index mapper
-        df_ba = self._data.df_ba  # Basal activity
+        df_conds = self._data.df_conds  # Basal activity
 
         self._inds_ba = []  # Indices (inds)
         self._vals_ba = []  # Values (vals)
-        for i, row in enumerate(df_ba.iterrows()):
+        for i, row in enumerate(df_conds.iterrows()):
             row = row[1]
             list_ind = []  # Indices
             list_val = []  # Values
-            for target in df_ba.columns[row.nonzero()]:
+            for target in df_conds.columns[row.nonzero()]:
                 list_ind.append(n2i[target])
                 list_val.append(row[target])
             # end of for

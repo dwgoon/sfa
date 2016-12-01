@@ -16,7 +16,8 @@ import pandas as pd
         
 
 
-df_ptb = pd.read_table("ptb.tsv")
+df_ptb = pd.read_table("ptb.tsv", index_col=0)
 
-for i, row in df_ptb.iterrows():
-    print (i, row.Target, row.Type, row.Value, row.Comment)
+for target, row in df_ptb.iterrows():
+    #print (i, row.Target, row.Type, row.Value, row.Comment)
+    print (target, row.Type, row.Value, row.Comment)

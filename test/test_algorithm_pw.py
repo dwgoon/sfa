@@ -42,17 +42,17 @@ class TestAlgorithmPW(unittest.TestCase):
         self.solutions["BORISOV_2009_SS_EGF+I"] = 0.627
     # end of def __init__
 
-    def test_nelander(self):
-        alg = self.algs["PW"]
-        data = self.ds["NELANDER_2008"]
-
-        alg.params.initialize()
-        alg.params.no_inputs = True
-        alg.data = data
-        alg.initialize()
-        alg.compute_batch()
-        acc = calc_accuracy(alg.result.df_sim, data.df_exp)
-        self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
+    # def test_nelander(self):
+    #     alg = self.algs["PW"]
+    #     data = self.ds["NELANDER_2008"]
+    #
+    #     alg.params.initialize()
+    #     alg.params.no_inputs = True
+    #     alg.data = data
+    #     alg.initialize()
+    #     alg.compute_batch()
+    #     acc = calc_accuracy(alg.result.df_sim, data.df_exp)
+    #     self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
 
     def test_borisov(self):
         alg = self.algs["PW"]

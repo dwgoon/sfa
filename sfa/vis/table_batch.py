@@ -31,7 +31,7 @@ class BatchResultTable(BaseTable):
         self._set_default_color('result_dn_text', 'white')
 
         # Set references for data objects
-        self._dfc = data.df_ba  # DataFrame of condition cases
+        self._dfc = data.df_conds  # DataFrame of condition cases
         self._dfe = data.df_exp  # DataFrame of experiment results
         self._dfr = cons  # DataFrame of consensus between exp. and sim.
 

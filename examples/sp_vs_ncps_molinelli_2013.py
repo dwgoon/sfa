@@ -39,7 +39,7 @@ if __name__ == "__main__":
     ds.create("MOLINELLI_2013")
     data = ds["MOLINELLI_2013"]
     
-    #data.df_ba.drop(data.df_ba.columns[:17], axis=1, inplace=True)
+    #data.df_conds.drop(data.df_conds.columns[:17], axis=1, inplace=True)
     #data.df_exp.drop(data.df_exp.columns[17:], axis=1, inplace=True)
     #data.df_exp = data.df_exp[['cellprol']]
         

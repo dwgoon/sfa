@@ -10,10 +10,12 @@ sfa.egg-info/dependency_links.txt
 sfa.egg-info/not-zip-safe
 sfa.egg-info/requires.txt
 sfa.egg-info/top_level.txt
+test/test_algorithm_cps.py
 test/test_algorithm_gs.py
+test/test_algorithm_ngs.py
 test/test_algorithm_pw.py
 test/test_algorithm_sp.py
 test/test_importing_algorithms.py
 test/test_importing_data.py
-test/test_multi_algorithms_multi_data.py
+test/test_multi_algs_multi_data.py
 test/test_reading_network.py

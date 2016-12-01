@@ -163,28 +163,29 @@ class PathwayWiring(sfa.base.Algorithm):
 
     def _initialize_data(self):
         # N = self._data.A.shape[0]  # Number of state variables
-        df_ba = self._data.df_ba  # Basal activity
-        n2i = self.data.n2i
-
-        self._names_ba = []
-        self._vals_ba = []
-        for i, row in enumerate(df_ba.iterrows()):
-            row = row[1]
-            list_name = []  # Names
-            list_val = []  # Values
-            for target in df_ba.columns[row.nonzero()]:
-                list_name.append(target)
-                list_val.append(row[target])
-            # end of for
-            self._names_ba.append(list_name)
-            self._vals_ba.append(list_val)
-        # end of for
-
-        # For mapping from the indices of adj. matrix to those of DataFrame
-        # (arrange the indices of adj. matrix according to df_exp.columns)
-        self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
-
-        self._i2n = {idx: name for name, idx in n2i.items()}
+        # df_conds = self._data.df_conds  # Basal activity
+        # n2i = self.data.n2i
+        #
+        # self._names_ba = []
+        # self._vals_ba = []
+        # for i, row in enumerate(df_conds.iterrows()):
+        #     row = row[1]
+        #     list_name = []  # Names
+        #     list_val = []  # Values
+        #     for target in df_conds.columns[row.nonzero()]:
+        #         list_name.append(target)
+        #         list_val.append(row[target])
+        #     # end of for
+        #     self._names_ba.append(list_name)
+        #     self._vals_ba.append(list_val)
+        # # end of for
+        #
+        # # For mapping from the indices of adj. matrix to those of DataFrame
+        # # (arrange the indices of adj. matrix according to df_exp.columns)
+        # self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
+        #
+        # self._i2n = {idx: name for name, idx in n2i.items()}
+        pass
     # end of _initialize_data
 
     def _apply_inputs(self, names, vals):
@@ -198,6 +199,17 @@ class PathwayWiring(sfa.base.Algorithm):
         # end of if
     # end of def
 
+    def _apply_perturbation(self, idx, dg, names, vals):
+        for target in names:
+            type_ptb = self._data.types_ptb[idx]
+            if type_ptb == 'node':
+                vals.append(self._data.vals_ptb[idx])
+            elif type_ptb == 'link':
+                for dg.edge[target]
+                vals.extend(self._data.vals_ptb[i])
+            else:
+                raise ValueError("Undefiend perturbation type: %s"%(type_ptb))
+
     def compute_batch(self):
         df_exp = self._data.df_exp  # Result of experiment
 
@@ -210,20 +222,27 @@ class PathwayWiring(sfa.base.Algorithm):
             self._apply_inputs(names_ba_se, vals_ba_se)
             x_cnt = self.wire(names_ba_se, vals_ba_se)
             #x_cnt[x_cnt==0] = np.finfo(float).eps
+        # end of if
 
         # Main loop of the simulation
-        for i, names_ba_se in enumerate(self._names_ba):
-            vals_ba_se = self._vals_ba[i]  # 'se' means a 'single experiment'
+        for i, names_ba_se in enumerate(self._data.names_ptb):
             self._apply_inputs(names_ba_se, vals_ba_se)
+
+            self._dg_ptb = self._dg.copy()
+            vals_ba_se = []  # 'se' means a 'single experiment'
+            self._apply_perturbations(i,
+                                      self._dg_ptb,
+                                      names_ba_se,
+                                      vals_ba_se)
+
             x_exp = self.wire(names_ba_se, vals_ba_se)
 
             # Result of a single condition
             if self._params.use_rel_change:  # Use relative change
-                #x_exp[x_exp==0] = np.finfo(float).eps
-                rel_change = x_exp - x_cnt #((x_exp - x_cnt) / np.abs(x_cnt))
-                res_single = rel_change[self._iadj_to_idf]
+                rel_change = x_exp - x_cnt
+                res_single = rel_change[self._data.iadj_to_idf]
             else:
-                res_single = x_exp[self._iadj_to_idf]
+                res_single = x_exp[self._data.iadj_to_idf]
 
             sim_result[i, :] = res_single
         # end of for
@@ -244,7 +263,7 @@ class PathwayWiring(sfa.base.Algorithm):
             names_ba_se.append(i2n[i])
             val_ba_se.append(val)
         # end of for
-        return self.wire(names_ba_se, val_ba_se)
+        return self.wire(self._dg, names_ba_se, val_ba_se)
 
     def wire_single_path(self, dg, ba, path):
         F = ba
@@ -284,12 +303,12 @@ class PathwayWiring(sfa.base.Algorithm):
         else:
             return E
 
-    def wire(self, names_ba_se, val_ba_se, get_path=False):
+    def wire(self, dg, names_ba_se, val_ba_se, get_path=False):
         """
         names_ba_se: names of basal activities in a single experiment
         val_ba_se: values of basal activities in a single experiment
         """
-        dg = self._dg
+        #dg = self._dg
         n2i = self._data.n2i
 
         # The combined effects

@@ -25,7 +25,7 @@ class SimpleData(sfa.base.Data):
                             [0, 1, 0]], dtype=np.float)
 
         self._n2i = {"A": 0, "B": 1, "C": 2}
-        self._df_ba = pd.DataFrame()
+        self._df_conds = pd.DataFrame()
         self._df_exp = pd.DataFrame()
 
         self._dg = None  # nx.DiGraph()

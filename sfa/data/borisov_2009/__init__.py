@@ -81,12 +81,12 @@ def create_test_data():
 
         # Load basal activity data
         str_ba_file = os.path.join(dpath, 'exp_data_test', 'ba.tsv')
-        df_ba = pd.read_table(str_ba_file,
+        df_conds = pd.read_table(str_ba_file,
                               header=0,
                               index_col=0)
 
         abbr = "BORISOV_2009_%s_%s"%(data_type, stim_type)
-        data_obj = BorisovData(abbr, data_type, conc_EGF, conc_I, df_ba, df_exp)
+        data_obj = BorisovData(abbr, data_type, conc_EGF, conc_I, df_conds, df_exp)
         data_mult[abbr] = data_obj
     # end of for
 
@@ -145,16 +145,16 @@ def _create_single_data(abbr=None, fname=None):
 
     # Load basal activity data
     str_ba_file = os.path.join(dpath, "ba.tsv")
-    df_ba = pd.read_table(str_ba_file,
+    df_conds = pd.read_table(str_ba_file,
                           header=0,
                           index_col=0)
 
-    return BorisovData(abbr, data_type, conc_EGF, conc_I, df_ba, df_exp)
+    return BorisovData(abbr, data_type, conc_EGF, conc_I, df_conds, df_exp)
 # end of def
 
 
 class BorisovData(sfa.base.Data):
-    def __init__(self, abbr, data_type, conc_EGF, conc_I, df_ba, df_exp):
+    def __init__(self, abbr, data_type, conc_EGF, conc_I, df_conds, df_exp):
         super().__init__()
         self._abbr = abbr
 
@@ -165,7 +165,7 @@ class BorisovData(sfa.base.Data):
         self._A = A
         self._n2i = n2i
         self._dg = dg
-        self._df_ba = df_ba
+        self._df_conds = df_conds
         self._df_exp = df_exp
 
         # TODO: Set input by thresholding

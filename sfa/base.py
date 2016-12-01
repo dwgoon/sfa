@@ -135,21 +135,29 @@ class Data(ContainerItem):
         super().__init__()
         self._A = None
         self._n2i = None
+        self._i2n = None
         self._dg = None
         self._inputs= None
-        self._df_ba = None
+        self._df_conds = None
         self._df_exp = None
         self._df_ptb = None
-
+        self._names_ptb = None
+        self._vals_ptb = None
+        self._types_ptb = None
+        self._iadj_to_idf = None
 
     # Read-only members
     @property
-    def A(self):  # Adjacency matrix
+    def A(self):  # Adjacency matrix (numpy.ndarray)
         return self._A
 
     @property
     def n2i(self):  # Name to index mapping (hashable)
         return self._n2i
+
+    @property
+    def i2n(self):  # Index to name mapping (hashable)
+        return self._i2n
 
     @property
     def dg(self):  # Directed graph object of NetworkX
@@ -159,15 +167,32 @@ class Data(ContainerItem):
     def inputs(self):  # Input conditions
         return self._inputs
 
-    @property  # DataFrame of basal activity
-    def df_ba(self):
-        return self._df_ba
+    @property  # List of perturbation targets
+    def names_ptb(self):
+        return self._names_ptb
 
-    @df_ba.setter  # DataFrame of basal activity
-    def df_ba(self, df):
-        self._df_ba = df
+    @property  # List of values for perturbation
+    def vals_ptb(self):
+        return self._vals_ptb
 
-    @property  # DataFrame of experimental result
+    @property  # List of perturbation types
+    def types_ptb(self):
+        return self._types_ptb
+
+    @property
+    def iadj_to_idf(self):
+        return self._iadj_to_idf
+
+    # Replaceable (assignable) members
+    @property  # DataFrame of experimental conditions
+    def df_conds(self):
+        return self._df_conds
+
+    @df_conds.setter
+    def df_conds(self, df):
+        self._df_conds = df
+
+    @property  # DataFrame of experimental results
     def df_exp(self):
         return self._df_exp
 
@@ -175,13 +200,14 @@ class Data(ContainerItem):
     def df_exp(self, df):
         self._df_exp = df
 
-    @property  # DataFrame of perturbation type and value
+    @property  # DataFrame of perturbation information
     def df_ptb(self):
         return self._df_ptb
 
     @df_ptb.setter
     def df_ptb(self, df):
         self._df_ptb = df
+
 
 # end of class Data
 
