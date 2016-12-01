@@ -19,8 +19,9 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create('SP')
-    alg = algs['SP']
+    alg_name = 'PW'
+    algs.create(alg_name)
+    alg = algs[alg_name]
     
     ds.create("NELANDER_2008")
     data = ds["NELANDER_2008"]
@@ -37,6 +38,11 @@ if __name__ == "__main__":
                               get_cons=True)
     
     print ("Accuracy: ", acc)
+    
+    x, paths = algs.wire(data.dg, ['EGF'], [1], get_path=True)
+    for p in paths:
+        print (p)
+    
 #    brt = sfa.vis.BatchResultTable(data, cons)
 #    brt.column_label_fontsize = 4
 #    brt.ax.tick_params(axis='x', which='both', pad=0.01)

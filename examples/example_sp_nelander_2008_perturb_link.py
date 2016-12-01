@@ -44,7 +44,7 @@ if __name__ == "__main__":
 #    alg.initialize(data=False)
     x_exp = alg.compute(b)
     
-    x_diff = x_exp[alg._iadj_to_idf] - x_cnt[alg._iadj_to_idf]
+    x_diff = x_exp[data.iadj_to_idf] - x_cnt[data.iadj_to_idf]
     #df_sim = pd.DataFrame(alg.result.df_sim.ix[5, :])
     df_sim = pd.DataFrame(x_diff)
     df_exp = pd.DataFrame(data.df_exp.ix[5, :])

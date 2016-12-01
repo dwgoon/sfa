@@ -149,7 +149,7 @@ class SignalPropagation(sfa.base.Algorithm):
         if self._params.apply_weight_norm:
             self.W = sfa.utils.normalize(self.data.A)
         else:
-            self.W = self.data.A
+            self.W = np.array(self.data.A, dtype=np.float)
 
         self._check_dimension(self.W, "transition matrix")
 
@@ -160,8 +160,11 @@ class SignalPropagation(sfa.base.Algorithm):
                 self._check_dimension(self._M, "exact solution matrix")
                 self._exsol_avail = True
             except np.linalg.LinAlgError:
-                self._prepare_iterative_solution()
-                self._exsol_avail = False
+                pass
+
+        if not self._exsol_avail:
+            self._prepare_iterative_solution()
+            self._exsol_avail = False
     # end of def _initialize_network
 
     def _check_dimension(self, mat, mat_name):
@@ -201,31 +204,43 @@ class SignalPropagation(sfa.base.Algorithm):
         pass
     # end of _initialize_data
 
-    def _apply_inputs(self, b):
+    def _apply_inputs(self, inds, vals):
         if self._params.no_inputs:
             return
 
         # Input condition
         if hasattr(self.data, 'inputs') and self.data.inputs:
-            ind_inputs = [self.data.n2i[inp] for inp in self.data.inputs]
-            val_inputs = [val for val in self.data.inputs.values()]
-            b[ind_inputs] = val_inputs
+            inds_inputs = [self.data.n2i[inp] for inp in self.data.inputs]
+            vals_inputs = [val for val in self.data.inputs.values()]
+            # b[ind_inputs] = val_inputs
+            inds.extend(inds_inputs)
+            vals.extend(vals_inputs)
         # end of if
     # end of def _apply_inputs
 
-    def _apply_perturbations(self, targets, names, vals, dg):
+    def _apply_perturbations(self, targets, inds, vals, W_ptb=None):
+        if self.data.has_link_perturb and W_ptb is None:
+            raise ValueError("Weight matrix for perturbation is necessary for "
+                             "the data including link type perturbations.")
+
         for target in targets:
             type_ptb = self.data.df_ptb.ix[target, "Type"]
             val_ptb = self.data.df_ptb.ix[target, "Value"]
             if type_ptb == 'node':
-                names.append(target)
+                inds.append(self.data.n2i[target])
                 vals.append(val_ptb)
             elif type_ptb == 'link':
-                for downstream, attr in dg.edge[target].items():
-                    attr["weight"] *= val_ptb
+                idx = self.data.n2i[target]
+                W_ptb[:, idx] *= val_ptb
+                # try:
+                #     W_ptb[:, idx] *= val_ptb
+                # except TypeError:
+                #     print (W_ptb.dtype)
+                #     print (val_ptb)
+
             else:
                 raise ValueError("Undefined perturbation type: %s"%(type_ptb))
-
+    # end of def
 
     def compute_batch(self):
         """Algorithm perform the computation with the given data"""
@@ -237,41 +252,52 @@ class SignalPropagation(sfa.base.Algorithm):
         b = self._b
 
         if self._params.use_rel_change:
-            self._apply_inputs(b)
+            inds_ba = []  # Indices of nodes to be perturbed
+            vals_ba = []  # Basal activity
+            self._apply_inputs(inds_ba, vals_ba)
+            b[inds_ba] = vals_ba
             x_cnt = self.compute(b)
-            # x_cnt[x_cnt==0] = np.finfo(float).eps
 
+        W_cnt = self.W
 
         # Main loop of the simulation
         for i, targets_ptb in enumerate(self.data.names_ptb):
-            #ind_ba = self._inds_ba[i]
-            #b_store = b[ind_ba][:]
-            self._apply_inputs(b)  # Apply the input condition
-            self._apply_perturbations()
+            inds_ba = []  # Indices of nodes to be perturbed
+            vals_ba = []  # Basal activity
+            self._apply_inputs(inds_ba, vals_ba)  # Apply the input condition
 
-            b[ind_ba] = self._vals_ba[i]  # Basal activity
+            if self.data.has_link_perturb:
+                W_ptb = W_cnt.copy()
+                self._apply_perturbations(targets_ptb, inds_ba, vals_ba, W_ptb)
+            else:
+                self._apply_perturbations(targets_ptb, inds_ba, vals_ba)
 
+            b_store = b[inds_ba]
+            b[inds_ba] = vals_ba
+
+            # if self.data.has_link_perturb:
+            #     alpha = self._params.alpha
+            #     lim_iter = self._params.lim_iter
+            #     x_exp, _ = self.propagate_iterative(W_ptb, b, b,
+            #                                         a=alpha,
+            #                                         lim_iter=lim_iter)
+            # else:  # Data has a link perturbation
+            self.W = W_ptb
             x_exp = self.compute(b)
 
             # Result of a single condition
             if self._params.use_rel_change:  # Use relative change
-                #x_exp[x_exp==0] = np.finfo(float).eps
                 x_diff = (x_exp - x_cnt)
-                #denom_x_cnt = x_cnt.copy()
-                #idx_nz = np.where(np.logical_and(x_diff != 0, x_cnt == 0))[0]
-                #denom_x_cnt[idx_nz] = np.finfo(float).eps
-                #print ("denom: ", denom_x_cnt)
-                #rel_change = np.zeros_like(x_exp)                
-                #rel_change[idx_nz] = x_diff[idx_nz]/np.abs(denom_x_cnt[idx_nz])
-                #rel_change = x_diff/np.abs(x_cnt)
                 rel_change = x_diff
-                res_single = rel_change[self._iadj_to_idf]
+                res_single = rel_change[self.data.iadj_to_idf]
             else:
                 res_single = x_exp[self._iadj_to_idf]
 
             sim_result[i, :] = res_single
-            b[ind_ba] = b_store
+            b[inds_ba] = b_store
         # end of for
+
+        self.W = W_cnt
 
         df_sim = pd.DataFrame(sim_result,
                               index=df_exp.index,

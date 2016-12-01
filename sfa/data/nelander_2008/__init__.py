@@ -47,6 +47,11 @@ class NelenderData(sfa.base.Data):
         self._inputs = inputs
         self._df_ptb = pd.read_table(dpath_ptb, index_col=0)
 
+        if any(self._df_ptb.Type == 'link'):
+            self._has_link_perturb = True
+        else:
+            self._has_link_perturb = False
+
         self._names_ptb = []
         for i, row in enumerate(self._df_conds.iterrows()):
             row = row[1]
@@ -55,7 +60,6 @@ class NelenderData(sfa.base.Data):
                 list_name.append(target)
             # end of for
             self._names_ptb.append(list_name)
-
         # end of for
 
         # For mapping from the indices of adj. matrix to those of DataFrame

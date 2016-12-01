@@ -143,6 +143,7 @@ class Data(ContainerItem):
         self._df_ptb = None
         self._names_ptb = None
         self._iadj_to_idf = None
+        self._has_link_perturb = None
 
     # Read-only members
     @property
@@ -180,6 +181,10 @@ class Data(ContainerItem):
     @property
     def iadj_to_idf(self):
         return self._iadj_to_idf
+
+    @property
+    def has_link_perturb(self):
+        return self._has_link_perturb
 
     # Replaceable (assignable) members
     @property  # DataFrame of experimental conditions

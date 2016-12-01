@@ -37,7 +37,7 @@ class MolinelliData(sfa.base.Data):
         self._n2i = n2i
         self._dg = dg
         self._df_conds = pd.read_table(os.path.join(dpath, "conds.tsv"),
-                                    header=0, index_col=0)
+                                       header=0, index_col=0)
         self._df_exp = pd.read_table(os.path.join(dpath, "exp_sub.tsv"),
                                      header=0, index_col=0)
 
