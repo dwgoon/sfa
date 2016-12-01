@@ -278,25 +278,30 @@ class PathwayWiring(sfa.base.Algorithm):
         return F
 
     def wire_all_paths(self, dg, ba, src, tgt, get_path=False):
-        mpl = self._params.max_path_length
-        paths = nx.all_simple_paths(dg, src, tgt, mpl)
         E = 0
 
         if get_path:
             list_paths = []
 
-        # Calculate the F for each path
-        for i, path in enumerate(paths):
-            F = self.wire_single_path(dg, ba, path)
-            E += F
-            if get_path:
-                list_paths.append(path)
-        # end of for
-
         # Apply the effect of perturbation on the target itself
-        # if src == tgt:
-        #    F = self.wire_single_path(dg, ba, [tgt])
-        #    E += F
+        if src == tgt:
+           F = self.wire_single_path(dg, ba, [tgt])
+           E += F
+
+           if get_path:
+               list_paths.append([src])
+
+        else:
+            mpl = self._params.max_path_length
+            paths = nx.all_simple_paths(dg, src, tgt, mpl)
+
+            # Calculate the F for each path
+            for i, path in enumerate(paths):
+                F = self.wire_single_path(dg, ba, path)
+                E += F
+                if get_path:
+                    list_paths.append(path)
+            # end of for
 
         if get_path:
             return E, list_paths
@@ -320,9 +325,7 @@ class PathwayWiring(sfa.base.Algorithm):
         for tgt in dg.nodes_iter():
             Et = 0.0
             for i, src in enumerate(names_ba_se):
-                if src == tgt:
-                    continue
-                
+
                 ba = val_ba_se[i]
                 if get_path:
                     E, paths = self.wire_all_paths(dg, ba, src, tgt, get_path)

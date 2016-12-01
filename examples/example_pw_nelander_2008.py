@@ -19,8 +19,9 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create('SP')
-    alg = algs['SP']
+    alg_name = 'PW'
+    algs.create(alg_name)
+    alg = algs[alg_name]
     
     ds.create("NELANDER_2008")
     data = ds["NELANDER_2008"]
