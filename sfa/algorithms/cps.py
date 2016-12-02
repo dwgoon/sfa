@@ -12,7 +12,7 @@ import sfa.base
 import sfa.utils
 
 from .sp import SignalPropagation
-from .pw import PathwayWiring
+from .aps import AcyclicPathSummation
 
 
 def create_algorithm(abbr):

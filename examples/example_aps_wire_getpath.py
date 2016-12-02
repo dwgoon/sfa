@@ -7,8 +7,8 @@ import sfa
 if __name__ == "__main__":
 
     algs = sfa.AlgorithmSet()
-    algs.create("PW")
-    alg = algs["PW"]
+    algs.create("APS")
+    alg = algs["APS"]
 
     ds = sfa.DataSet()
     ds.create("NELANDER_2008")

@@ -21,6 +21,7 @@ __all_containers = ["AlgorithmSet",
 
 __all_utils = ["FrozenClass",
                "read_sif",
+               "create_data_members",
                "normalize",
                "calc_accuracy",
                "get_akey",

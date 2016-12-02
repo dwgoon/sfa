@@ -13,7 +13,7 @@ sfa.egg-info/top_level.txt
 test/test_algorithm_cps.py
 test/test_algorithm_gs.py
 test/test_algorithm_ngs.py
-test/test_algorithm_pw.py
+test/test_algorithm_aps.py
 test/test_algorithm_sp.py
 test/test_importing_algorithms.py
 test/test_importing_data.py

@@ -12,17 +12,17 @@ import sfa.base
 from sfa.utils import FrozenClass
 
 def create_algorithm(abbr):
-    return PathwayWiring(abbr)
+    return AcyclicPathSummation(abbr)
 # end of def
 
 np.seterr(all='raise')
 
 
-class PathwayWiring(sfa.base.Algorithm):
+class AcyclicPathSummation(sfa.base.Algorithm):
 
     class ParameterSet(FrozenClass):
         """
-        Parameters of PathwayWiring algorithm.
+        Parameters of AcyclicPathSummation algorithm.
         """
 
         def __init__(self):
@@ -115,7 +115,7 @@ class PathwayWiring(sfa.base.Algorithm):
         super().__init__(abbr)
         self._name = "Feiglin's pathway wiring algorithm"
 
-        self._params = PathwayWiring.ParameterSet()
+        self._params = AcyclicPathSummation.ParameterSet()
 
         # The following members are assigned the instances in initialize()
         #self._names_ba = None
@@ -343,4 +343,4 @@ class PathwayWiring(sfa.base.Algorithm):
             return CE
     # end of def wire
 
-# end of def class PathwayWiring
+# end of def class AcyclicPathSummation

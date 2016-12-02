@@ -74,19 +74,26 @@ def create_test_data():
         #data_obj = #_create_single_data(abbr, fname=fname)
         #data_mult[data_obj.abbr] = data_obj
 
-        str_exp_file = os.path.join(dpath, 'exp_data_test', fname)
-        df_exp = pd.read_table(str_exp_file,
-                               header=0,
-                               index_col=0)  # Load basal activity data
+        # str_exp_file = os.path.join(dpath, 'exp_data_test', fname)
+        # df_exp = pd.read_table(str_exp_file,
+        #                        header=0,
+        #                        index_col=0)  # Load basal activity data
+        #
+        # # Load basal activity data
+        # str_ba_file = os.path.join(dpath, 'exp_data_test', 'ba.tsv')
+        # df_conds = pd.read_table(str_ba_file,
+        #                       header=0,
+        #                       index_col=0)
+        #
+        # abbr = "BORISOV_2009_%s_%s"%(data_type, stim_type)
+        # data_obj = BorisovData(abbr, data_type, conc_EGF, conc_I, df_conds, df_exp)
+        abbr = "BORISOV_2009_%s_%s" % (data_type, stim_type)
+        fname_conds = os.path.join('exp_data_test', "conds.tsv")
+        fname_exp = os.path.join('exp_data_test', fname)
 
-        # Load basal activity data
-        str_ba_file = os.path.join(dpath, 'exp_data_test', 'ba.tsv')
-        df_conds = pd.read_table(str_ba_file,
-                              header=0,
-                              index_col=0)
-
-        abbr = "BORISOV_2009_%s_%s"%(data_type, stim_type)
-        data_obj = BorisovData(abbr, data_type, conc_EGF, conc_I, df_conds, df_exp)
+        data_obj = BorisovData(abbr, data_type,
+                               conc_EGF, conc_I,
+                               fname_conds, fname_exp)
         data_mult[abbr] = data_obj
     # end of for
 
@@ -133,50 +140,94 @@ def _create_single_data(abbr=None, fname=None):
         conc_I = m.group(1)
         dconc_I = conc_I.replace('.', 'd')  # Use 'd' instead of '.'
 
-        fname = "exp_%s_%s_EGF=%s+I=%s.tsv" % (sim_duration, data_type, dconc_EGF, dconc_I)
+        fname = "exp_%s_%s_EGF=%s+I=%s.tsv" % (sim_duration, data_type,
+                                               dconc_EGF, dconc_I)
     else:
         raise ValueError("One of abbr or fname should be given"
                          "in %s._create_single_data()"%(__name__))
     # end of if-else
 
-    str_exp_file = os.path.join(dpath, 'exp_data', fname)
-    df_exp = pd.read_table(str_exp_file,
-                           header=0, index_col=0)
+    fname_exp = os.path.join('exp_data', fname)
+    fname_conds = "conds.tsv"
 
-    # Load basal activity data
-    str_ba_file = os.path.join(dpath, "ba.tsv")
-    df_conds = pd.read_table(str_ba_file,
-                          header=0,
-                          index_col=0)
+    return BorisovData(abbr, data_type,
+                       conc_EGF, conc_I,
+                       fname_conds, fname_exp)
 
-    return BorisovData(abbr, data_type, conc_EGF, conc_I, df_conds, df_exp)
+    # str_exp_file = os.path.join(dpath, 'exp_data', fname)
+    # df_exp = pd.read_table(str_exp_file,
+    #                        header=0, index_col=0)
+    #
+    # # Load basal activity data
+    # str_ba_file = os.path.join(dpath, "ba.tsv")
+    # df_conds = pd.read_table(str_ba_file,
+    #                         header=0,
+    #                         index_col=0)
+
+    #return BorisovData(abbr, data_type, conc_EGF, conc_I, df_conds, df_exp)
 # end of def
 
-
 class BorisovData(sfa.base.Data):
-    def __init__(self, abbr, data_type, conc_EGF, conc_I, df_conds, df_exp):
+    def __init__(self,
+                 abbr,
+                 data_type,
+                 conc_EGF, conc_I,
+                 fname_conds, fname_exp):
+
         super().__init__()
         self._abbr = abbr
-
-        dpath = os.path.dirname(__file__)
-        fpath = os.path.join(dpath, "network.sif")
-
-        A, n2i, dg = sfa.read_sif(fpath, as_nx=True)
-        self._A = A
-        self._n2i = n2i
-        self._dg = dg
-        self._df_conds = df_conds
-        self._df_exp = df_exp
-
-        # TODO: Set input by thresholding
-        inputs = {}
-        inputs['EGF'] = float(conc_EGF)
-        inputs['I'] = float(conc_I)
-        self._inputs = inputs
-
         fstr_name = "BORISOV_2009_%s[EGF=%snM,I=%snM]"
         str_name = fstr_name % (data_type, conc_EGF, conc_I)
         self._name = str_name
+
+        inputs = {}
+        inputs['EGF'] = float(conc_EGF)
+        inputs['I'] = float(conc_I)
+
+        sfa.create_data_members(self, __file__, inputs=inputs,
+                                fname_conds=fname_conds,
+                                fname_exp=fname_exp)
+
+
+        # dpath = os.path.dirname(__file__)
+        # fpath_network = os.path.join(dpath, "network.sif")
+        # fpath_ptb = os.path.join(dpath, "ptb.tsv")
+        #
+        # A, n2i, dg = sfa.read_sif(fpath_network, as_nx=True)
+        # self._A = A
+        # self._n2i = n2i
+        # self._dg = dg
+        # self._df_conds = df_conds
+        # self._df_exp = df_exp
+        #
+        # inputs = {}
+        # inputs['EGF'] = float(conc_EGF)
+        # inputs['I'] = float(conc_I)
+        # self._inputs = inputs
+        #
+        #
+        # self._df_ptb = pd.read_table(fpath_ptb, index_col=0)
+        #
+        # if any(self._df_ptb.Type == 'link'):
+        #     self._has_link_perturb = True
+        # else:
+        #     self._has_link_perturb = False
+        #
+        # self._names_ptb = []
+        # for i, row in enumerate(self._df_conds.iterrows()):
+        #     row = row[1]
+        #     list_name = []  # Target names
+        #     for target in self._df_conds.columns[row.nonzero()]:
+        #         list_name.append(target)
+        #     # end of for
+        #     self._names_ptb.append(list_name)
+        # # end of for
+        #
+        # # For mapping from the indices of adj. matrix to those of DataFrame
+        # # (arrange the indices of adj. matrix according to df_exp.columns)
+        # self._iadj_to_idf = [n2i[x] for x in self._df_exp.columns]
+        #
+        # self._i2n = {idx: name for name, idx in n2i.items()}
 
     # end of def __init__
 # end of def class BorisovData

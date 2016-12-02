@@ -13,14 +13,14 @@ from sfa import DataSet
 from sfa.data import borisov_2009
 
 
-class TestAlgorithmPW(unittest.TestCase):
+class TestAlgorithmAPS(unittest.TestCase):
 
     def __init__(self,  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Create an object for signal propagation algorithm
         self.algs = AlgorithmSet()
-        self.algs.create("PW")
+        self.algs.create("APS")
 
         # Create container for data.
         self.ds = DataSet()
@@ -29,33 +29,33 @@ class TestAlgorithmPW(unittest.TestCase):
 
         self.solutions = {}
 
-        self.solutions["NELANDER_2008"] = 0.793
+        self.solutions["NELANDER_2008"] = 0.751
 
-        self.solutions["BORISOV_2009_AUC_LOW"] = 0.647
-        self.solutions["BORISOV_2009_AUC_EGF"] = 0.680
-        self.solutions["BORISOV_2009_AUC_I"] = 0.723
-        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.695
+        self.solutions["BORISOV_2009_AUC_LOW"] = 0.682
+        self.solutions["BORISOV_2009_AUC_EGF"] = 0.725
+        self.solutions["BORISOV_2009_AUC_I"] = 0.770
+        self.solutions["BORISOV_2009_AUC_EGF+I"] = 0.742
 
-        self.solutions["BORISOV_2009_SS_LOW"] = 0.669
-        self.solutions["BORISOV_2009_SS_EGF"] = 0.637
-        self.solutions["BORISOV_2009_SS_I"] = 0.652
-        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.627
+        self.solutions["BORISOV_2009_SS_LOW"] = 0.704
+        self.solutions["BORISOV_2009_SS_EGF"] = 0.664
+        self.solutions["BORISOV_2009_SS_I"] = 0.697
+        self.solutions["BORISOV_2009_SS_EGF+I"] = 0.650
     # end of def __init__
 
-    # def test_nelander(self):
-    #     alg = self.algs["PW"]
-    #     data = self.ds["NELANDER_2008"]
-    #
-    #     alg.params.initialize()
-    #     alg.params.no_inputs = True
-    #     alg.data = data
-    #     alg.initialize()
-    #     alg.compute_batch()
-    #     acc = calc_accuracy(alg.result.df_sim, data.df_exp)
-    #     self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
+    def test_nelander(self):
+        alg = self.algs["APS"]
+        data = self.ds["NELANDER_2008"]
+
+        alg.params.initialize()
+        alg.params.no_inputs = True
+        alg.data = data
+        alg.initialize()
+        alg.compute_batch()
+        acc = calc_accuracy(alg.result.df_sim, data.df_exp)
+        self.assertAlmostEqual(acc, self.solutions[data.abbr], 2)
 
     def test_borisov(self):
-        alg = self.algs["PW"]
+        alg = self.algs["APS"]
         borisov = borisov_2009.create_test_data()
 
         alg.params.initialize()
@@ -67,6 +67,7 @@ class TestAlgorithmPW(unittest.TestCase):
             alg.initialize(network=False)
             alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim, data.df_exp)
+            #print (abbr, acc)
             self.assertAlmostEqual(acc, self.solutions[abbr], 2)
         # end of for
     # end of def

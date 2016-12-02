@@ -27,7 +27,7 @@ class TestAlgorithmSP(unittest.TestCase):
 
         self.solutions = {}
 
-        self.solutions["NELANDER_2008"] = 0.76719  # 0.77249
+        self.solutions["NELANDER_2008"] = 0.79365
 
         self.solutions["BORISOV_2009_AUC_LOW"] = 0.69822
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.70583

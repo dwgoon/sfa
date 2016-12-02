@@ -269,6 +269,7 @@ class SignalPropagation(sfa.base.Algorithm):
             if self.data.has_link_perturb:
                 W_ptb = W_cnt.copy()
                 self._apply_perturbations(targets_ptb, inds_ba, vals_ba, W_ptb)
+                self.W = W_ptb
             else:
                 self._apply_perturbations(targets_ptb, inds_ba, vals_ba)
 
@@ -282,7 +283,6 @@ class SignalPropagation(sfa.base.Algorithm):
             #                                         a=alpha,
             #                                         lim_iter=lim_iter)
             # else:  # Data has a link perturbation
-            self.W = W_ptb
             x_exp = self.compute(b)
 
             # Result of a single condition

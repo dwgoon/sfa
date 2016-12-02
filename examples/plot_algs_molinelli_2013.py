@@ -22,8 +22,7 @@ if __name__ == "__main__":
     #algs.create(["CPS", "SP"])
     algs.create()
 
-    algs["APS"] = algs["PW"]
-    del algs["PW"]
+    algs["APS"] = algs["APS"]
     algs["APS"].abbr = "APS"
     
     # Normalized CPS

@@ -47,7 +47,7 @@ class TestAlgorithmCPS(unittest.TestCase):
 
         self.solutions = {}
 
-        self.solutions["NELANDER_2008"] = 0.767
+        self.solutions["NELANDER_2008"] = 0.788
 
         self.solutions["BORISOV_2009_AUC_LOW"] = 0.680473 #0.692308
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.720202 #0.704987

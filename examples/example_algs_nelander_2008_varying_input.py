@@ -27,7 +27,7 @@ if __name__ == "__main__":
     algs["NCPS"] = copy.deepcopy(algs["CPS"])
     algs["NCPS"].params.apply_weight_norm = True
 
-    algs["NAPS"] = copy.deepcopy(algs["PW"])
+    algs["NAPS"] = copy.deepcopy(algs["APS"])
     algs["NAPS"].params.initialize()
     algs["NAPS"].params.apply_weight_norm = True
 
@@ -61,8 +61,7 @@ if __name__ == "__main__":
     # end of for
 
     df = pd.concat(dfs, axis=1)
-    df = df[["PW", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"]]
-    df.rename(columns={'PW': 'APS',}, inplace=True)
+    df = df[["APS", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"]]
     df_sort = df.sort_index()
     df_sort.to_csv("algs_nelander_2008.tsv", sep="\t")
 # end of main

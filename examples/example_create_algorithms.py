@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     """
     algs = sfa.AlgorithmSet()
-    algs.create("PW")
+    algs.create("APS")
     algs.create("GS")
     algs.create("SP")
 
@@ -17,16 +17,16 @@ if __name__ == "__main__":
     """
 
     algs = sfa.AlgorithmSet()
-    algs.create(["PW", "GS", "SP"])
+    algs.create(["APS", "GS", "SP"])
 
 
     # Access with the id of algorithm
-    alg_pw = algs["PW"]  # Pathway wiring
+    alg_aps = algs["APS"]  # Pathway wiring
     alg_gs = algs["GS"]  # Gaussian smoothing
     alg_sp = algs["SP"]  # Signal propagation
 
     # Print the name of algorithm
-    print(alg_pw.name)
+    print(alg_aps.name)
     print(alg_gs.name)
     print(alg_sp.name)
        

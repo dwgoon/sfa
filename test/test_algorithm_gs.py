@@ -49,7 +49,7 @@ class TestAlgorithmGS(unittest.TestCase):
 
         self.solutions = {}
 
-        self.solutions["NELANDER_2008"] = 0.650
+        self.solutions["NELANDER_2008"] = 0.661
 
         self.solutions["BORISOV_2009_AUC_LOW"] = 0.551
         self.solutions["BORISOV_2009_AUC_EGF"] = 0.581

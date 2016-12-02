@@ -22,7 +22,7 @@ if __name__ == "__main__":
     algs["NCPS"] = copy.deepcopy(algs["CPS"])
     algs["NCPS"].params.apply_weight_norm = True
 
-    algs["NAPS"] = copy.deepcopy(algs["PW"])
+    algs["NAPS"] = copy.deepcopy(algs["APS"])
     algs["NAPS"].params.initialize()
     algs["NAPS"].params.apply_weight_norm = True
 
