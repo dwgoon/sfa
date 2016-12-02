@@ -80,7 +80,7 @@ def create_test_data():
         #                        index_col=0)  # Load basal activity data
         #
         # # Load basal activity data
-        # str_ba_file = os.path.join(dpath, 'exp_data_test', 'ba.tsv')
+        # str_ba_file = os.path.join(dpath, 'exp_data_test', 'conds.tsv')
         # df_conds = pd.read_table(str_ba_file,
         #                       header=0,
         #                       index_col=0)
@@ -159,7 +159,7 @@ def _create_single_data(abbr=None, fname=None):
     #                        header=0, index_col=0)
     #
     # # Load basal activity data
-    # str_ba_file = os.path.join(dpath, "ba.tsv")
+    # str_ba_file = os.path.join(dpath, "conds.tsv")
     # df_conds = pd.read_table(str_ba_file,
     #                         header=0,
     #                         index_col=0)
@@ -184,7 +184,9 @@ class BorisovData(sfa.base.Data):
         inputs['EGF'] = float(conc_EGF)
         inputs['I'] = float(conc_I)
 
-        sfa.create_data_members(self, __file__, inputs=inputs,
+        sfa.create_data_members(self,
+                                __file__,
+                                inputs=inputs,
                                 fname_conds=fname_conds,
                                 fname_exp=fname_exp)
 

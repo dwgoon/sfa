@@ -19,13 +19,14 @@ if __name__ == "__main__":
     ds.create("SCHLIEMANN_2011")
     mult_data = ds["SCHLIEMANN_2011"]  # Multiple data
 
-    # Normalized CPS
-    algs["NCPS"] = copy.deepcopy(algs["CPS"])
-    algs["NCPS"].params.apply_weight_norm = True
-
+    # Normalized PS
     algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].params.initialize()
+    algs["NAPS"].abbr = "NAPS"
     algs["NAPS"].params.apply_weight_norm = True
+
+    algs["NCPS"] = copy.deepcopy(algs["CPS"])
+    algs["NCPS"].abbr = "NCPS"
+    algs["NCPS"].params.apply_weight_norm = True
 
 
     dfs = []

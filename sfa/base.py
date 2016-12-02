@@ -100,19 +100,17 @@ class Algorithm(ContainerItem):
     def data(self, obj):
         self._data = obj
 
-    def initialize(self, network=True, ba=True, data=True):
-
+    #def initialize(self, network=True, ba=True, data=True):
+    def initialize(self, network=True, ba=True):
         if network:
             self._initialize_network()
 
         if ba:
             self._initialize_basal_activity()
 
-        if data:
-            self._initialize_data()
+        # if data:
+        #     self._initialize_data()
 
-    def _initialize_params(self):
-        pass
 
     def _initialize_network(self):
         pass
@@ -120,8 +118,8 @@ class Algorithm(ContainerItem):
     def _initialize_basal_activity(self):
         pass
 
-    def _initialize_data(self):
-        pass
+    # def _initialize_data(self):
+    #     pass
 
     @abc.abstractmethod
     def compute_batch(self):

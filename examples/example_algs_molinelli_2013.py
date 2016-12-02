@@ -30,16 +30,15 @@ if __name__ == "__main__":
     algs["SPN"].params.apply_weight_norm = False
     algs["SPN"].abbr = "SPN"
 
-    # Normalized CPS
-    algs["NCPS"] = copy.deepcopy(algs["CPS"])
-    algs["NCPS"].params.apply_weight_norm = True
-    algs["NCPS"].abbr = "NCPS"
-    #algs["NCPS"].params.lim_iter = 10000
-
+    # Normalized PS
     algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].params.initialize()
-    algs["NAPS"].params.apply_weight_norm = True
     algs["NAPS"].abbr = "NAPS"
+    algs["NAPS"].params.apply_weight_norm = True
+
+    algs["NCPS"] = copy.deepcopy(algs["CPS"])
+    algs["NCPS"].abbr = "NCPS"
+    algs["NCPS"].params.apply_weight_norm = True
+
 
 
     results = {}

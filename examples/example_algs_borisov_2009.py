@@ -19,30 +19,26 @@ if __name__ == "__main__":
     ds.create("BORISOV_2009")
     mult_data = ds["BORISOV_2009"]  # Multiple data
 
-    # Normalized CPS
-    algs["NCPS"] = copy.deepcopy(algs["CPS"])
-    algs["NCPS"].params.apply_weight_norm = True
-
+    # Normalized PS
     algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].params.initialize()
+    algs["NAPS"].abbr = "NAPS"
     algs["NAPS"].params.apply_weight_norm = True
+
+    algs["NCPS"] = copy.deepcopy(algs["CPS"])
+    algs["NCPS"].abbr = "NCPS"
+    algs["NCPS"].params.apply_weight_norm = True
 
     dfs = []
     for alg_abbr, alg in algs.items():
 
         alg.params.use_rel_change = True
-        alg.data = sfa.get_avalue(mult_data)
-
         # Initialize the network and matrices only once
-        alg.initialize(data=False)
+        alg.data = sfa.get_avalue(mult_data)
+        alg.initialize()
 
         results = {}
         for abbr, data in mult_data.items():
             alg.data = data
-
-            # Do not perform initializing network and matrices multiple times
-            alg.initialize(network=False)
-
             alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim,
                                 data.df_exp)

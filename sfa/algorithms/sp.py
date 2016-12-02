@@ -179,30 +179,30 @@ class SignalPropagation(sfa.base.Algorithm):
         #self._b = np.finfo(np.float).eps * np.ones(N)
     # end of def
         
-    def _initialize_data(self):
-        # n2i = self._data.n2i  # Name to index mapper
-        # df_conds = self._data.df_conds  # Basal activity
-        #
-        # self._inds_ba = []  # Indices (inds)
-        # self._vals_ba = []  # Values (vals)
-        # for i, row in enumerate(df_conds.iterrows()):
-        #     row = row[1]
-        #     list_ind = []  # Indices
-        #     list_val = []  # Values
-        #     for target in df_conds.columns[row.nonzero()]:
-        #         list_ind.append(n2i[target])
-        #         list_val.append(row[target])
-        #     # end of for
-        #
-        #     self._inds_ba.append(list_ind)
-        #     self._vals_ba.append(list_val)
-        # # end of for
-        #
-        # # For mapping from the indices of adj. matrix to those of DataFrame
-        # # (arrange the indices of adj. matrix according to df_exp.columns)
-        # self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
-        pass
-    # end of _initialize_data
+    # def _initialize_data(self):
+    #     # n2i = self._data.n2i  # Name to index mapper
+    #     # df_conds = self._data.df_conds  # Basal activity
+    #     #
+    #     # self._inds_ba = []  # Indices (inds)
+    #     # self._vals_ba = []  # Values (vals)
+    #     # for i, row in enumerate(df_conds.iterrows()):
+    #     #     row = row[1]
+    #     #     list_ind = []  # Indices
+    #     #     list_val = []  # Values
+    #     #     for target in df_conds.columns[row.nonzero()]:
+    #     #         list_ind.append(n2i[target])
+    #     #         list_val.append(row[target])
+    #     #     # end of for
+    #     #
+    #     #     self._inds_ba.append(list_ind)
+    #     #     self._vals_ba.append(list_val)
+    #     # # end of for
+    #     #
+    #     # # For mapping from the indices of adj. matrix to those of DataFrame
+    #     # # (arrange the indices of adj. matrix according to df_exp.columns)
+    #     # self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
+    #     pass
+    # # end of _initialize_data
 
     def _apply_inputs(self, inds, vals):
         if self._params.no_inputs:

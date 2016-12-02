@@ -161,32 +161,32 @@ class AcyclicPathSummation(sfa.base.Algorithm):
         self._weight_matrix_invalidated = True
     # end of def _initialize_network
 
-    def _initialize_data(self):
-        # N = self._data.A.shape[0]  # Number of state variables
-        # df_conds = self._data.df_conds  # Basal activity
-        # n2i = self.data.n2i
-        #
-        # self._names_ba = []
-        # self._vals_ba = []
-        # for i, row in enumerate(df_conds.iterrows()):
-        #     row = row[1]
-        #     list_name = []  # Names
-        #     list_val = []  # Values
-        #     for target in df_conds.columns[row.nonzero()]:
-        #         list_name.append(target)
-        #         list_val.append(row[target])
-        #     # end of for
-        #     self._names_ba.append(list_name)
-        #     self._vals_ba.append(list_val)
-        # # end of for
-        #
-        # # For mapping from the indices of adj. matrix to those of DataFrame
-        # # (arrange the indices of adj. matrix according to df_exp.columns)
-        # self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
-        #
-        # self._i2n = {idx: name for name, idx in n2i.items()}
-        pass
-    # end of _initialize_data
+    # def _initialize_data(self):
+    #     # N = self._data.A.shape[0]  # Number of state variables
+    #     # df_conds = self._data.df_conds  # Basal activity
+    #     # n2i = self.data.n2i
+    #     #
+    #     # self._names_ba = []
+    #     # self._vals_ba = []
+    #     # for i, row in enumerate(df_conds.iterrows()):
+    #     #     row = row[1]
+    #     #     list_name = []  # Names
+    #     #     list_val = []  # Values
+    #     #     for target in df_conds.columns[row.nonzero()]:
+    #     #         list_name.append(target)
+    #     #         list_val.append(row[target])
+    #     #     # end of for
+    #     #     self._names_ba.append(list_name)
+    #     #     self._vals_ba.append(list_val)
+    #     # # end of for
+    #     #
+    #     # # For mapping from the indices of adj. matrix to those of DataFrame
+    #     # # (arrange the indices of adj. matrix according to df_exp.columns)
+    #     # self._iadj_to_idf = [n2i[x] for x in self._data.df_exp.columns]
+    #     #
+    #     # self._i2n = {idx: name for name, idx in n2i.items()}
+    #     pass
+    # # end of _initialize_data
 
     def _apply_inputs(self, names, vals):
         if self._params.no_inputs:
@@ -223,7 +223,6 @@ class AcyclicPathSummation(sfa.base.Algorithm):
             vals_ba_se = []
             self._apply_inputs(names_ba_se, vals_ba_se)
             x_cnt = self.wire(self._dg, names_ba_se, vals_ba_se)
-            #x_cnt[x_cnt==0] = np.finfo(float).eps
         # end of if
 
         # Main loop of the simulation
@@ -285,6 +284,7 @@ class AcyclicPathSummation(sfa.base.Algorithm):
 
         # Apply the effect of perturbation on the target itself
         if src == tgt:
+           # pass
            F = self.wire_single_path(dg, ba, [tgt])
            E += F
 
