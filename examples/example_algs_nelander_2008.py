@@ -18,13 +18,15 @@ if __name__ == "__main__":
     # Load an algorithm and a data.
     algs.create()
 
-    # Normalized CPS
+    # Normalized PS
+    algs["NAPS"] = copy.deepcopy(algs["APS"])
+    algs["NAPS"].abbr = "NAPS"
+    algs["NAPS"].params.apply_weight_norm = True
+
     algs["NCPS"] = copy.deepcopy(algs["CPS"])
+    algs["NCPS"].abbr = "NCPS"
     algs["NCPS"].params.apply_weight_norm = True
 
-    algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].params.initialize()
-    algs["NAPS"].params.apply_weight_norm = True
 
     ds.create("NELANDER_2008")
     data = ds["NELANDER_2008"]
@@ -44,9 +46,11 @@ if __name__ == "__main__":
 
     df = pd.DataFrame.from_dict(results, orient='index')
     df.columns = ['NELANDER_2008']
-    
-    df_sort = df.sort_values(by='NELANDER_2008')
-    print(df_sort)
+    df = df.ix[["APS", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"], :]
+    print(df)
+
+    #df_sort = df.sort_values(by='NELANDER_2008')
+    #print(df_sort)
 
 
 # end of main

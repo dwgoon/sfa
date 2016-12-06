@@ -204,7 +204,7 @@ class SignalPropagation(sfa.base.Algorithm):
     #     pass
     # # end of _initialize_data
 
-    def _apply_inputs(self, inds, vals):
+    def apply_inputs(self, inds, vals):
         if self._params.no_inputs:
             return
 
@@ -216,9 +216,9 @@ class SignalPropagation(sfa.base.Algorithm):
             inds.extend(inds_inputs)
             vals.extend(vals_inputs)
         # end of if
-    # end of def _apply_inputs
+    # end of def apply_inputs
 
-    def _apply_perturbations(self, targets, inds, vals, W_ptb=None):
+    def apply_perturbations(self, targets, inds, vals, W_ptb=None):
         if self.data.has_link_perturb and W_ptb is None:
             raise ValueError("Weight matrix for perturbation is necessary for "
                              "the data including link type perturbations.")
@@ -240,7 +240,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
             else:
                 raise ValueError("Undefined perturbation type: %s"%(type_ptb))
-    # end of def
+    # end of def apply_perturbations
 
     def compute_batch(self):
         """Algorithm perform the computation with the given data"""
@@ -254,7 +254,7 @@ class SignalPropagation(sfa.base.Algorithm):
         if self._params.use_rel_change:
             inds_ba = []  # Indices of nodes to be perturbed
             vals_ba = []  # Basal activity
-            self._apply_inputs(inds_ba, vals_ba)
+            self.apply_inputs(inds_ba, vals_ba)
             b[inds_ba] = vals_ba
             x_cnt = self.compute(b)
 
@@ -264,14 +264,14 @@ class SignalPropagation(sfa.base.Algorithm):
         for i, targets_ptb in enumerate(self.data.names_ptb):
             inds_ba = []  # Indices of nodes to be perturbed
             vals_ba = []  # Basal activity
-            self._apply_inputs(inds_ba, vals_ba)  # Apply the input condition
+            self.apply_inputs(inds_ba, vals_ba)  # Apply the input condition
 
             if self.data.has_link_perturb:
                 W_ptb = W_cnt.copy()
-                self._apply_perturbations(targets_ptb, inds_ba, vals_ba, W_ptb)
+                self.apply_perturbations(targets_ptb, inds_ba, vals_ba, W_ptb)
                 self.W = W_ptb
             else:
-                self._apply_perturbations(targets_ptb, inds_ba, vals_ba)
+                self.apply_perturbations(targets_ptb, inds_ba, vals_ba)
 
             b_store = b[inds_ba]
             b[inds_ba] = vals_ba

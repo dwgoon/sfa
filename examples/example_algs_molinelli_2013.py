@@ -25,10 +25,9 @@ if __name__ == "__main__":
     # Load an algorithm and a data.
     algs.create()
 
-    # Normalized CPS
-    algs["SPN"] = copy.deepcopy(algs["SP"])
-    algs["SPN"].params.apply_weight_norm = False
-    algs["SPN"].abbr = "SPN"
+    # algs["SPN"] = copy.deepcopy(algs["SP"])
+    # algs["SPN"].params.apply_weight_norm = False
+    # algs["SPN"].abbr = "SPN"
 
     # Normalized PS
     algs["NAPS"] = copy.deepcopy(algs["APS"])
@@ -58,12 +57,13 @@ if __name__ == "__main__":
         print ("%s: %.3f"%(abbr, acc))
     # end of for
         
-
     df = pd.DataFrame.from_dict(results, orient='index')
     df.columns = ['MOLINELLI_2013']
-    
-    df_sort = df.sort_values(by='MOLINELLI_2013')
-    print(df_sort)
+    df = df.ix[["APS", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"], :]
+    print(df)
+
+    #df_sort = df.sort_values(by='MOLINELLI_2013')
+    #print(df_sort)
 
 
 # end of main

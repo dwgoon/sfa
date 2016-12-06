@@ -188,7 +188,7 @@ class AcyclicPathSummation(sfa.base.Algorithm):
     #     pass
     # # end of _initialize_data
 
-    def _apply_inputs(self, names, vals):
+    def apply_inputs(self, names, vals):
         if self._params.no_inputs:
             return
 
@@ -199,7 +199,7 @@ class AcyclicPathSummation(sfa.base.Algorithm):
         # end of if
     # end of def
 
-    def _apply_perturbations(self, targets, names, vals, dg):
+    def apply_perturbations(self, targets, names, vals, dg):
         for target in targets:
             type_ptb = self.data.df_ptb.ix[target, "Type"]
             val_ptb = self.data.df_ptb.ix[target, "Value"]
@@ -221,7 +221,7 @@ class AcyclicPathSummation(sfa.base.Algorithm):
         if self._params.use_rel_change:
             names_ba_se = []
             vals_ba_se = []
-            self._apply_inputs(names_ba_se, vals_ba_se)
+            self.apply_inputs(names_ba_se, vals_ba_se)
             x_cnt = self.wire(self._dg, names_ba_se, vals_ba_se)
         # end of if
 
@@ -230,8 +230,8 @@ class AcyclicPathSummation(sfa.base.Algorithm):
             dg_ptb = self._dg.copy()
             names_ba_se = []
             vals_ba_se = []  # 'se' means a 'single experiment'
-            self._apply_inputs(names_ba_se, vals_ba_se)
-            self._apply_perturbations(targets_ptb,
+            self.apply_inputs(names_ba_se, vals_ba_se)
+            self.apply_perturbations(targets_ptb,
                                       names_ba_se, vals_ba_se, dg_ptb)
 
             x_exp = self.wire(dg_ptb, names_ba_se, vals_ba_se)
@@ -284,7 +284,7 @@ class AcyclicPathSummation(sfa.base.Algorithm):
 
         # Apply the effect of perturbation on the target itself
         if src == tgt:
-           # pass
+           #pass
            F = self.wire_single_path(dg, ba, [tgt])
            E += F
 

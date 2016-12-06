@@ -36,15 +36,11 @@ if __name__ == "__main__":
         alg.data = sfa.get_avalue(mult_data)
 
         # Initialize the network and matrices only once
-        alg.initialize(data=False)
+        alg.initialize()
 
         results = {}
         for abbr, data in mult_data.items():
             alg.data = data
-
-            # Do not perform initializing network and matrices multiple times
-            alg.initialize(network=False)
-
             alg.compute_batch()
             acc = calc_accuracy(alg.result.df_sim,
                                 data.df_exp)
