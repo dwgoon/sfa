@@ -284,12 +284,12 @@ class AcyclicPathSummation(sfa.base.Algorithm):
 
         # Apply the effect of perturbation on the target itself
         if src == tgt:
-           #pass
-           F = self.wire_single_path(dg, ba, [tgt])
-           E += F
+           pass
+           #F = self.wire_single_path(dg, ba, [tgt])
+           #E += F
 
-           if get_path:
-               list_paths.append([src])
+           #if get_path:
+           #    list_paths.append([src])
 
         else:
             mpl = self._params.max_path_length

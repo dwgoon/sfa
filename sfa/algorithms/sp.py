@@ -29,7 +29,7 @@ class SignalPropagation(sfa.base.Algorithm):
 
         def initialize(self):
             self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
-            self._apply_weight_norm = True
+            self._apply_weight_norm = False #True
             self._use_rel_change = False
             self._exsol_forbidden = False
             self._lim_iter = 1000

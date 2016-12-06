@@ -71,7 +71,7 @@ class CyclicPathSummation(SignalPropagation):
                             get_trj=False):
 
         x_sum = np.zeros_like(b)
-        x_sum += b  # Add the starting point (i.e., length-zero path).
+        #x_sum += b  # Add the starting point (i.e., length-zero path).
         x_t1 = b
         trj_x = []
 
