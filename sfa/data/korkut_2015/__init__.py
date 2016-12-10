@@ -26,9 +26,6 @@ class KorkutData(sfa.base.Data):
         self._abbr = "KORKUT_2015"
         self._name = "Korkut and Wang et al. eLife 2015;4:e04640"
 
-        #sfa.create_data_members(self, __file__,
-        #                        fname_network="average_network.sif")
-
         dpath = os.path.dirname(__file__)
         fpath_network = os.path.join(dpath, "average_network.sif")
         fpath_ptb = os.path.join(dpath, "ptb_link.tsv")

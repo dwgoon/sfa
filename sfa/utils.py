@@ -132,51 +132,51 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
         return adj, name_to_idx, dg
     # end of else
 # end of def
-
-def create_data_members(self,
-                        fpath,
-                        fname_network="network.sif",
-                        fname_ptb="ptb.tsv",
-                        fname_conds="conds.tsv",
-                        fname_exp="exp.tsv",
-                        inputs={}):
-
-    dpath = os.path.dirname(fpath)
-    fpath_network = os.path.join(dpath, fname_network)
-    fpath_ptb = os.path.join(dpath, fname_ptb)
-
-    A, n2i, dg = sfa.read_sif(fpath_network, as_nx=True)
-    self._A = A
-    self._n2i = n2i
-    self._dg = dg
-    self._df_conds = pd.read_table(os.path.join(dpath, fname_conds),
-                                   header=0, index_col=0)
-    self._df_exp = pd.read_table(os.path.join(dpath, fname_exp),
-                                 header=0, index_col=0)
-
-    self._inputs = inputs
-    self._df_ptb = pd.read_table(fpath_ptb, index_col=0)
-    if any(self._df_ptb.Type == 'link'):
-        self._has_link_perturb = True
-    else:
-        self._has_link_perturb = False
-
-    self._names_ptb = []
-    for i, row in enumerate(self._df_conds.iterrows()):
-        row = row[1]
-        list_name = []  # Target names
-        for target in self._df_conds.columns[row.nonzero()]:
-            list_name.append(target)
-        # end of for
-        self._names_ptb.append(list_name)
-    # end of for
-
-    # For mapping from the indices of adj. matrix to those of DataFrame
-    # (arrange the indices of adj. matrix according to df_exp.columns)
-    self._iadj_to_idf = [n2i[x] for x in self._df_exp.columns]
-
-    self._i2n = {idx: name for name, idx in n2i.items()}
-# end of def
+#
+# def create_data_members(self,
+#                         fpath,
+#                         fname_network="network.sif",
+#                         fname_ptb="ptb.tsv",
+#                         fname_conds="conds.tsv",
+#                         fname_exp="exp.tsv",
+#                         inputs={}):
+#
+#     dpath = os.path.dirname(fpath)
+#     fpath_network = os.path.join(dpath, fname_network)
+#     fpath_ptb = os.path.join(dpath, fname_ptb)
+#
+#     A, n2i, dg = sfa.read_sif(fpath_network, as_nx=True)
+#     self._A = A
+#     self._n2i = n2i
+#     self._dg = dg
+#     self._df_conds = pd.read_table(os.path.join(dpath, fname_conds),
+#                                    header=0, index_col=0)
+#     self._df_exp = pd.read_table(os.path.join(dpath, fname_exp),
+#                                  header=0, index_col=0)
+#
+#     self._inputs = inputs
+#     self._df_ptb = pd.read_table(fpath_ptb, index_col=0)
+#     if any(self._df_ptb.Type == 'link'):
+#         self._has_link_perturb = True
+#     else:
+#         self._has_link_perturb = False
+#
+#     self._names_ptb = []
+#     for i, row in enumerate(self._df_conds.iterrows()):
+#         row = row[1]
+#         list_name = []  # Target names
+#         for target in self._df_conds.columns[row.nonzero()]:
+#             list_name.append(target)
+#         # end of for
+#         self._names_ptb.append(list_name)
+#     # end of for
+#
+#     # For mapping from the indices of adj. matrix to those of DataFrame
+#     # (arrange the indices of adj. matrix according to df_exp.columns)
+#     self._iadj_to_idf = [n2i[x] for x in self._df_exp.columns]
+#
+#     self._i2n = {idx: name for name, idx in n2i.items()}
+# # end of def
 
 def normalize(A, norm_in=True, norm_out=True):
     # Check whether A is a square matrix

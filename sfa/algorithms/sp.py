@@ -224,8 +224,13 @@ class SignalPropagation(sfa.base.Algorithm):
                              "the data including link type perturbations.")
 
         for target in targets:
-            type_ptb = self.data.df_ptb.ix[target, "Type"]
-            val_ptb = self.data.df_ptb.ix[target, "Value"]
+            if self.data.df_ptb:
+                type_ptb = self.data.df_ptb.ix[target, "Type"]
+                val_ptb = self.data.df_ptb.ix[target, "Value"]
+            else:
+                type_ptb = 'node'
+                val_ptb = -1
+
             if type_ptb == 'node':
                 inds.append(self.data.n2i[target])
                 vals.append(val_ptb)

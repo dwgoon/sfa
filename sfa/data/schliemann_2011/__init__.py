@@ -88,15 +88,6 @@ def _create_single_data(abbr=None, fname=None):
                           conc_I,
                           fname_conds, fname_exp)
 
-    # str_exp_file = os.path.join(dpath, 'exp_data', fname)
-    # df_exp = pd.read_table(str_exp_file,
-    #                        header=0, index_col=0)
-    #
-    # # Load basal activity data
-    # str_ba_file = os.path.join(dpath, "conds.tsv")
-    # df_conds = pd.read_table(str_ba_file,
-    #                       header=0, index_col=0)
-
 
 # end of def
 
@@ -119,24 +110,9 @@ class SchliemannData(sfa.base.Data):
         inputs['TNF'] = float(conc_I)
         self._inputs = inputs
 
-        sfa.create_data_members(self,
-                                __file__,
-                                inputs=inputs,
-                                fname_conds=fname_conds,
-                                fname_exp=fname_exp)
-
-        # dpath = os.path.dirname(__file__)
-        # fpath = os.path.join(dpath, "network.sif")
-        #
-        # A, n2i, dg = sfa.read_sif(fpath, as_nx=True)
-        # self._A = A
-        # self._n2i = n2i
-        # self._dg = dg
-        # self._df_conds = df_conds
-        # self._df_exp = df_exp
-
-
-
-
+        self.initialize(__file__,
+                        inputs=inputs,
+                        fname_conds=fname_conds,
+                        fname_exp=fname_exp)
     # end of def __init__
 # end of def class

@@ -201,8 +201,13 @@ class AcyclicPathSummation(sfa.base.Algorithm):
 
     def apply_perturbations(self, targets, names, vals, dg):
         for target in targets:
-            type_ptb = self.data.df_ptb.ix[target, "Type"]
-            val_ptb = self.data.df_ptb.ix[target, "Value"]
+            if self.data.df_ptb:
+                type_ptb = self.data.df_ptb.ix[target, "Type"]
+                val_ptb = self.data.df_ptb.ix[target, "Value"]
+            else:
+                type_ptb = 'node'
+                val_ptb = -1
+
             if type_ptb == 'node':
                 names.append(target)
                 vals.append(val_ptb)
