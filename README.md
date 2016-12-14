@@ -1,4 +1,5 @@
-![alt tag](sfa.png)
+
+![Signal Flow Analysis](sfa.png)
 
 Signal Flow Analysis (SFA)
 ==========================
