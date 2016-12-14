@@ -13,5 +13,5 @@ for abbr, data in ds.items():
     print ("L: ", data.dg.number_of_edges())
     print ("I: ", len(data.inputs))
     print ("T: ", data.df_ptb.index.size)
-    print ("C: ", data.df_conds.index.size)
     print ("R: ", data.df_exp.columns.size)
+    print ("C: ", data.df_conds.index.size)

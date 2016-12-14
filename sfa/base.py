@@ -1,3 +1,4 @@
+import os
 import sys
 if sys.version_info <= (2, 8):
     from builtins import super
@@ -6,8 +7,8 @@ if sys.version_info <= (2, 8):
 import abc
 import copy
 
+import pandas as pd
 import six
-
 import sfa.utils
 
 

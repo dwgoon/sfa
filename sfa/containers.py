@@ -71,13 +71,16 @@ class Container(collections.MutableMapping):
         """
         if keys is not None:
             if type(keys) is str:
-                self._create_single(keys)
+                return self._create_single(keys)
             elif hasattr(keys, '__iter__'):
+                mult = []  # To return multiple elements
                 # An iterable object contains multiple keys.
                 for elem in keys:
-                    self._create_single(elem)
+                    mult.append(self._create_single(elem))
+                return mult
         else:
-            self._crate_all()
+            self._create_all()
+            return self
     # end of def create
 
     @abc.abstractmethod
@@ -86,7 +89,7 @@ class Container(collections.MutableMapping):
     # end of def
 
     @abc.abstractmethod
-    def _crate_all(self):
+    def _create_all(self):
         """Create all objects"""
     # end of def
 
@@ -133,8 +136,9 @@ class AlgorithmSet(Container):
 
         # For testing purpose
         print("%s algorithm has been created." % (_key))
+        return alg
 
-    def _crate_all(self):
+    def _create_all(self):
         """
         Import all algorithms, based on file names
         """
@@ -201,9 +205,10 @@ class DataSet(Container):
 
         # For testing purpose
         print("%s data has been created." % (_key))
+        return self._map[_key]
     # end of def _create_single
 
-    def _crate_all(self):
+    def _create_all(self):
         """
         Import all data, based on the directory names of data modules
         """
