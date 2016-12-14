@@ -1,10 +1,12 @@
-
 ![Signal Flow Analysis](sfa.png)
 
 Signal Flow Analysis (SFA)
 ==========================
 
-A simulation framework enabling multiple algorithms to process multiple data
+A simulation framework for 
+
+## Features ##
+* Analysis with multiple algorithms to process multiple data
 
 ## Python version ##
 * Both Python 2 and 3 are supported.
