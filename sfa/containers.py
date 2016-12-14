@@ -22,10 +22,9 @@ from sfa.utils import Singleton
 @six.add_metaclass(abc.ABCMeta)
 class Container(collections.MutableMapping):
     """
-    A simple singleton class, which handles multiple objects with
+    A simple container class, which handles multiple objects with
     its hashable functionality (using dictionary).
     """
-
     def __init__(self, *args, **kwargs):
         """
         _dict: internal data structure, which is hashable.

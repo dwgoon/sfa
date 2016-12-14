@@ -3,10 +3,10 @@
 Signal Flow Analysis (SFA)
 ==========================
 
-A simulation framework for 
+A simulation framework to analyze signal flows in complex networks.
 
 ## Features ##
-* Analysis with multiple algorithms to process multiple data
+* Analysis with multiple algorithms to process multiple data (M:N).
 
 ## Python version ##
 * Both Python 2 and 3 are supported.
