@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     # Create containers for algorithm and data.
     algs = AlgorithmSet()
-    algs.create(['CPS', 'GS', 'NGS', 'SP'])
+    algs.create(['CPS', 'SS', 'NSS', 'SP'])
 
     ds = DataSet()
 
@@ -60,8 +60,8 @@ if __name__ == "__main__":
         
     df = pd.DataFrame.from_dict(results, orient='index')
     df.columns = [data.abbr]
-    #df = df.ix[["APS", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP", "NSP"], :]
-    df = df.ix[["CPS", "NCPS", "GS", "NGS", "SP", "NSP"], :]
+    #df = df.ix[["APS", "NAPS", "CPS", "NCPS", "SS", "NSS", "SP", "NSP"], :]
+    df = df.ix[["CPS", "NCPS", "SS", "NSS", "SP", "NSP"], :]
     print(df)
 
     #df_sort = df.sort_values(by='MOLINELLI_2013')

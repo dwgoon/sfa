@@ -6,7 +6,6 @@ import sfa
 from sfa import AlgorithmSet
 from sfa import DataSet
 
-
 if __name__ == "__main__":
 
     # Create containers for algorithm and data.
@@ -14,38 +13,37 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create("NGS")
-    alg_sp = algs["NGS"]
+    algs.create("SS")
+    alg = algs["SS"]
 
-    ds.create("PEZZE_2012")
+    ds.create("SCHLIEMANN_2011")
 
     """
     It needs to assign one of the data
     for initializing the common network structure only once.
     """
-    alg_sp.params.use_rel_change = True
-    alg_sp.data = sfa.get_avalue(ds["PEZZE_2012"])
+    alg.params.use_rel_change = True
+    alg.data = sfa.get_avalue(ds["SCHLIEMANN_2011"])
 
     # Initialize the network and matrices only once
-    alg_sp.initialize(data=False)
+    alg.initialize(data=False)
 
     results = {}
-    for abbr, data in ds["PEZZE_2012"].items():
-        alg_sp.data = data
+    for abbr, data in ds["SCHLIEMANN_2011"].items():
+        alg.data = data
 
         # Do not perform initializing network and matrices multiple times
-        alg_sp.initialize(network=False)
+        alg.initialize(network=False)
 
-        alg_sp.compute_batch()
-        acc = sfa.calc_accuracy(alg_sp.result.df_sim,
+        alg.compute_batch()
+        acc = sfa.calc_accuracy(alg.result.df_sim,
                                 data.df_exp)
 
         results[abbr] = acc
     # end of for
 
     df = pd.DataFrame.from_dict(results, orient='index')
-    df.columns = ['NGS']
-    
-    df_sort = df.sort_values(by='NGS')
+    df.columns = ['SS']
+
+    df_sort = df.sort_values(by='SS')
     print(df_sort)
-    

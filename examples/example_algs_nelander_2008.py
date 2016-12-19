@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     df = pd.DataFrame.from_dict(results, orient='index')
     df.columns = ['NELANDER_2008']
-    df = df.ix[["APS", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"], :]
+    df = df.ix[["APS", "NAPS", "CPS", "NCPS", "SS", "NSS", "SP"], :]
     print(df)
 
     #df_sort = df.sort_values(by='NELANDER_2008')

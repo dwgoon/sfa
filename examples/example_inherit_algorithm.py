@@ -5,25 +5,25 @@ if sys.version_info <= (2, 8):
 
 import sfa
 
-from sfa.algorithms.gs import GaussianSmoothing
+from sfa.algorithms.gs import SignalSmoothing
 
-class NormGaussianSmoothing(GaussianSmoothing):
+class NormSignalSmoothing(SignalSmoothing):
     def __init__(self, abbr="nGS"):
         super().__init__(abbr)
         self._name = "Gaussian smoothing algorithm with matrix normalization"
 
     def normalize(self, A):
         # Call normalize of GaussianSmoothing's parent (i.e, SignalPropagation)
-        return super(GaussianSmoothing, self).normalize(A)
+        return super(SignalSmoothing, self).normalize(A)
 # end of def class
 
 
 if __name__ == "__main__":
 
     algs = sfa.AlgorithmSet()
-    algs.create(["GS", "SP"])
+    algs.create(["SS", "SP"])
 
-    algs["nGS"] = NormGaussianSmoothing()
+    algs["nGS"] = NormSignalSmoothing()
 
     ds = sfa.DataSet()
     ds.create("BORISOV_2009")

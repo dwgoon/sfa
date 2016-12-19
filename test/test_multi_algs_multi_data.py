@@ -22,7 +22,7 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
 
         # Create an object for signal propagation algorithm
         self.algs = AlgorithmSet()
-        self.algs.create(["SP", "GS", "APS"])
+        self.algs.create(["SP", "SS", "APS"])
 
         # Create container for data.
         self.ds = borisov_2009.create_test_data()
@@ -38,14 +38,14 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
         self.solutions["SP"]["BORISOV_2009_SS_I"] = 0.73119
         self.solutions["SP"]["BORISOV_2009_SS_EGF+I"] = 0.66272
 
-        self.solutions["GS"]["BORISOV_2009_AUC_EGF"] = 0.581
-        self.solutions["GS"]["BORISOV_2009_AUC_LOW"] = 0.551
-        self.solutions["GS"]["BORISOV_2009_AUC_I"] = 0.588
-        self.solutions["GS"]["BORISOV_2009_AUC_EGF+I"] = 0.583
-        self.solutions["GS"]["BORISOV_2009_SS_LOW"] = 0.587
-        self.solutions["GS"]["BORISOV_2009_SS_EGF"] = 0.537
-        self.solutions["GS"]["BORISOV_2009_SS_I"] = 0.557
-        self.solutions["GS"]["BORISOV_2009_SS_EGF+I"] = 0.542
+        self.solutions["SS"]["BORISOV_2009_AUC_EGF"] = 0.581
+        self.solutions["SS"]["BORISOV_2009_AUC_LOW"] = 0.551
+        self.solutions["SS"]["BORISOV_2009_AUC_I"] = 0.588
+        self.solutions["SS"]["BORISOV_2009_AUC_EGF+I"] = 0.583
+        self.solutions["SS"]["BORISOV_2009_SS_LOW"] = 0.587
+        self.solutions["SS"]["BORISOV_2009_SS_EGF"] = 0.537
+        self.solutions["SS"]["BORISOV_2009_SS_I"] = 0.557
+        self.solutions["SS"]["BORISOV_2009_SS_EGF+I"] = 0.542
 
         self.solutions["APS"]["BORISOV_2009_AUC_LOW"] = 0.648
         self.solutions["APS"]["BORISOV_2009_AUC_EGF"] = 0.689
@@ -68,7 +68,7 @@ class TestMultipleAlgorithmsMultipleData(unittest.TestCase):
             alg.params.initialize()
 
         algs["SP"].params.use_rel_change = True
-        algs["GS"].params.use_rel_change = True
+        algs["SS"].params.use_rel_change = True
         algs["APS"].params.no_inputs = True
 
         for alg_name, alg in algs.items():

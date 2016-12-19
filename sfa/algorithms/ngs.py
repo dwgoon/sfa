@@ -8,17 +8,17 @@ from functools import reduce
 import numpy as np
 
 import sfa
-from .gs import GaussianSmoothing
+from .gs import SignalSmoothing
 
 
 def create_algorithm(abbr):
-    return NormalizedGaussianSmoothing(abbr)
+    return NormalizedSignalSmoothing(abbr)
 # end of def
 
 
-class NormalizedGaussianSmoothing(GaussianSmoothing):
+class NormalizedSignalSmoothing(SignalSmoothing):
 
-    class ParameterSet(GaussianSmoothing.ParameterSet):
+    class ParameterSet(SignalSmoothing.ParameterSet):
         def initialize(self):
             super().initialize()
     # end of class ParameterSet

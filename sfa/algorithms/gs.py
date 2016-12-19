@@ -12,11 +12,11 @@ from .sp import SignalPropagation
 
 
 def create_algorithm(abbr):
-    return GaussianSmoothing(abbr)
+    return SignalSmoothing(abbr)
 # end of def
 
 
-class GaussianSmoothing(SignalPropagation):
+class SignalSmoothing(SignalPropagation):
 
     class ParameterSet(SignalPropagation.ParameterSet):
         def initialize(self):

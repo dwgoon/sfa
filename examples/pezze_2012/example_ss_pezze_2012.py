@@ -6,6 +6,7 @@ import sfa
 from sfa import AlgorithmSet
 from sfa import DataSet
 
+
 if __name__ == "__main__":
 
     # Create containers for algorithm and data.
@@ -13,23 +14,24 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create("GS")
-    alg = algs["GS"]
+    algs.create("SS")
+    alg = algs["SS"]
 
-    ds.create("SCHLIEMANN_2011")
+    ds.create("PEZZE_2012")
 
     """
     It needs to assign one of the data
     for initializing the common network structure only once.
     """
     alg.params.use_rel_change = True
-    alg.data = sfa.get_avalue(ds["SCHLIEMANN_2011"])
+    #alg.params.apply_weight_norm = True
+    alg.data = sfa.get_avalue(ds["PEZZE_2012"])
 
     # Initialize the network and matrices only once
     alg.initialize(data=False)
 
     results = {}
-    for abbr, data in ds["SCHLIEMANN_2011"].items():
+    for abbr, data in ds["PEZZE_2012"].items():
         alg.data = data
 
         # Do not perform initializing network and matrices multiple times
@@ -43,7 +45,8 @@ if __name__ == "__main__":
     # end of for
 
     df = pd.DataFrame.from_dict(results, orient='index')
-    df.columns = ['GS']
-
-    df_sort = df.sort_values(by='GS')
+    df.columns = ['SS']
+    
+    df_sort = df.sort_values(by='SS')
     print(df_sort)
+    

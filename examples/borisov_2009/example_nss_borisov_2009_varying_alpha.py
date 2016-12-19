@@ -16,8 +16,8 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create("GS")
-    alg = algs["GS"]
+    algs.create("NSS")
+    alg = algs["NSS"]
 
     ds.create("BORISOV_2009")
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     df_merged = pd.concat(dfs, axis=1)
     df_merged = df_merged.sort_index()
-    df_merged.to_csv("sp_borisov_2009_varying_alpha.tsv", sep='\t')
+    df_merged.to_csv("ngs_borisov_2009_varying_alpha.tsv", sep='\t')
 
     ind_argmax = np.argmax(df_merged.as_matrix(), axis=1)
     str_argmax = list(df_merged.columns[ind_argmax])

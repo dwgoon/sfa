@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # end of for
 
     df = pd.concat(dfs, axis=1)
-    df = df[["APS", "NAPS", "CPS", "NCPS", "GS", "NGS", "SP"]]
+    df = df[["APS", "NAPS", "CPS", "NCPS", "SS", "NSS", "SP"]]
     df_sort = df.sort_index()
     df_sort.to_csv("algs_schliemann_2011.tsv", sep="\t")
 # end of main

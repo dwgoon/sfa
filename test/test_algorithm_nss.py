@@ -39,7 +39,7 @@ class TestAlgorithmNGS(unittest.TestCase):
 
         # Create an object for signal propagation algorithm
         self.algs = AlgorithmSet()
-        self.algs.create("NGS")
+        self.algs.create("NSS")
 
     # end of def __init__
 
@@ -51,7 +51,7 @@ class TestAlgorithmNGS(unittest.TestCase):
 
         sdata = SimpleData()
 
-        alg = self.algs["NGS"]
+        alg = self.algs["NSS"]
         alg.data = sdata
 
         alg.params.initialize()
@@ -87,7 +87,7 @@ class TestAlgorithmNGS(unittest.TestCase):
         sdata._A[2, 1] = 0
         sdata._A[2, 0] = 1
 
-        alg = self.algs["NGS"]
+        alg = self.algs["NSS"]
         alg.data = sdata
 
         alg.params.initialize()
@@ -123,7 +123,7 @@ class TestAlgorithmNGS(unittest.TestCase):
         sdata = SimpleData()
         sdata._A[1, 1] = -1
 
-        alg = self.algs["NGS"]
+        alg = self.algs["NSS"]
         alg.data = sdata
 
         alg.params.initialize()
@@ -158,7 +158,7 @@ class TestAlgorithmNGS(unittest.TestCase):
         sdata = SimpleData()
         sdata._A[1, 1] = -1
 
-        alg = self.algs["NGS"]
+        alg = self.algs["NSS"]
         alg.data = sdata
 
         alg.params.initialize()

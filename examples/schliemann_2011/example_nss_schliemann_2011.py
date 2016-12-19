@@ -13,8 +13,8 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create("NGS")
-    alg = algs["NGS"]
+    algs.create("NSS")
+    alg = algs["NSS"]
 
     ds.create("SCHLIEMANN_2011")
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # end of for
 
     df = pd.DataFrame.from_dict(results, orient='index')
-    df.columns = ['NGS']
+    df.columns = ['NSS']
 
-    df_sort = df.sort_values(by='NGS')
+    df_sort = df.sort_values(by='NSS')
     print(df_sort)

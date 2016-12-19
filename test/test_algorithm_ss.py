@@ -39,8 +39,8 @@ class TestAlgorithmGS(unittest.TestCase):
 
         # Create an object for signal propagation algorithm
         self.algs = AlgorithmSet()
-        self.algs.create("GS")
-        self.alg = self.algs["GS"]
+        self.algs.create("SS")
+        self.alg = self.algs["SS"]
 
         # Create container for data.
         self.ds = DataSet()
