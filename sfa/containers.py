@@ -146,7 +146,7 @@ class AlgorithmSet(Container):
                 mod_name = entity.split('.')[0]  # Module name
                 self._create_single(mod_name)
         # end of for
-    # end of def _crate_all
+    # end of def _create_all
 
 # end of class Algorithms
 
@@ -216,6 +216,6 @@ class DataSet(Container):
             if not entity.startswith('_') and os.path.isdir(dpath):
                 self._create_single(entity)
         # end of for
-    # end of def _crate_all
+    # end of def _create_all
 
 # end of def class DataSet
