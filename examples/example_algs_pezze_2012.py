@@ -7,6 +7,8 @@ from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet
 
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 
 if __name__ == "__main__":
 
@@ -15,18 +17,19 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    algs.create()
+    algs.create(["APS", "SS", "SP"])
     ds.create("PEZZE_2012")
     mult_data = ds["PEZZE_2012"]  # Multiple data
 
-    # Normalized PS
+    algs.create(["APS", "SS", "NSS", "SP"])
+
     algs["NAPS"] = copy.deepcopy(algs["APS"])
     algs["NAPS"].abbr = "NAPS"
     algs["NAPS"].params.apply_weight_norm = True
-
-    algs["NCPS"] = copy.deepcopy(algs["CPS"])
-    algs["NCPS"].abbr = "NCPS"
-    algs["NCPS"].params.apply_weight_norm = True
+    
+    algs["NSP"] = copy.deepcopy(algs["SP"])
+    algs["NSP"].abbr = "NSP"
+    algs["NSP"].params.apply_weight_norm = True
 
 
 
@@ -56,7 +59,7 @@ if __name__ == "__main__":
     # end of for
 
     df = pd.concat(dfs, axis=1)
-    df = df[["APS", "NAPS", "CPS", "NCPS", "SS", "NSS", "SP"]]
+    df = df[["APS", "SS", "SP", "NAPS", "NSS", "NSP"]]
     df_sort = df.sort_index()
     df_sort.to_csv("algs_pezze_2012.tsv", sep="\t")
 # end of main

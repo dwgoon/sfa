@@ -224,7 +224,7 @@ class SignalPropagation(sfa.base.Algorithm):
                              "the data including link type perturbations.")
 
         for target in targets:
-            if self.data.df_ptb:
+            if self.data.df_ptb is not None:
                 type_ptb = self.data.df_ptb.ix[target, "Type"]
                 val_ptb = self.data.df_ptb.ix[target, "Value"]
             else:
@@ -296,7 +296,7 @@ class SignalPropagation(sfa.base.Algorithm):
                 rel_change = x_diff
                 res_single = rel_change[self.data.iadj_to_idf]
             else:
-                res_single = x_exp[self._iadj_to_idf]
+                res_single = x_exp[self.data.iadj_to_idf]
 
             sim_result[i, :] = res_single
             b[inds_ba] = b_store

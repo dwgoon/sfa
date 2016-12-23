@@ -5,12 +5,12 @@ if sys.version_info <= (2, 8):
 
 import sfa
 
-from sfa.algorithms.gs import SignalSmoothing
+from sfa.algorithms.ss import SignalSmoothing
 
 class NormSignalSmoothing(SignalSmoothing):
     def __init__(self, abbr="nGS"):
         super().__init__(abbr)
-        self._name = "Gaussian smoothing algorithm with matrix normalization"
+        self._name = "Signal smoothing algorithm with matrix normalization"
 
     def normalize(self, A):
         # Call normalize of GaussianSmoothing's parent (i.e, SignalPropagation)

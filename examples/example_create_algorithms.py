@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     # Access with the id of algorithm
     alg_aps = algs["APS"]  # Pathway wiring
-    alg_gs = algs["SS"]  # Gaussian smoothing
+    alg_gs = algs["SS"]  # Signal smoothing
     alg_sp = algs["SP"]  # Signal propagation
 
     # Print the name of algorithm

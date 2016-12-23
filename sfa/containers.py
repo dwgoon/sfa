@@ -117,6 +117,10 @@ class AlgorithmSet(Container):
     # end of def __init__
 
     def _create_single(self, key):
+        if key in self._map:
+            return self._map[key]
+
+
         key_low = key.lower()
         fstr_module_path = "%s.%s" % (sfa.algorithms.__name__,
                                       key_low)
@@ -171,6 +175,9 @@ class DataSet(Container):
     # end of def __init__
 
     def _create_single(self, key):
+        if key in self._map:
+            return self._map[key]
+
         key_items = key.split("_")
         key_1st, key_2nd = key_items[:2]
         mod_name = "%s_%s"%(key_1st.lower(), key_2nd.lower())

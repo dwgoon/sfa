@@ -3,12 +3,12 @@
 import glob
 import pandas as pd
 
-pert_nodes = ['SS', 'GAB1', 'IRS',
+pert_nodes = ['GS', 'GAB1', 'IRS',
               'RasGAP', 'RAS', 'RAF', 'MEK',
               'PI3K', 'PIP3', 'PDK1', 'mTOR']
 
 
-readout_nodes = ['SS', 'GAB1', 'IRS',
+readout_nodes = ['GS', 'GAB1', 'IRS',
                  'RasGAP', 'RAS', 'RAF', 'MEK',
                  'PI3K', 'PIP3', 'PDK1', 'mTOR', 'ERK', 'AKT']
                  

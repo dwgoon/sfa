@@ -1,7 +1,7 @@
 Target	Type	Value	Comment
 SFK	node	-1
 SHC	node	-1
-SS	node	-1
+GS	node	-1
 GAB1	node	-1
 IRS	node	-1
 RasGAP	node	-1
