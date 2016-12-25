@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-class_type = 'UP' # Class label: UP, DN, -
-ylabel = "AUROC"
+class_type = 'DN' # Class label: UP, DN, -
+ylabel = "AUPRC"
 abbrs = ["BORISOV_2009", "SCHLIEMANN_2011", "PEZZE_2012"]
 
 dfs = []

@@ -40,8 +40,7 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    data_abbr = "SCHLIEMANN_2011"
-    class_type = 'UP'
+    data_abbr = "BORISOV_2009"
     algs.create()
     ds.create(data_abbr)
     mult_data = ds[data_abbr]  # Multiple data

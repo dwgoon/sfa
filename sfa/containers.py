@@ -18,6 +18,7 @@ import sfa.data
 
 from sfa.utils import Singleton
 
+__all__ = ["AlgorithmSet", "DataSet"]
 
 @six.add_metaclass(abc.ABCMeta)
 class Container(collections.MutableMapping):

@@ -1,32 +1,18 @@
 
 
 
-#from .base import Algorithm
+from .base import *
 from .containers import AlgorithmSet
 from .containers import DataSet
 
+from .stats import *
 from .utils import *
-
-# The following modules are not determined yet
-# from .base import Data
-# from .base import Result
-# from .manager import JobManager
-
 
 
 __all__ = []
-
-__all_containers = ["AlgorithmSet",
-                    "DataSet"]
-
-__all_utils = ["FrozenClass",
-               "read_sif",
-               "create_data_members",
-               "normalize",
-               "calc_accuracy",
-               "get_akey",
-               "get_avalue",]
+__all__ += base.__all__
+__all__ += containers.__all__
+__all__ += stats.__all__
+__all__ += utils.__all__
 
 
-__all__ += __all_containers
-__all__ += __all_utils

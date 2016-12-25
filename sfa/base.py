@@ -11,6 +11,7 @@ import pandas as pd
 import six
 import sfa.utils
 
+__all__ = ['Algorithm', 'Data', 'Result']
 
 @six.add_metaclass(abc.ABCMeta)
 class ContainerItem():

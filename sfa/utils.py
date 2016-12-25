@@ -12,11 +12,15 @@ import scipy as sp
 import pandas as pd
 import networkx as nx
 
-#from sklearn.metrics import roc_curve, auc
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import average_precision_score
 
 import sfa
+
+__all__ = ["FrozenClass",
+           "Singleton",
+           "read_sif",
+           "normalize",
+           "get_akey",
+           "get_avalue",]
 
 
 class FrozenClass(object):
@@ -179,98 +183,6 @@ def normalize(A, norm_in=True, norm_out=True):
 
 
 # end of def normalize
-
-def calc_accuracy(df1, df2, get_cons=False):
-    """
-    Count the same sign of each element between df1 and df2
-
-    df1: Left pandas.DataFrame to be compared
-    df2: Right pandas.DataFrame to be compared
-    getcons: decide whether to return consensus array in DataFrame or not
-    """
-
-    np.sign(df1) + np.sign(df2)
-    num_total = df1.shape[0]*df1.shape[1]
-    diff_abs = np.abs(np.sign(df1) - np.sign(df2))    
-    consensus = (diff_abs == 0)
-    
-    num_cons = consensus.sum(axis=1).sum()  # Number of consensus
-    acc = (num_cons) / np.float(num_total)  # Accuracy
-    if get_cons:
-        return acc, consensus
-    else:
-        return acc
-# end of def
-
-
-def calc_auroc(df_exp, df_sim, class_type='UP'):
-    auroc = dict()
-    for idx_roc, (name_roc, col) in enumerate(df_exp.iteritems()):
-
-        arr_exp = np.array(col)
-        arr_sim = np.array(df_sim[name_roc])
-
-        if class_type == 'UP':
-            arr_exp[arr_exp > 0] = 1
-            arr_exp[arr_exp <= 0] = 0
-        elif class_type == 'DN':
-            arr_exp *= -1  # Flip the sign
-            arr_sim *= -1
-            arr_exp[arr_exp > 0] = 1
-            arr_exp[arr_exp <= 0] = 0
-        elif class_type == '-':
-            arr_exp[arr_exp == 0] = 1
-            arr_exp[arr_exp != 0] = 0
-
-        try:
-            auc = roc_auc_score(arr_exp, arr_sim)
-            auroc[name_roc] = auc
-        except ValueError as ve:
-            print ("Skip calculating AUROC of %s "
-                   "due to the following."%name_roc)
-            print (ve)
-
-    # end of for
-    auroc["mean"] = sum(auroc.values())/len(auroc)
-    return auroc
-# end of def
-
-
-def calc_auprc(df_exp, df_sim, class_type='UP'):
-    auprc = dict()
-    for idx_roc, (name_roc, col) in enumerate(df_exp.iteritems()):
-
-        arr_exp = np.array(col)
-        arr_sim = np.array(df_sim[name_roc])
-
-        if class_type == 'UP':
-            arr_exp[arr_exp > 0] = 1
-            arr_exp[arr_exp <= 0] = 0
-        elif class_type == 'DN':
-            arr_exp *= -1  # Flip the sign
-            arr_sim *= -1
-            arr_exp[arr_exp > 0] = 1
-            arr_exp[arr_exp <= 0] = 0
-        elif class_type == '-':
-            arr_exp[arr_exp == 0] = 1
-            arr_exp[arr_exp != 0] = 0
-
-        try:
-            auc = average_precision_score(arr_exp, arr_sim)
-            auprc[name_roc] = auc
-        except ValueError as ve:
-            print ("Skip calculating AUPRC of %s "
-                   "due to the following."%name_roc)
-            print (ve)
-        except FloatingPointError as fpe:
-            print("Skip calculating AUPRC of %s "
-                  "due to the following." % name_roc)
-            print(fpe)
-
-    # end of for
-    auprc["mean"] = sum(auprc.values())/len(auprc)
-    return auprc
-# end of def
 
 def get_akey(d):
     """
