@@ -4,9 +4,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-class_type = 'DN' # Class label: UP, DN, -
+class_type = 'UP' # Class label: UP, DN, -
 ylabel = "AUPRC"
 abbrs = ["BORISOV_2009", "SCHLIEMANN_2011", "PEZZE_2012"]
+#abbrs = ["BORISOV_2009",]
 
 dfs = []
 #for fname in glob.glob("*_acc.tsv"):
@@ -55,3 +56,6 @@ for ax in g.axes[0]:
     
 plt.subplots_adjust(left=0.1, bottom=0.2, right=0.95, top=0.9,
                     wspace=0.1, hspace=0.2)
+
+
+plt.show()

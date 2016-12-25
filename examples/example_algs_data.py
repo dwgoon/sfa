@@ -40,13 +40,13 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    data_abbr = "BORISOV_2009"
-    algs.create()
+    data_abbr = "borisov_2009"
     ds.create(data_abbr)
     mult_data = ds[data_abbr]  # Multiple data
 
     algs.create(["APS", "SS", "NSS", "SP"])
-
+    alg_names = ['APS', 'SS', 'SP', 'NAPS', 'NSS', 'NSP']
+    
     algs["NAPS"] = copy.deepcopy(algs["APS"])
     algs["NAPS"].abbr = "NAPS"
     algs["NAPS"].params.apply_weight_norm = True
@@ -55,8 +55,6 @@ if __name__ == "__main__":
     algs["NSP"].abbr = "NSP"
     algs["NSP"].params.apply_weight_norm = True
     
-
-
     dfs_acc = []
     dfs_auroc_up = []
     dfs_auroc_dn = []
@@ -110,7 +108,6 @@ if __name__ == "__main__":
         print ("The computation of %s has been finished..."%(alg_abbr))
     # end of for
     
-    alg_names = ["APS", "SS", "SP", "NAPS", "NSS", "NSP"]
     to_tsv('accuracy', dfs_acc, data_abbr, alg_names)
     to_tsv('auroc', dfs_auroc_up, data_abbr, alg_names, 'UP')
     to_tsv('auroc', dfs_auroc_dn, data_abbr, alg_names, 'DN')

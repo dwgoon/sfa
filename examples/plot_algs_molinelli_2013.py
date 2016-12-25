@@ -42,6 +42,11 @@ if __name__ == "__main__":
     #data.df_exp.drop(data.df_exp.columns[17:], axis=1, inplace=True)
     #data.df_exp = data.df_exp[['cellprol']]
         
+    
+    alpha = 0.9
+    algs["SS"].params.alpha = alpha
+    algs["NSS"].params.alpha = alpha
+    
     dfs = {}
     results = {}
     for abbr, alg in algs.items():        

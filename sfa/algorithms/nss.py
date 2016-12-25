@@ -95,7 +95,7 @@ class NormalizedSignalSmoothing(SignalSmoothing):
         S_out = np.diag(S_out)
 
         n = Wn_norm.shape[0]
-        M0 = a*((Ds+S_in+S_out) - (Wn_norm+Wn_norm.T)) + (1-a)*np.eye(n)
+        M0 = 0.5*a*((Ds+S_in+S_out) - (Wn_norm+Wn_norm.T)) + (1-a)*np.eye(n)
 
         if np.linalg.det(M0) == 0:
             raise np.linalg.LinAlgError()
@@ -111,10 +111,10 @@ class NormalizedSignalSmoothing(SignalSmoothing):
         [Ds, S_in, S_out, Wn_norm] = self._prepare_solution_common()
 
         # Coefficient matrix
-        self._Dc = np.diag(1.0 / (a*(Ds+S_in+S_out) + (1-a)))
+        self._Dc = np.diag(1.0 / (0.5*a*(Ds+S_in+S_out) + (1-a)))
 
         # W(original + transposed) = Wn + Wn.T
-        self._W_ot = Wn_norm + Wn_norm.T
+        self._W_ot = 0.5*(Wn_norm + Wn_norm.T)
 
         self._weight_matrix_invalidated = False
     # end of def _prepare_iterative_solution

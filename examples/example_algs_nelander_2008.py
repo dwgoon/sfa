@@ -19,15 +19,23 @@ if __name__ == "__main__":
     algs.create()
 
     # Normalized PS
-    algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].abbr = "NAPS"
-    algs["NAPS"].params.apply_weight_norm = True
+    #algs["NAPS"] = copy.deepcopy(algs["APS"])
+    #algs["NAPS"].abbr = "NAPS"
+    #algs["NAPS"].params.apply_weight_norm = True
 
-    algs["NCPS"] = copy.deepcopy(algs["CPS"])
-    algs["NCPS"].abbr = "NCPS"
-    algs["NCPS"].params.apply_weight_norm = True
+    algs["NSP"] = copy.deepcopy(algs["SP"])
+    algs["NSP"].abbr = "NSP"
+    algs["NSP"].params.apply_weight_norm = True
 
+    
+    alpha = 0.5
+    algs["SS"].params.alpha = alpha
+    algs["NSS"].params.alpha = alpha
 
+    algs["SP"].params.alpha = alpha
+    algs["NSP"].params.alpha = alpha
+    
+    
     ds.create("NELANDER_2008")
     data = ds["NELANDER_2008"]
 
@@ -41,13 +49,15 @@ if __name__ == "__main__":
                             data.df_exp)
 
         results[abbr] = acc
+        print (abbr, acc)
+        
     # end of for
         
 
     df = pd.DataFrame.from_dict(results, orient='index')
     df.columns = ['NELANDER_2008']
     df = df.ix[["APS", "NAPS", "CPS", "NCPS", "SS", "NSS", "SP"], :]
-    print(df)
+    #print(df)
 
     #df_sort = df.sort_values(by='NELANDER_2008')
     #print(df_sort)

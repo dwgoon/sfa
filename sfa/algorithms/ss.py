@@ -45,7 +45,7 @@ class SignalSmoothing(SignalPropagation):
         # Sum. of out-links effects
         S_out = np.diag(Wn_abs.sum(axis=0))
 
-        M0 = a*((Ds+S_in+S_out) - (Wn+Wn.T)) + (1-a)*np.eye(n)
+        M0 = 0.5*a*((Ds+S_in+S_out) - (Wn+Wn.T)) + (1-a)*np.eye(n)
 
         if np.linalg.det(M0) == 0:
             raise np.linalg.LinAlgError()
@@ -73,7 +73,7 @@ class SignalSmoothing(SignalPropagation):
         S_out = Wn_abs.sum(axis=0)
 
         # Coefficient matrix
-        self._Dc = np.diag(1.0/(a*(Ds+S_in+S_out) + (1-a)))
+        self._Dc = np.diag(1.0/(0.5*a*(Ds+S_in+S_out) + (1-a)))
 
         """
         The above calculation is the same as the following:
@@ -87,7 +87,7 @@ class SignalSmoothing(SignalPropagation):
         """
 
         # W(original + transposed) = Wn + Wn.T
-        self._W_ot = Wn + Wn.T
+        self._W_ot = 0.5*(Wn + Wn.T)
         self._weight_matrix_invalidated = False
     # end of def _prepare_iterative_solution
 
