@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-clabel = 'DN' # Class label: UP, DN, -
-ylabel = "AUPRC"
+class_type = 'UP' # Class label: UP, DN, -
+ylabel = "AUROC"
 abbrs = ["BORISOV_2009", "SCHLIEMANN_2011", "PEZZE_2012"]
 
 dfs = []
@@ -16,7 +16,13 @@ for data_abbr in abbrs:
     #data_abbr = '_'.join(items[1:3])
     #data_abbr = data_abbr.upper()
     #fname = "algs_%s_acc.tsv"%(data_abbr.lower())
-    fname = "algs_%s_%s_%s.tsv"%(data_abbr.lower(), ylabel.lower(), clabel.lower())
+    if ylabel == 'Accuracy':
+        fname = "algs_%s_%s.tsv"%(data_abbr.lower(), ylabel.lower(), )
+    elif ylabel == 'AUROC' or ylabel == 'AUPRC':        
+        fname = "algs_%s_%s_%s.tsv"%(data_abbr.lower(),
+                                     ylabel.lower(),
+                                     class_type.lower())
+        
     df = pd.read_table(fname, index_col=0)
     df = df.unstack().reset_index()
     df.columns = ['Algorithm', 'Condition', ylabel]

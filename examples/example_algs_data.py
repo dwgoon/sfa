@@ -9,6 +9,30 @@ from sfa import AlgorithmSet
 from sfa import DataSet
 
 
+def append_dataframe(dfs, res, alg_abbr):
+    df = pd.DataFrame.from_dict(res, orient='index')
+    df.columns = [alg_abbr]
+    dfs.append(df)
+    
+
+def to_tsv(measure, dfs, data_name, alg_names=None, class_type=None):
+    measure = measure.lower()
+    data_name = data_name.lower()
+    df = pd.concat(dfs, axis=1)
+    if alg_names:            
+        df = df[alg_names]
+        
+    df_sort = df.sort_index()
+    if class_type:
+        class_type = class_type.lower()
+        fstr = "algs_%s_%s_%s.tsv"%(data_name, measure, class_type)
+    else:
+        fstr = "algs_%s_%s.tsv"%(data_name, measure)
+        
+    df_sort.to_csv(fstr, sep="\t")
+    
+    
+
 if __name__ == "__main__":
 
     # Create containers for algorithm and data.
@@ -16,7 +40,7 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    data_abbr = "PEZZE_2012"
+    data_abbr = "SCHLIEMANN_2011"
     class_type = 'UP'
     algs.create()
     ds.create(data_abbr)
@@ -31,72 +55,69 @@ if __name__ == "__main__":
     algs["NSP"] = copy.deepcopy(algs["SP"])
     algs["NSP"].abbr = "NSP"
     algs["NSP"].params.apply_weight_norm = True
+    
+
 
     dfs_acc = []
-    dfs_auroc = []
-    dfs_auprc = []
+    dfs_auroc_up = []
+    dfs_auroc_dn = []
+    dfs_auprc_up = []
+    dfs_auprc_dn = []
     dfs_time = []
+    
     for alg_abbr, alg in algs.items():
-
         alg.params.use_rel_change = True
     
         # Initialize the network and matrices only once
         alg.data = sfa.get_avalue(mult_data)
         alg.initialize()
-
+        
         res_acc = {}
-        res_auroc = {}
-        res_auprc = {}
+        res_auroc_up = {}        
+        res_auroc_dn = {}
+        res_auprc_up = {}
+        res_auprc_dn = {}
         res_time = {}
-        for data_abbr, data in mult_data.items():
+        for cond, data in mult_data.items():  # cond: experimental condition
             alg.data = data
             t_beg = time.time()
             alg.compute_batch()
             t_end = time.time()
             acc = sfa.calc_accuracy(data.df_exp, alg.result.df_sim)
-            auroc = sfa.calc_auroc(data.df_exp, alg.result.df_sim, class_type)
-            auprc = sfa.calc_auprc(data.df_exp, alg.result.df_sim, class_type)
-            res_acc[data_abbr] = acc
-            res_auroc[data_abbr] = auroc['mean']
-            res_auprc[data_abbr] = auprc['mean']
-            res_time[data_abbr] = t_end - t_beg
+            res_acc[cond] = acc
+            
+            auroc = sfa.calc_auroc(data.df_exp, alg.result.df_sim, 'UP')
+            res_auroc_up[cond] = auroc['mean']
+            
+            auroc = sfa.calc_auroc(data.df_exp, alg.result.df_sim, 'DN')
+            res_auroc_dn[cond] = auroc['mean']
+            
+            auprc = sfa.calc_auprc(data.df_exp, alg.result.df_sim, 'UP')
+            res_auprc_up[cond] = auprc['mean']
+            
+            auprc = sfa.calc_auprc(data.df_exp, alg.result.df_sim, 'DN')
+            res_auprc_dn[cond] = auprc['mean']
+            
+            res_time[cond] = t_end - t_beg
         # end of for
 
-        df_acc = pd.DataFrame.from_dict(res_acc, orient='index')
-        df_acc.columns = [alg_abbr]
-        dfs_acc.append(df_acc)
-        
-        df_auroc = pd.DataFrame.from_dict(res_auroc, orient='index')
-        df_auroc.columns = [alg_abbr]
-        dfs_auroc.append(df_auroc)       
-        
-        df_auprc = pd.DataFrame.from_dict(res_auprc, orient='index')
-        df_auprc.columns = [alg_abbr]
-        dfs_auprc.append(df_auprc)
-        
-        df_time = pd.DataFrame.from_dict(res_time, orient='index')
-        df_time.columns = [alg_abbr]
-        dfs_time.append(df_time)
+        append_dataframe(dfs_acc, res_acc, alg_abbr)
+        append_dataframe(dfs_auroc_up, res_auroc_up, alg_abbr)
+        append_dataframe(dfs_auroc_dn, res_auroc_dn, alg_abbr)
+        append_dataframe(dfs_auprc_up, res_auprc_up, alg_abbr)
+        append_dataframe(dfs_auprc_dn, res_auprc_dn, alg_abbr)
+        append_dataframe(dfs_time, res_time, alg_abbr)
 
         print ("The computation of %s has been finished..."%(alg_abbr))
     # end of for
-
-    
-    def to_tsv(dfs, measure, data_name, alg_names=None):
-        measure = measure.lower()
-        data_name = data_name.lower()
-        df = pd.concat(dfs, axis=1)
-        if alg_names:            
-            df = df[alg_names]
-            
-        df_sort = df.sort_index()
-        df_sort.to_csv("algs_%s_%s.tsv"%(measure, data_name), sep="\t")
     
     alg_names = ["APS", "SS", "SP", "NAPS", "NSS", "NSP"]
-    to_tsv(dfs_acc, 'acc', data_abbr, alg_names)
-    to_tsv(dfs_auroc, 'auroc', data_abbr, alg_names)
-    to_tsv(dfs_auprc, 'auprc', data_abbr, alg_names)
-    to_tsv(dfs_time, 'time', data_abbr, alg_names)
+    to_tsv('accuracy', dfs_acc, data_abbr, alg_names)
+    to_tsv('auroc', dfs_auroc_up, data_abbr, alg_names, 'UP')
+    to_tsv('auroc', dfs_auroc_dn, data_abbr, alg_names, 'DN')
+    to_tsv('auprc', dfs_auprc_up, data_abbr, alg_names, 'UP')
+    to_tsv('auprc', dfs_auprc_dn, data_abbr, alg_names, 'DN')
+    to_tsv('time', dfs_time, data_abbr, alg_names)
     
 #    df_auroc = pd.concat(dfs_auroc, axis=1)
 #    df_auroc = df_auroc[["APS", "SS", "SP", "NAPS", "NSS", "NSP"]]
