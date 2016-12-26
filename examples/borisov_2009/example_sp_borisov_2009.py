@@ -25,17 +25,17 @@ if __name__ == "__main__":
     for initializing the common network structure only once.
     """
     alg.params.use_rel_change = True
+    alg.params.apply_weight_norm = True
+    
     alg.data = sfa.get_avalue(ds["BORISOV_2009"])
-
-    # Initialize the network and matrices only once
-    alg.initialize(data=False)
+    alg.initialize()
 
     results = {}
     for abbr, data in ds["BORISOV_2009"].items():
         alg.data = data
 
         # Do not perform initializing network and matrices multiple times
-        alg.initialize(network=False)
+        # alg.initialize()
 
         alg.compute_batch()
         acc = calc_accuracy(alg.result.df_sim,
