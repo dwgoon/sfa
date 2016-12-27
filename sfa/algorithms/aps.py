@@ -243,7 +243,10 @@ class AcyclicPathSummation(sfa.base.Algorithm):
 
             # Result of a single condition
             if self._params.use_rel_change:  # Use relative change
-                rel_change = x_exp - x_cnt
+                x_diff = (x_exp - x_cnt)
+                denom = np.abs(x_cnt)
+                denom[denom == 0] = 1.0
+                rel_change = x_diff/denom
                 res_single = rel_change[self._data.iadj_to_idf]
             else:
                 res_single = x_exp[self._data.iadj_to_idf]

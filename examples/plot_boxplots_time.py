@@ -12,6 +12,12 @@ dfs = []
 for data_abbr in abbrs:
     fname = "algs_%s_%s.tsv"%(data_abbr.lower(), measure.lower(), )
     df = pd.read_table(fname, index_col=0)
+    
+    df = df[['APS', 'NSS', 'NSP']]
+    df.columns = df.columns.str.replace('NSS', 'SS')
+    df.columns = df.columns.str.replace('NSP', 'SP')
+    
+    
     df = df.unstack().reset_index()
     df.columns = ['Algorithm', 'Condition', measure]
     df['Data'] = data_abbr
@@ -30,6 +36,7 @@ for data_abbr in abbrs:
 sns.set(font_scale=1.11)
 g = sns.FacetGrid(df_tot, col="Data", size=4, aspect=.5, sharey=False)
 g = g.map(sns.boxplot, "Algorithm", measure,  palette="Set3")
+g.set_titles("{col_name}")
 g.set_ylabels('Time (sec.)')
 
 # Set the name of axes
@@ -43,5 +50,14 @@ for ax in g.axes[0]:
     ax.tick_params(axis='y', which='major', labelsize=12)
     ax.set_yscale("log", nonposy='clip')
     
-plt.subplots_adjust(left=0.1, bottom=0.1, right=0.95, top=0.9,
-                    wspace=0.25, hspace=0.2)
+plt.subplots_adjust(left=0.15, bottom=0.1, right=0.95, top=0.9,
+                    wspace=0.1, hspace=0.2)
+
+
+g.fig.set_size_inches(10, 5)
+
+str_datasets = '_'.join([abbr.lower() for abbr in abbrs])   
+g.fig.savefig('%s_%s.png'%(measure.lower(), str_datasets),
+              dpi=400)
+
+

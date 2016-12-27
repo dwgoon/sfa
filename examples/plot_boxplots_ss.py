@@ -18,18 +18,13 @@ for data_abbr in abbrs:
     #data_abbr = data_abbr.upper()
     #fname = "algs_%s_acc.tsv"%(data_abbr.lower())
     if ylabel == 'Accuracy':
-        fname = "algs_%s_%s.tsv"%(data_abbr.lower(), ylabel.lower(), )
+        fname = "ss_%s_%s.tsv"%(data_abbr.lower(), ylabel.lower(), )
     elif ylabel == 'AUROC' or ylabel == 'AUPRC':        
-        fname = "algs_%s_%s_%s.tsv"%(data_abbr.lower(),
-                                     ylabel.lower(),
-                                     class_type.lower())
+        fname = "ss_%s_%s_%s.tsv"%(data_abbr.lower(),
+                                   ylabel.lower(),
+                                   class_type.lower())
         
     df = pd.read_table(fname, index_col=0)
-    
-    df = df[['APS', 'NSS', 'NSP']]
-    df.columns = df.columns.str.replace('NSS', 'SS')
-    df.columns = df.columns.str.replace('NSP', 'SP')
-    
     df = df.unstack().reset_index()
     df.columns = ['Algorithm', 'Condition', ylabel]
     df['Data'] = data_abbr
@@ -48,34 +43,20 @@ df_tot = pd.concat(dfs, axis=0, ignore_index=True)
 sns.set(font_scale=1.11)
 g = sns.FacetGrid(df_tot, col="Data", size=4, aspect=.5,)
 g = g.map(sns.boxplot, "Algorithm", ylabel,  palette="Set3")
-g.set_titles("{col_name}")
-g.set_ylabels("%s (%s)"%(ylabel, class_type))
+
 # Set the name of axes
 #ax.set_ylabel(ylabel)
 #ax.set_xlabel("Algorithms")
 for ax in g.axes[0]:
-    ax.title.set_fontsize(12)
     ax.xaxis.get_label().set_fontsize(12)
-    ax.yaxis.get_label().set_fontsize(16)
+    ax.yaxis.get_label().set_fontsize(14)
     
     ax.tick_params(axis='x', which='major', labelsize=12)
     ax.tick_params(axis='y', which='major', labelsize=12)
+    ax.set_xticklabels(ax.xaxis.get_majorticklabels(), rotation=45)
     
-plt.subplots_adjust(left=0.15, bottom=0.1, right=0.95, top=0.9,
+plt.subplots_adjust(left=0.1, bottom=0.2, right=0.95, top=0.9,
                     wspace=0.1, hspace=0.2)
 
 
 plt.show()
-
-g.fig.set_size_inches(7, 7)
-
-str_datasets = '_'.join([abbr.lower() for abbr in abbrs])
-if ylabel == 'Accuracy':
-    g.fig.savefig('accuracy_%s.png'%(str_datasets), dpi=400)
-elif ylabel == 'AUROC' or ylabel == 'AUPRC':        
-    g.fig.savefig('%s_%s_%s.png'%(ylabel.lower(),
-                                  class_type.lower(),
-                                  str_datasets),
-                  dpi=400)
-          #transparent=True, dpi=400)
-

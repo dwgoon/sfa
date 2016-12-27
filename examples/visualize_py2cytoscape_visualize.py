@@ -29,7 +29,7 @@ def calc_width_diff(F, dg, data):
         src = data.i2n[isrc]
         tgt = data.i2n[itgt]
         dg.edge[src][tgt]['weight'] = np.abs(F[itgt, isrc])
-        #dg.edge[src][tgt]['sign'] = dg.edge[src][tgt]['sign']
+        dg.edge[src][tgt]['sign'] = np.sign(F[itgt, isrc])
     # end of for
     
     
@@ -69,23 +69,19 @@ if __name__ == "__main__":
     cond = cond.lower()
     dg = nx.DiGraph(data.dg)
     
-#    SF_diff = np.zeros_like(SF_cnt)
-#    ir, ic = SF_cnt.nonzero()
-#    for i in range(ic.size):
-#        isrc, itgt = ic[i], ir[i]
-#        diff = SF_ptb[itgt, isrc]-SF_cnt[itgt, isrc]
-#        if diff == 0:
-#            
-#        else:
-#            SF_diff[itgt, isrc] = diff/(0.5(SF_ptb[itgt, isrc]+SF_cnt[itgt, isrc]))
+    SF_diff = np.zeros_like(SF_cnt)
+    ir, ic = SF_cnt.nonzero()
+    for i in range(ic.size):
+        isrc, itgt = ic[i], ir[i]
+        fold = SF_ptb[itgt, isrc]/np.abs(SF_cnt[itgt, isrc])        
+        SF_diff[itgt, isrc] = fold
+#    if cond == 'cnt':        
+#        SF = SF_cnt
+#    else:
+#        SF = SF_ptb
         
-    if cond == 'cnt':        
-        SF = SF_cnt
-    else:
-        SF = SF_ptb
-        
-    calc_width(SF, dg, data)
-    #calc_width_diff(SF_diff, dg, data)
+    #calc_width(SF, dg, data)
+    calc_width_diff(SF_diff, dg, data)
     
     with open("nx_position_object.pydat", "rb") as fin:
         dg_pos = pickle.load(fin)
@@ -174,7 +170,7 @@ if __name__ == "__main__":
 
     
     # Change the widths and colors of edge stroke
-    weights = table_edges.weight #np.log(table_edges.weight)
+    weights = np.log(np.abs(table_edges.weight))
     weights_tr = weights #weights[np.abs(weights-weights.mean())<=(3*weights.std())]
     min_w = weights_tr.min()
     max_w = weights_tr.max()
@@ -186,21 +182,21 @@ if __name__ == "__main__":
     val_B = 100
     val_R = 200
     
-    max_width = 20
-    min_width = 10
+    max_width = 10
+    min_width = 2
     
     df_edge_view = view.get_edge_views_as_dataframe()
     for id_edge, row in df_edge_view.iterrows():
         #row.EDGE_WIDTH = 4 #np.random.randint(1, 5)
-        weight = edge_weights[id_edge]#np.log(edge_weights[id_edge])
+        weight = np.log(edge_weights[id_edge])
         sign = edge_signs[id_edge]
 #        val_R = int((weight-min_w)*(max_R-min_R) \
 #                /(max_w-min_w)+min_R)
-        if sign>0:
+        if weight>0:
             xcolor = "#%02x%02x%02x" % (200,
                                         10,
                                         100)
-        elif sign<0:
+        elif weight<0:
             xcolor = "#%02x%02x%02x" % (5,
                                         100,
                                         255)
@@ -233,7 +229,7 @@ if __name__ == "__main__":
     
 
     from IPython.display import Image
-    fname_fig = "img_sf_%s.png"%(cond)
+    fname_fig = "img_sf_diff.png"
     fout = open(fname_fig, "wb")    
     fout.write(net.get_png())
     fout.close()
