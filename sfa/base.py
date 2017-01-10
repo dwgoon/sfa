@@ -102,16 +102,13 @@ class Algorithm(ContainerItem):
     def data(self, obj):
         self._data = obj
 
-    #def initialize(self, network=True, ba=True, data=True):
+
     def initialize(self, network=True, ba=True):
         if network:
             self._initialize_network()
 
         if ba:
             self._initialize_basal_activity()
-
-        # if data:
-        #     self._initialize_data()
 
 
     def _initialize_network(self):
@@ -120,12 +117,13 @@ class Algorithm(ContainerItem):
     def _initialize_basal_activity(self):
         pass
 
-    # def _initialize_data(self):
-    #     pass
+    @abc.abstractmethod
+    def compute(self, b):
+        raise NotImplementedError("compute() should be implemented")
 
     @abc.abstractmethod
     def compute_batch(self):
-        raise NotImplementedError("compute() should be implemented")
+        raise NotImplementedError("compute_batch() should be implemented")
 
 # end of class Algorithm        
 

@@ -22,10 +22,7 @@ def calc_width(F, dg, data):
             dg.edge[src][tgt]['sign'] = np.sign(F[itgt, isrc])
     # end of for
 
-if __name__ == "__main__":
-    
-    
-    
+if __name__ == "__main__": 
     
     cond = 'CNT'
     
@@ -33,15 +30,16 @@ if __name__ == "__main__":
     alg = algs.create('SP')
     
     ds = sfa.DataSet()
-    ds.create("BORISOV_2009")
-    data = ds["BORISOV_2009"]["15m_AUC_EGF=0.1+I=100"]
-
+    #ds.create("BORISOV_2009")
+    #data = ds["BORISOV_2009"]["15m_AUC_EGF=0.1+I=100"]
+    data = ds.create("MOLINELLI_2013")
+    
     alg.data = data
     alg.initialize()
     
     N = data.dg.number_of_nodes()
     b = np.zeros((N,), dtype=np.float)
-    targets = ['MEK']
+    targets = ['aHDAC']
     inds = []
     vals = []
     
@@ -65,8 +63,8 @@ if __name__ == "__main__":
     
     calc_width(SF, dg, data)
     
-    with open("nx_position_object.pydat", "rb") as fin:
-        dg_pos = pickle.load(fin)
+    #with open("nx_position_object.pydat", "rb") as fin:
+    #    dg_pos = pickle.load(fin)
     
     
     # Start cyREST session

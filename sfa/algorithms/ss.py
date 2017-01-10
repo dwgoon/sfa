@@ -4,21 +4,18 @@ if sys.version_info <= (2, 8):
     from builtins import super
 
 
-from functools import reduce
 import numpy as np
-
-import sfa
-from .sp import SignalPropagation
+from ._np import NetworkPropagation
 
 
 def create_algorithm(abbr):
-    return SignalSmoothing(abbr)
+    return SignalSmoothingWithoutNorm(abbr)
 # end of def
 
 
-class SignalSmoothing(SignalPropagation):
+class SignalSmoothingWithoutNorm(NetworkPropagation):
 
-    class ParameterSet(SignalPropagation.ParameterSet):
+    class ParameterSet(NetworkPropagation.ParameterSet):
         def initialize(self):
             super().initialize()
             self._apply_weight_norm = False
@@ -28,7 +25,7 @@ class SignalSmoothing(SignalPropagation):
 
     def __init__(self, abbr):
         super().__init__(abbr)
-        self._name = "Signal smoothing algorithm"
+        self._name = "Signal smoothing algorithm without normalization"
 
     def _prepare_exact_solution(self):
         a = self._params.alpha

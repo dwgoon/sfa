@@ -3,6 +3,7 @@ sfa/__init__.py
 sfa/base.py
 sfa/containers.py
 sfa/manager.py
+sfa/stats.py
 sfa/utils.py
 sfa.egg-info/PKG-INFO
 sfa.egg-info/SOURCES.txt
@@ -11,10 +12,10 @@ sfa.egg-info/not-zip-safe
 sfa.egg-info/requires.txt
 sfa.egg-info/top_level.txt
 test/test_algorithm_cps.py
-test/test_algorithm_gs.py
-test/test_algorithm_ngs.py
-test/test_algorithm_aps.py
+test/test_algorithm_nss.py
+test/test_algorithm_pw.py
 test/test_algorithm_sp.py
+test/test_algorithm_ss.py
 test/test_importing_algorithms.py
 test/test_importing_data.py
 test/test_multi_algs_multi_data.py
