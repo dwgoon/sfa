@@ -14,20 +14,25 @@ if __name__ == "__main__":
     ds = sfa.DataSet()
     algs = sfa.AlgorithmSet()
     
-    data_abbr = "MOLINELLI_2013"
+    data_abbr = "KORKUT_2015"
     class_type = 'UP'
     data = ds.create(data_abbr)
-    algs.create(["APS", "SS", "NSS", "SP"])
+    algs.create(["APS", "NSS", "SP"])
 
-    algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].abbr = "NAPS"
-    algs["NAPS"].params.apply_weight_norm = True
+#    algs["NAPS"] = copy.deepcopy(algs["APS"])
+#    algs["NAPS"].abbr = "NAPS"
+#    algs["NAPS"].params.apply_weight_norm = True
+#    
+#    algs["NSP"] = copy.deepcopy(algs["SP"])
+#    algs["NSP"].abbr = "NSP"
+#    algs["NSP"].params.apply_weight_norm = True
     
-    algs["NSP"] = copy.deepcopy(algs["SP"])
-    algs["NSP"].abbr = "NSP"
-    algs["NSP"].params.apply_weight_norm = True
+#    alg_names = ['APS', 'SS', 'SP', 'NAPS', 'NSS', 'NSP']
     
-    alg_names = ['APS', 'SS', 'SP', 'NAPS', 'NSS', 'NSP']
+    algs["SS"] = algs["NSS"]
+    del algs["NSS"]
+    algs["SP"].params.apply_weight_norm = True
+    alg_names = ['APS', 'SS', 'SP']
     
     res = {}
     for alg_abbr, alg in algs.items():
@@ -69,24 +74,10 @@ if __name__ == "__main__":
     ax.tick_params(axis='both', which='major',
                    labelsize=12)
     
-    fig.set_size_inches(7, 7)
-    fig.savefig('%s_prc_curves_%s.png'%(data_abbr.lower(), class_type),
-                facecolor=fig.get_facecolor(),
-                transparent=True, dpi=400)
 
-#    recall, precision, auprc = res["SP"]
-#    for name in recall:
-#        plt.plot(recall[name], precision[name],
-#         label='{} (area = {:0.2f})'.format(name, auprc[name]),
-#         linewidth=2,)
-#        
-#    plt.legend(loc="lower right")
-#    all_recall = np.unique(np.concatenate([rec for name, rec in recall.items()]))
-#    mean_precision = np.zeros_like(all_recall)
-#    for name in recall:
-#        mean_precision += sp.interp(all_recall,
-#                                    recall[name],
-#                                    precision[name])
-#        
-        
-    
+    fig.set_size_inches(7, 7)
+    fig.savefig('%s_pr_curves_%s.png'%(data_abbr.lower(), class_type),
+                facecolor=fig.get_facecolor(),
+                dpi=400)            
+                #facecolor=fig.get_facecolor(),
+                #transparent=True, dpi=400)

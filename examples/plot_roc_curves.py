@@ -13,21 +13,26 @@ if __name__ == "__main__":
     ds = sfa.DataSet()
     algs = sfa.AlgorithmSet()
     
-    data_abbr = "MOLINELLI_2013"
-    class_type = 'DN'
+    data_abbr = "KORKUT_2015"
+    class_type = 'UP'
     #data = sfa.get_avalue(ds.create("BORISOV_2009"))
     data = ds.create(data_abbr)
-    algs.create(["APS", "SS", "NSS", "SP"])
+    algs.create(["APS", "NSS", "SP"])
 
-    algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].abbr = "NAPS"
-    algs["NAPS"].params.apply_weight_norm = True
+#    algs["NAPS"] = copy.deepcopy(algs["APS"])
+#    algs["NAPS"].abbr = "NAPS"
+#    algs["NAPS"].params.apply_weight_norm = True
+#    
+#    algs["NSP"] = copy.deepcopy(algs["SP"])
+#    algs["NSP"].abbr = "NSP"
+#    algs["NSP"].params.apply_weight_norm = True
     
-    algs["NSP"] = copy.deepcopy(algs["SP"])
-    algs["NSP"].abbr = "NSP"
-    algs["NSP"].params.apply_weight_norm = True
+#    alg_names = ['APS', 'SS', 'SP', 'NAPS', 'NSS', 'NSP']
     
-    alg_names = ['APS', 'SS', 'SP', 'NAPS', 'NSS', 'NSP']
+    algs["SS"] = algs["NSS"]
+    del algs["NSS"]
+    algs["SP"].params.apply_weight_norm = True
+    alg_names = ['APS', 'SS', 'SP']
     
     res = {}
     for alg_abbr, alg in algs.items():
@@ -81,4 +86,6 @@ if __name__ == "__main__":
     fig.set_size_inches(7, 7)
     fig.savefig('%s_roc_curves_%s.png'%(data_abbr.lower(), class_type),
                 facecolor=fig.get_facecolor(),
-                transparent=True, dpi=400)
+                dpi=400)            
+                #facecolor=fig.get_facecolor(),
+                #transparent=True, dpi=400)
