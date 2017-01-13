@@ -3,6 +3,5 @@
 **.png
 !sfa.png
 .idea
-.idea/
-sfa.egg-info
+**/.idea/
 sfa.egg-info/
