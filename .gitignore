@@ -1,7 +1,6 @@
 **.pyc
 **/__pycache__/
+**/.idea/
 **.png
 !sfa.png
-.idea
-**/.idea/
 sfa.egg-info/
