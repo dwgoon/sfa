@@ -7,18 +7,17 @@ if sys.version_info <= (2, 8):
 from functools import reduce
 import numpy as np
 
-import sfa
-from .ss import SignalSmoothing
+from .ss import SignalSmoothingWithoutNorm
 
 
 def create_algorithm(abbr):
-    return NormalizedSignalSmoothing(abbr)
+    return SignalSmoothingWithNorm(abbr)
 # end of def
 
 
-class NormalizedSignalSmoothing(SignalSmoothing):
+class SignalSmoothingWithNorm(SignalSmoothingWithoutNorm):
 
-    class ParameterSet(SignalSmoothing.ParameterSet):
+    class ParameterSet(SignalSmoothingWithoutNorm.ParameterSet):
         def initialize(self):
             super().initialize()
     # end of class ParameterSet

@@ -13,45 +13,33 @@ import sfa
 
 
 def calc_width(F, dg, data):
-    ir, ic = F.nonzero()
-    for i in range(ic.size):
-        isrc, itgt = ic[i], ir[i]
-        src = data.i2n[isrc]
-        tgt = data.i2n[itgt]
-        dg.edge[src][tgt]['weight'] = np.abs(F[itgt, isrc])
-        dg.edge[src][tgt]['sign'] = np.sign(F[itgt, isrc])
+        ir, ic = F.nonzero()
+        for i in range(ic.size):
+            isrc, itgt = ic[i], ir[i]
+            src = data.i2n[isrc]
+            tgt = data.i2n[itgt]
+            dg.edge[src][tgt]['weight'] = np.abs(F[itgt, isrc])
+            dg.edge[src][tgt]['sign'] = np.sign(F[itgt, isrc])
     # end of for
 
-def calc_width_diff(F, dg, data):
-    ir, ic = F.nonzero()
-    for i in range(ic.size):
-        isrc, itgt = ic[i], ir[i]
-        src = data.i2n[isrc]
-        tgt = data.i2n[itgt]
-        dg.edge[src][tgt]['weight'] = np.abs(F[itgt, isrc])
-        #dg.edge[src][tgt]['sign'] = dg.edge[src][tgt]['sign']
-    # end of for
+if __name__ == "__main__": 
     
-    
-if __name__ == "__main__":
-    
-    cond = 'PTB'
-    
+    cond = 'CNT'
     
     algs = sfa.AlgorithmSet()
     alg = algs.create('SP')
     
     ds = sfa.DataSet()
-    ds.create("BORISOV_2009")
-    data = ds["BORISOV_2009"]["15m_AUC_EGF=0.1+I=100"]
-
-    alg.params.apply_weight_norm = True
+    #ds.create("BORISOV_2009")
+    #data = ds["BORISOV_2009"]["15m_AUC_EGF=0.1+I=100"]
+    data = ds.create("MOLINELLI_2013")
+    
     alg.data = data
     alg.initialize()
     
     N = data.dg.number_of_nodes()
     b = np.zeros((N,), dtype=np.float)
-    targets = ['MEK']
+    targets = ['aHDAC']
     inds = []
     vals = []
     
@@ -60,7 +48,6 @@ if __name__ == "__main__":
     x_cnt = alg.compute(b)
     SF_cnt = alg.W*x_cnt
     
-    alg.apply_inputs(inds, vals)
     alg.apply_perturbations(targets, inds, vals)
     b[inds] = vals
     x_ptb = alg.compute(b)
@@ -68,33 +55,17 @@ if __name__ == "__main__":
 
     cond = cond.lower()
     dg = nx.DiGraph(data.dg)
-    
-#    SF_diff = np.zeros_like(SF_cnt)
-#    ir, ic = SF_cnt.nonzero()
-#    for i in range(ic.size):
-#        isrc, itgt = ic[i], ir[i]
-#        diff = SF_ptb[itgt, isrc]-SF_cnt[itgt, isrc]
-#        if diff == 0:
-#            
-#        else:
-#            SF_diff[itgt, isrc] = diff/(0.5(SF_ptb[itgt, isrc]+SF_cnt[itgt, isrc]))
-        
     if cond == 'cnt':        
         SF = SF_cnt
     else:
         SF = SF_ptb
         
+    
     calc_width(SF, dg, data)
-    #calc_width_diff(SF_diff, dg, data)
     
-    with open("nx_position_object.pydat", "rb") as fin:
-        dg_pos = pickle.load(fin)
+    #with open("nx_position_object.pydat", "rb") as fin:
+    #    dg_pos = pickle.load(fin)
     
-    #dg_pos.node['I']['x'] = df_node_view[df_node_view.NODE_LABEL == 'I'].NODE_X_LOCATION
-    #dg_pos.node['I']['y'] = df_node_view[df_node_view.NODE_LABEL == 'I'].NODE_Y_LOCATION
-
-    #with open("nx_position_object.pydat", "wb") as fout:
-    #    pickle.dump(dg_pos, fout)
     
     # Start cyREST session
     cy = CyRestClient()
@@ -102,8 +73,8 @@ if __name__ == "__main__":
     net = cy.network.create_from_networkx(dg)
    
     # Set layout option
-#    cy.layout.apply(name='kamada-kawai',
-#                    network=net)
+    cy.layout.apply(name='kamada-kawai',
+                    network=net)
 
     # Get CyNetworkView objects from CyNetwork
     view_id_list = net.get_views() 
@@ -114,24 +85,20 @@ if __name__ == "__main__":
     df_node_view = view.get_node_views_as_dataframe()
     df_edge_view = view.get_edge_views_as_dataframe() 
     
-    #print(df_node_view.columns)
-    #print(df_edge_view.columns)
+    print(df_node_view.columns)
+    print(df_edge_view.columns)
   
     
     for id_node, row in df_node_view.iterrows():
         name = row.NODE_LABEL
-        row.NODE_BORDER_TRANSPARENCY = 255
-        #row.NODE_BORDER_PAINT = '#000000'
-        #row.NODE_BORDER_WIDTH = 2
-        row.NODE_FILL_COLOR = '#FFFFFF'
-        row.NODE_TRANSPARENCY = 80
-        row.NODE_LABEL_COLOR = '#000000'
-        row.NODE_LABEL_FONT_SIZE = 16
+        row.NODE_BORDER_PAINT = '#000000'
+        row.NODE_BORDER_WIDTH = 2.0
+        #row.NODE_FILL_COLOR = '#003DA8'
+        row.NODE_LABEL_COLOR = '#FFFFFF'
+        row.NODE_LABEL_FONT_SIZE = 12
         row.NODE_X_LOCATION = dg_pos.node[name]['x']
         row.NODE_Y_LOCATION = dg_pos.node[name]['y']
         row.NODE_WIDTH = dg_pos.node[name]['width']
-        row.COMPOUND_NODE_SHAPE = 'ELLIPSE'
-
     # end of for
     
     # Update edge data using batch_update
@@ -147,7 +114,6 @@ if __name__ == "__main__":
     # according to the sign of edge.
     target_arrow_shapes = {}
     edge_weights = {}
-    edge_signs = {}
     for id_edge, row in table_edges.iterrows():
         id_edge = int(id_edge)
         if row.sign>0:
@@ -161,7 +127,6 @@ if __name__ == "__main__":
             raise ValueError(err_msg)
         # end of if-else
         edge_weights[id_edge] = row.weight
-        edge_signs[id_edge] = row.sign
     # end of for
 
     # Update target arrow shapes of the signed network]
@@ -174,7 +139,7 @@ if __name__ == "__main__":
 
     
     # Change the widths and colors of edge stroke
-    weights = table_edges.weight #np.log(table_edges.weight)
+    weights = np.log(table_edges.weight)
     weights_tr = weights #weights[np.abs(weights-weights.mean())<=(3*weights.std())]
     min_w = weights_tr.min()
     max_w = weights_tr.max()
@@ -186,29 +151,19 @@ if __name__ == "__main__":
     val_B = 100
     val_R = 200
     
-    max_width = 20
-    min_width = 10
+    max_width = 10
+    min_width = 1
     
     df_edge_view = view.get_edge_views_as_dataframe()
     for id_edge, row in df_edge_view.iterrows():
         #row.EDGE_WIDTH = 4 #np.random.randint(1, 5)
-        weight = edge_weights[id_edge]#np.log(edge_weights[id_edge])
-        sign = edge_signs[id_edge]
+        weight = edge_weights[id_edge]
 #        val_R = int((weight-min_w)*(max_R-min_R) \
 #                /(max_w-min_w)+min_R)
-        if sign>0:
-            xcolor = "#%02x%02x%02x" % (200,
-                                        10,
-                                        100)
-        elif sign<0:
-            xcolor = "#%02x%02x%02x" % (5,
-                                        100,
-                                        255)
-        else:
-            xcolor = "#%02x%02x%02x" % (160,
-                                        160,
-                                        160)
-            
+        
+        xcolor = "#%02x%02x%02x" % (val_R,
+                                    val_G,
+                                    val_B)
                                     
         row.EDGE_STROKE_UNSELECTED_PAINT = xcolor
         row.EDGE_TARGET_ARROW_UNSELECTED_PAINT = xcolor
@@ -222,18 +177,19 @@ if __name__ == "__main__":
                     /(max_w-min_w)+min_width)
                     
         row.EDGE_WIDTH = val_width
-        row.EDGE_TRANSPARENCY = 150
+        row.EDGE_TRANSPARENCY = 180
     # end of for
     
     # Update edge data using batch_update
     view.batch_update_edge_views(df_edge_view)
     
     view.update_network_view(visual_property="NETWORK_SCALE_FACTOR",
-                             value=0.8)
+                             value=1.0)
     
 
-    from IPython.display import Image
-    fname_fig = "img_sf_%s.png"%(cond)
-    fout = open(fname_fig, "wb")    
-    fout.write(net.get_png())
-    fout.close()
+    #from IPython.display import Image
+
+#    fname_fig = "img_%s.png"%(fname_out)
+#    fout = open(fname_fig, "wb")    
+#    fout.write(net.get_png())
+#    fout.close()

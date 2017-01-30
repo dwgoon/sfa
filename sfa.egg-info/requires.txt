@@ -1,7 +1,0 @@
-six
-future
-numpy
-networkx
-pandas
-matplotlib
-seaborn

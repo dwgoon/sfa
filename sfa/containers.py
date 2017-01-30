@@ -33,6 +33,7 @@ class Container(collections.MutableMapping):
         """
         self._map = dict()
         self._dpath = None
+        self._all_keys = None
         self.update(dict(*args, **kwargs))
 
     def __getitem__(self, key):
@@ -84,6 +85,11 @@ class Container(collections.MutableMapping):
     # end of def create
 
     @abc.abstractmethod
+    def get_all_keys(self):
+        """"""
+    # end of def
+
+    @abc.abstractmethod
     def _create_single(self, key):
         """Create a single object"""
     # end of def
@@ -92,6 +98,8 @@ class Container(collections.MutableMapping):
     def _create_all(self):
         """Create all objects"""
     # end of def
+
+
 
 """
 <References>
@@ -116,6 +124,20 @@ class AlgorithmSet(Container):
         self._dpath = os.path.dirname(sfa.algorithms.__file__)
 
     # end of def __init__
+
+    def get_all_keys(self):
+        if not self._all_keys:
+            self._all_keys = []
+            for entity in os.listdir(self._dpath):
+                if re.match(r"[^_]\w+\.py$", entity):
+                    mod_name = entity.split('.')[0]  # Module name
+                    print(mod_name, entity)
+                    key = mod_name.upper()
+                    self._all_keys.append(key)
+                    yield key
+            # end of for
+        else:
+            return iter(self._all_keys)
 
     def _create_single(self, key):
         if key in self._map:
@@ -174,6 +196,18 @@ class DataSet(Container):
         self._dpath = os.path.dirname(sfa.data.__file__)
 
     # end of def __init__
+
+    def get_all_keys(self):
+        if not self._all_keys:
+            self._all_keys = []
+            for entity in os.listdir(self._dpath):
+                dpath = os.path.join(self._dpath, entity)
+                if not entity.startswith('_') and os.path.isdir(dpath):
+                    key = entity.upper()
+                    self._all_keys.append(key)
+                    yield key
+        else:
+            return iter(self._all_keys)
 
     def _create_single(self, key):
         if key in self._map:

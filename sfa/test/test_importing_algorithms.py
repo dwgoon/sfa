@@ -40,8 +40,8 @@ class TestImportingAlgorithms(unittest.TestCase):
 
     def test_import_module(self):
         # Module path
-        mpath = 'sfa.algorithms.this_should_be_imported'         
-        self.assertTrue(mpath in sys.modules)
+        #mpath = 'sfa.algorithms.this_should_be_imported'
+        #self.assertTrue(mpath in sys.modules)
         
         mpath = 'sfa.algorithms._this_should_not_be_imported'
         self.assertFalse(mpath in sys.modules)

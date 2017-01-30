@@ -1,8 +1,9 @@
 **.pyc
-**/__pycache__/
+__pycache__/
+__pycache__/**
+.idea/
+.idea/**
 **.png
 !sfa.png
-.idea
-.idea/
 sfa.egg-info
 sfa.egg-info/
