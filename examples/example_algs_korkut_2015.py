@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import numpy as np
 import pandas as pd
 
 import sfa
@@ -14,29 +15,14 @@ if __name__ == "__main__":
 
     # Create containers for algorithm and data.
     algs = AlgorithmSet()
-    algs.create(['CPS', 'SS', 'NSS', 'SP'])
+    algs.create(['NSS', 'SP'])
 
     ds = DataSet()
 
     ds.create("KORKUT_2015")
     data = ds["KORKUT_2015"]
-
-
-
-    # Normalized PS
-    # algs["NAPS"] = copy.deepcopy(algs["APS"])
-    # algs["NAPS"].abbr = "NAPS"
-    # algs["NAPS"].params.apply_weight_norm = True
-    #
-    algs["NCPS"] = copy.deepcopy(algs["CPS"])
-    algs["NCPS"].abbr = "NCPS"
-    algs["NCPS"].params.apply_weight_norm = True
-
-    algs["NSP"] = copy.deepcopy(algs["SP"])
-    algs["NSP"].params.apply_weight_norm = True
-    algs["NSP"].abbr = "NSP"
-
-
+    algs["SP"].params.apply_weight_norm = True
+    
     results = {}
     for abbr, alg in algs.items():        
         alg.params.use_rel_change = True
@@ -44,7 +30,21 @@ if __name__ == "__main__":
         alg.initialize()
 
         alg.compute_batch()
-        df_sim = alg.result.df_sim
+        df_sim = pd.DataFrame(alg.result.df_sim)            
+#        if abbr == 'SP':
+#            thr_up = 0 #2.130000e-10
+#            thr_dn = -1.960000e-10
+#            
+#        elif abbr == 'NSS':
+#            thr_up = 1.731947e-05
+#            thr_dn = -1.708759e-05
+#            
+#        df_sim[df_sim>thr_up] = 1.0
+#        df_sim[df_sim<thr_dn] = -1.0
+#        df_sim[np.logical_and(df_sim>thr_dn, df_sim<thr_up)] = 0.0
+        
+        acc = sfa.calc_accuracy(data.df_exp, df_sim)
+            
         acc, cons = calc_accuracy(df_sim,
                                   data.df_exp,
                                   get_cons=True)
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     df = pd.DataFrame.from_dict(results, orient='index')
     df.columns = [data.abbr]
     #df = df.ix[["APS", "NAPS", "CPS", "NCPS", "SS", "NSS", "SP", "NSP"], :]
-    df = df.ix[["CPS", "NCPS", "SS", "NSS", "SP", "NSP"], :]
+    df = df.ix[["NSS", "SP"], :]
     print(df)
 
     #df_sort = df.sort_values(by='MOLINELLI_2013')

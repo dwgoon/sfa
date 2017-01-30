@@ -40,20 +40,19 @@ if __name__ == "__main__":
     ds = DataSet()
 
     # Load an algorithm and a data.
-    data_abbr = "borisov_2009"
+    data_abbr = "BORISOV_2009"
     ds.create(data_abbr)
     mult_data = ds[data_abbr]  # Multiple data
 
-    algs.create(["APS", "SS", "NSS", "SP"])
-    alg_names = ['APS', 'SS', 'SP', 'NAPS', 'NSS', 'NSP']
+    algs.create(["NSS", "SP"])
+    alg_names = ['NSS', 'SP']
     
-    algs["NAPS"] = copy.deepcopy(algs["APS"])
-    algs["NAPS"].abbr = "NAPS"
-    algs["NAPS"].params.apply_weight_norm = True
-    
-    algs["NSP"] = copy.deepcopy(algs["SP"])
-    algs["NSP"].abbr = "NSP"
-    algs["NSP"].params.apply_weight_norm = True
+#    algs["NAPS"] = copy.deepcopy(algs["APS"])
+#    algs["NAPS"].abbr = "NAPS"
+#    algs["NAPS"].params.apply_weight_norm = True
+#    
+
+    algs["SP"].params.apply_weight_norm = True
     
     dfs_acc = []
     dfs_auroc_up = []
@@ -80,7 +79,23 @@ if __name__ == "__main__":
             t_beg = time.time()
             alg.compute_batch()
             t_end = time.time()
+            
+#            df_sim = pd.DataFrame(alg.result.df_sim)            
+#            if alg_abbr == 'SP':
+#                thr_up = 2.130000e-10
+#                thr_dn = -1.960000e-10
+#                
+#            elif alg_abbr == 'NSS':
+#                thr_up = 1.731947e-05
+#                thr_dn = -1.708759e-05
+#                
+#            df_sim[df_sim>thr_up] = 1.0
+#            df_sim[df_sim<thr_dn] = 1.0
+#            df_sim[np.logical_and(thr_dn<df_sim, df_sim<thr_up)] = 0.0
+            
+            #acc = sfa.calc_accuracy(data.df_exp, df_sim)
             acc = sfa.calc_accuracy(data.df_exp, alg.result.df_sim)
+            
             res_acc[cond] = acc
             
             auroc = sfa.calc_auroc(data.df_exp, alg.result.df_sim, 'UP')

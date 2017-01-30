@@ -14,25 +14,17 @@ if __name__ == "__main__":
     algs = sfa.AlgorithmSet()
     
     data_abbr = "KORKUT_2015"
-    class_type = 'UP'
+    class_type = 'DN'
     #data = sfa.get_avalue(ds.create("BORISOV_2009"))
     data = ds.create(data_abbr)
-    algs.create(["APS", "NSS", "SP"])
-
-#    algs["NAPS"] = copy.deepcopy(algs["APS"])
-#    algs["NAPS"].abbr = "NAPS"
-#    algs["NAPS"].params.apply_weight_norm = True
-#    
-#    algs["NSP"] = copy.deepcopy(algs["SP"])
-#    algs["NSP"].abbr = "NSP"
-#    algs["NSP"].params.apply_weight_norm = True
     
-#    alg_names = ['APS', 'SS', 'SP', 'NAPS', 'NSS', 'NSP']
+    algs.create(['NSS', 'SP'])
     
     algs["SS"] = algs["NSS"]
     del algs["NSS"]
     algs["SP"].params.apply_weight_norm = True
-    alg_names = ['APS', 'SS', 'SP']
+    alg_names = ['SS', 'SP']
+
     
     res = {}
     for alg_abbr, alg in algs.items():
@@ -46,15 +38,26 @@ if __name__ == "__main__":
                                                   class_type)
         
         
-        res[alg_abbr] = (fpr, tpr, auroc)
+        res[alg_abbr] = (fpr, tpr, thr, auroc)
     
-
+        x = fpr['mean']
+        y = tpr['mean']
+        thr_opt = 0
+        dist_min = 1.0
+        for i, val in enumerate(thr['mean']):
+            dist = np.sqrt((x[i]-0.)**2 + (y[i]-1.)**2)
+            if dist<dist_min:
+                dist_min = dist
+                thr_opt = val
+        print ("Threshold of %s: %e[dist: %f]"%(alg_abbr, thr_opt, dist_min))
+    # end of for
+    
     fig, ax = plt.subplots()
     fig.set_facecolor('white')
     lw = 2
     
     for alg_abbr in alg_names:
-        fpr, tpr, auroc = res[alg_abbr]
+        fpr, tpr, thr, auroc = res[alg_abbr]
         plt.plot(fpr["mean"], tpr["mean"],
                  label='{} (area = {:0.2f})'.format(alg_abbr, auroc["mean"]),
                  linewidth=2,)#color='navy', linestyle=':', )
