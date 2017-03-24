@@ -47,12 +47,11 @@ class ContainerItem():
         self._name = val
 
 
-
 class Algorithm(ContainerItem):
-    """
-    The algorithms should implement compute method.    
+    """The algorithms should implement compute method.
     
-    Usage:
+    Examples
+    --------
         >>> class AnAlgorithm(sfa.Algorithm):
                 ...
                 ...        
