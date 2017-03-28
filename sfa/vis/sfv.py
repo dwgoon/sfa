@@ -14,9 +14,13 @@ PosHeader = HeaderClassFactory.create('ARROW')
 TextLabel = LabelClassFactory.create('TEXT_LABEL')
 
 
-def visualize_signal_flow(net, alg, data, act,
+def visualize_signal_flow(net, W, n2i, act,
                           color_up=None, color_dn=None,
-                          pct_up=50, pct_dn=50):
+                          pct=50, dlw=1.0, plw=1.0,
+                          show_act=True,
+                          fmt_act='%.5f',
+                          fix_node_size=False,
+                          fix_act_label=False):
     """Visualize signal flow using SFV.
 
     SFV (Seamless Flow Visualization) is a light-weight,
@@ -31,10 +35,10 @@ def visualize_signal_flow(net, alg, data, act,
     net : sfv.graphics.Network
         Network object that is given by sfv.
 
-    alg : sfa.Algorithm
-        Algorithm object which has the weight matrix, W.
-    data : sfa.Data
-        Data object which has the n2i and i2n dictionaries.
+    W : numpy.ndarray
+        Weight matrix of the algorithm object.
+    n2i : dict
+        Name to index dictionary.
 
     act : numpy.ndarray
         Change in the activities. It is usually calculated
@@ -48,26 +52,38 @@ def visualize_signal_flow(net, alg, data, act,
     color_dn : numpy.ndarray or QtGui.QColor, optional
         Default is red (i.e., QColor(255, 0, 0)),
         if it is None.
-
-    pct_up : int
-        Percentile of up-regulated activity, which is
-        the maximum value for color_up.
+    pct : int, optional
+        Percentile of activity, which is used to set
+        the maximum value for coloring nodes.
         Default value is 50.
 
-    pct_dn : int
-        Percentile of down-regulated activity, which is
-        the maximum value for color_dn. Absolute values of
-        down-regulated activities are used.
-        Default value is 50.
+    dlw : float, optional
+        Link width for unchanged flow, which is 1.
+
+    plw : float, optional
+        Parameter for adjusting link width.
+
+    show_act : bool, optional
+        Show activity label or not.
+
+    fmt_act : str, optional
+        Format string for activity label.
+
+    fix_node_size : bool, optional
+        Change the size of node or not.
+        Default is False.
+
+    fix_act_label : bool, optional
+        Change the graphics of activity label or not.
+        The activity value is changed irrespective of
+        this parameter. Default is False.
 
     Returns
     -------
     None
     """
 
-    W = alg.W
-    n2i = data.n2i
-    i2n = data.i2n
+    i2n = {val:key for key, val in n2i.items()}
     color_white = np.array([255, 255, 255])
 
     if not color_up:
@@ -90,38 +106,43 @@ def visualize_signal_flow(net, alg, data, act,
         raise ValueError("color_dn should be 3-dimensional np.ndarray "
                          "or QtGui.QColor")
 
-    pos_act = act[act > 0]
-    neg_act = np.abs(act[act < 0])
+    # pos_act = act[act > 0]
+    # neg_act = np.abs(act[act < 0])
+    #
+    # if pos_act.size == 0:
+    #     pos_cut = 1.0
+    # else:
+    #     pos_cut = np.percentile(pos_act, pct_up)
+    #
+    # if neg_act.size == 0:
+    #     neg_cut = 1.0
+    # else:
+    #     neg_cut = np.percentile(neg_act, pct_dn)
 
-    if pos_act.size == 0:
-        pos_cut = 1.0
-    else:
-        pos_cut = np.percentile(pos_act, pct_up)
 
-    if neg_act.size == 0:
-        neg_cut = 1.0
-    else:
-        neg_cut = np.percentile(neg_act, pct_dn)
+    abs_act = np.abs(act)
+    thr = np.percentile(abs_act, pct)
 
     arr_t = np.zeros_like(act)
 
     for i, elem in enumerate(act):
 
-        if elem > 0:
-            t = np.clip(elem / pos_cut, a_min=0, a_max=1)
-        elif elem <= 0:
-            t = np.clip(np.abs(elem) / neg_cut, a_min=0, a_max=1)
+        # if elem > 0:
+        #     t = np.clip(elem / pos_cut, a_min=0, a_max=1)
+        # elif elem <= 0:
+        #     t = np.clip(np.abs(elem) / neg_cut, a_min=0, a_max=1)
 
+        t = np.clip(np.abs(elem)/thr, a_min=0, a_max=1)
         arr_t[i] = t
-        # print(data.i2n[i], elem, neg_cut, np.abs(elem)/neg_cut, t)
 
 
 
     for iden, node in net.nodes.items():
         idx = n2i[iden]
 
-        radius = 20  # + 10*np.log(1+b[idx])
-        node.width = node.height = radius
+        if not fix_node_size:
+            radius = 20
+            node.width = node.height = radius
 
         fold = act[idx]
 
@@ -133,15 +154,24 @@ def visualize_signal_flow(net, alg, data, act,
             node['FILL_COLOR'] = QColor(*color)
 
         node['BORDER_COLOR'] = '#555555'
-        _update_single_label_name(net, node, node.name)
-        _update_single_label_activity(net, node, fold)
+        _update_single_label_name(net, node, node.name,
+                                  fix_node_size,)
+
+        if show_act:
+            _update_single_label_activity(net, node, fold, fmt_act,
+                                          fix_act_label)
+        else:
+            iden_label = '%s_act' % iden.upper()
+            if iden_label in net.labels:
+                #del net.labels[iden_label]
+                net.remove_label(net.labels[iden_label])
     # end of for : update nodes and labels
 
-    _update_links(net, W, act, i2n)
+    _update_links(net, W, act, i2n, plw, dlw)
 
 
 
-def _update_links(net, W, act, i2n):
+def _update_links(net, W, act, i2n, plw, dlw):
     F = W * act
     i2n = i2n
     ir, ic = W.nonzero()
@@ -174,31 +204,35 @@ def _update_links(net, W, act, i2n):
         link['FILL_COLOR'] = color_link
         f = np.abs(f)
         if f == 0:
-            link.width = 1
+            link.width = dlw
         else:
-            link.width = 0.5*abs(np.log(f))
+            link.width = max(plw*abs(np.log(f)), dlw)
 
 
-def _update_single_label_name(net, node, name):
+def _update_single_label_name(net, node, name,
+                              fix_node_size):
     label = net.labels[name]
     rect = label.boundingRect()
-    node.width = 1.1 * rect.width()
-    node.height = 1.1 * rect.height()
+
+    if not fix_node_size:
+        node.width = 1.1 * rect.width()
+        node.height = 1.1 * rect.height()
+
     label.setPos(-rect.width() / 2, -rect.height() / 2)  # center
 
     lightness = QColor(node['FILL_COLOR']).lightness()
     label['TEXT_COLOR'] = Qt.black
     label['FONT_SIZE'] = 12
-    label['FONT_FAMILY'] = 'Tahoma'
+    label['FONT_FAMILY'] = 'Arial'
     if lightness < 200:
         label['TEXT_COLOR'] = Qt.white
     else:
         label['TEXT_COLOR'] = Qt.black
 
 
-def _update_single_label_activity(net, node, x):
+def _update_single_label_activity(net, node, x, fmt, fix_act_label):
     iden = '%s_act' % node.iden.upper()
-    str_x = '%f' % (x)
+    str_x = fmt % (x)
     if iden not in net.labels:
         label_x = TextLabel(node, text=str_x)
         label_x.iden = iden
@@ -206,13 +240,28 @@ def _update_single_label_activity(net, node, x):
         label_x = net.labels[iden]
         label_x.text = str_x % (x)
 
-    label_x.font = QFont('Tahoma', 12)
-    label_x['TEXT_COLOR'] = QColor(20, 20, 20)
-    rect = label_x.boundingRect()
-    rect_ln = net.labels[node.name].boundingRect()
-    pos_x = 0.5 * max(rect_ln.width(), node.width)
-    label_x.setPos(pos_x, -rect.height() / 2)
+    if not fix_act_label:
+        label_x.font = QFont('Tahoma', 12)
+        label_x['TEXT_COLOR'] = QColor(20, 20, 20)
+        rect = label_x.boundingRect()
+        rect_ln = net.labels[node.name].boundingRect()
+        pos_x = node.width/2 + 0.5
+        label_x.setPos(pos_x, -rect.height() / 2)
 
     if iden not in net.labels:
         net.add_label(label_x)
 
+
+
+"""<Deprecated documentation>
+    pct_up : int, optional
+        Percentile of up-regulated activity, which is
+        the maximum value for color_up.
+        Default value is 50.
+
+    pct_dn : int, optional
+        Percentile of down-regulated activity, which is
+        the maximum value for color_dn. Absolute values of
+        down-regulated activities are used.
+        Default value is 50.
+"""
