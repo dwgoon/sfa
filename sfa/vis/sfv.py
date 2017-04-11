@@ -122,16 +122,13 @@ def visualize_signal_flow(net, W, n2i, act,
 
     abs_act = np.abs(act)
     thr = np.percentile(abs_act, pct)
+    thr = 1 if thr == 0 else thr
+
 
     arr_t = np.zeros_like(act)
 
     for i, elem in enumerate(act):
-
-        # if elem > 0:
-        #     t = np.clip(elem / pos_cut, a_min=0, a_max=1)
-        # elif elem <= 0:
-        #     t = np.clip(np.abs(elem) / neg_cut, a_min=0, a_max=1)
-
+        #print("elem:", elem, "thr:", thr)
         t = np.clip(np.abs(elem)/thr, a_min=0, a_max=1)
         arr_t[i] = t
 
@@ -148,10 +145,11 @@ def visualize_signal_flow(net, W, n2i, act,
 
         if fold > 0:
             color = color_white + arr_t[idx] * (color_up - color_white)
-            node['FILL_COLOR'] = QColor(*color)
         elif fold <= 0:
             color = color_white + arr_t[idx] * (color_dn - color_white)
-            node['FILL_COLOR'] = QColor(*color)
+
+        color = np.int32(color)
+        node['FILL_COLOR'] = QColor(*color)
 
         node['BORDER_COLOR'] = '#555555'
         _update_single_label_name(net, node, node.name,

@@ -107,7 +107,7 @@ class SchliemannData(sfa.base.Data):
         self._name = str_name
 
         inputs = {}
-        inputs['TNF'] = float(conc_I)
+        inputs['TNF'] = 1 #float(conc_I)
         self._inputs = inputs
 
         self.initialize(__file__,

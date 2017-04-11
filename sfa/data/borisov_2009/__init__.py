@@ -181,8 +181,8 @@ class BorisovData(sfa.base.Data):
         self._name = str_name
 
         inputs = {}
-        inputs['EGF'] = float(conc_EGF)
-        inputs['I'] = float(conc_I)
+        inputs['EGF'] = 1 #float(conc_EGF)
+        inputs['I'] = 1 #float(conc_I)
 
         self.initialize(__file__,
                         inputs=inputs,

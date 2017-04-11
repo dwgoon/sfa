@@ -24,6 +24,7 @@ import os
 import re
 import glob
 
+import numpy as np
 import pandas as pd
 
 import sfa
@@ -35,7 +36,7 @@ def create_data(abbr=None):
         data_mult = {}  # Multiple data
         dpath = os.path.dirname(__file__)
 
-        fstr_file = os.path.join(dpath, 'exp_data', 'exp_*')
+        fstr_file = os.path.join(dpath, 'exp_data', '*.tsv')
         for abspath in glob.glob(fstr_file):
             fname = os.path.basename(abspath)
             data_obj = _create_single_data(abbr, fname=fname)
@@ -55,9 +56,9 @@ def _create_single_data(abbr=None, fname=None):
     if fname:
         items = re.split('[._]', fname)
 
-        sim_duration = items[1]
-        data_type = items[2]
-        stim_I = items[3]  # The concentration of insulin stimulation
+        sim_duration = items[0]
+        data_type = items[1]
+        stim_I = items[2]  # The concentration of insulin stimulation
 
         # Fetch the concentration of I
         m = re.search("I=((\d|d)+)", stim_I)
@@ -75,7 +76,7 @@ def _create_single_data(abbr=None, fname=None):
         # Fetch the concentration of I
         m = re.search("I=((\w|\.)+)", stim_I)
         conc_I = m.group(1)
-        fname = "exp_%s_%s_I=%s.tsv" % (sim_duration, data_type, conc_I)
+        fname = "%s_%s_I=%s.tsv" % (sim_duration, data_type, conc_I)
     else:
         raise ValueError("One of abbr or fname should be given"
                          "in %s._create_single_data()"%(__name__))
@@ -100,12 +101,12 @@ class PezzeData(sfa.base.Data):
         self._name = str_name
 
         inputs = {}
-        inputs['I/IGF'] = float(conc_I)
+        inputs['I/IGF'] = 1 #np.log2(float(conc_I))
 
         self.initialize(__file__,
-                        inputs=inputs,
-                        fname_conds=fname_conds,
-                        fname_exp=fname_exp)
+                   inputs=inputs,
+                   fname_conds=fname_conds,
+                   fname_exp=fname_exp)
 
     # end of def __init__
 # end of def class
