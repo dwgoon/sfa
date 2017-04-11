@@ -166,22 +166,22 @@ if __name__ == "__main__":
     alg.params.alpha = 0.5
     
     ds = sfa.DataSet()
-    ds.create("BORISOV_2009")
-    mdata = ds["BORISOV_2009"]
+    ds.create("SCHLIEMANN_2011")
+    mdata = ds["SCHLIEMANN_2011"]
     #data = mdata["AUC_EGF=1+I=100"]
     
-    rws = RandomWeightSimulator(bounds=(-3,0))
+    rws = RandomWeightSimulator(bounds=(-3,3))
     #df_res = rws.simulate_single(100, alg, data, use_norm=False)
     t_beg = time.time()
 
-    df_res = rws.simulate_multiple(10000, alg, mdata, use_norm=True,
+    df_res = rws.simulate_multiple(10000, alg, mdata, use_norm=False,
                                    use_print=True, freq_print=10,
-                                   max_workers=4)
+                                   max_workers=25)
     df_desc = df_res.describe().T
     t_end = time.time()
     
     print(df_desc)
     print("Time elapsed: ", t_end - t_beg)
     
-    df_res.to_csv("result_randomized_weights_norm.csv")
-    df_desc.to_csv("desc_result_randomized_weights_norm.csv")
+    df_res.to_csv("%s_result_randomized_weights(-3_3).csv"%(mdata.abbr.lower()))
+    df_desc.to_csv("%s_desc_result_randomized_weights(-3_3).csv"%(mdata.abbr.lower()))
