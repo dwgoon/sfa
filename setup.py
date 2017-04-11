@@ -16,8 +16,6 @@ setup(name='sfa',
           'future',
           'numpy',
           'networkx',
-	      'pandas',
-          'matplotlib',
-          'seaborn'
+          'pandas',
       ],
       zip_safe=False,)
