@@ -112,8 +112,8 @@ class RandomWeightSimulator(object):
         self.alg.initialize()
         self._initialize(alg)
 
-        df = self._simulate_single(num_samp, alg, data, use_norm,
-                                   use_print, freq_print)
+        df = self._simulate_single((num_samp, alg, data, use_norm,
+                                   use_print, freq_print))
         return df
     # end of def
         
@@ -121,6 +121,7 @@ class RandomWeightSimulator(object):
                           use_print=False, freq_print=100,
                           max_workers=1):
         self.alg = alg                
+
         # Initialize network information only
         self.alg.data = sfa.get_avalue(mdata)
         self.alg.initialize()
