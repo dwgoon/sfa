@@ -206,12 +206,17 @@ def randswap(A, nswap=10, noself=True, inplace=False):
         None is return when inplace is True.
     """
 
+
     if not inplace:
-        A = A.copy()
+        A_org = A
+        B = A.copy()
+    else:
+        A_org = A.copy()
+        B = A
 
     cnt = 0
     while cnt < nswap:
-        ir, ic = A.nonzero()
+        ir, ic = B.nonzero()
         i1, i2 = np.random.randint(0, ir.size, 2)
 
         itgt1, isrc1 = ir[i1], ic[i1]
@@ -221,17 +226,20 @@ def randswap(A, nswap=10, noself=True, inplace=False):
             if itgt2 == isrc1 or itgt1 == isrc2:
                 continue
 
-        if A[itgt2, isrc1] == 0 and A[itgt1, isrc2] == 0:
-            a, b = A[itgt1, isrc1], A[itgt2, isrc2]
-            A[itgt2, isrc1], A[itgt1, isrc2] = a, b
-            A[itgt1, isrc1], A[itgt2, isrc2] = 0, 0
+        if B[itgt2, isrc1] == 0 and B[itgt1, isrc2] == 0:
+            a, b = B[itgt1, isrc1], B[itgt2, isrc2]
+            if A_org[itgt2, isrc1] == a and A_org[itgt1, isrc2] == b:
+                continue
+
+            B[itgt2, isrc1], B[itgt1, isrc2] = a, b
+            B[itgt1, isrc1], B[itgt2, isrc2] = 0, 0
             cnt += 1
         else:
             continue
     # end of while
 
     if not inplace:
-        return A
+        return B
 
 
 def get_akey(d):

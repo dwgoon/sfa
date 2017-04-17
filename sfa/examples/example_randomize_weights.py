@@ -18,10 +18,10 @@ if __name__ == "__main__":
     mdata = ds.create(abbr)
 
     #rs = RandomWeightSimulator(bounds=(-3, 3))
-    rs = RandomStructureSimulator(nswap=10, noself=True)
+    rs = RandomStructureSimulator(nswap=200, noself=True)
 
     t_beg = time.time()
-    df_res = rs.simulate_multiple(1000, alg, mdata, use_norm=True,
+    df_res = rs.simulate_multiple(10, alg, mdata, use_norm=True,
                                   use_print=True, freq_print=10,
                                   max_workers=4)
 
