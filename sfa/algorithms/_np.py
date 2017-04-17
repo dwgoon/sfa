@@ -137,7 +137,7 @@ class NetworkPropagation(sfa.base.Algorithm):
         self._W = mat
         self._weight_matrix_invalidated = True
 
-    # end of W.setter
+    # end of _W.setter
 
     def _initialize_network(self):
         # Matrix normalization for getting transition matrix

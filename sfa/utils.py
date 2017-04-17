@@ -13,12 +13,11 @@ import pandas as pd
 import networkx as nx
 
 
-import sfa
-
 __all__ = ["FrozenClass",
            "Singleton",
            "read_sif",
            "normalize",
+           "randswap",
            "get_akey",
            "get_avalue",]
 
@@ -141,13 +140,14 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
     # end of else
 # end of def
 
+
 def normalize(A, norm_in=True, norm_out=True):
     # Check whether A is a square matrix
     if A.shape[0] != A.shape[1]:
         raise ValueError(
             "The A (adjacency matrix) should be square matrix.")
 
-    # Build propagation matrix (aka. transition matrix) W from A
+    # Build propagation matrix (aka. transition matrix) _W from A
     W = A.copy()
 
     # Norm. in-degree
@@ -184,18 +184,86 @@ def normalize(A, norm_in=True, norm_out=True):
 
 # end of def normalize
 
+def randswap(A, nswap=10, noself=True, inplace=False):
+    """Randomly rewire the network connections by swapping.
+
+    Parameters
+    ----------
+    A : numpy.ndarray
+        Adjacency matrix (connection matrix).
+    nswap : int, optional
+        Number of swaps to rewire the connections.
+    noself : bool, optional
+        Whether to allow self-loop link.
+    inplace : bool, optional
+        Modify the given adjacency matrix for rewiring.
+
+
+    Returns
+    -------
+    B : numpy.ndarray
+        New adjacency matrix.
+        None is return when inplace is True.
+    """
+
+    if not inplace:
+        A = A.copy()
+
+    cnt = 0
+    while cnt < nswap:
+        ir, ic = A.nonzero()
+        i1, i2 = np.random.randint(0, ir.size, 2)
+
+        itgt1, isrc1 = ir[i1], ic[i1]
+        itgt2, isrc2 = ir[i2], ic[i2]
+
+        if noself:
+            if itgt2 == isrc1 or itgt1 == isrc2:
+                continue
+
+        if A[itgt2, isrc1] == 0 and A[itgt1, isrc2] == 0:
+            a, b = A[itgt1, isrc1], A[itgt2, isrc2]
+            A[itgt2, isrc1], A[itgt1, isrc2] = a, b
+            A[itgt1, isrc1], A[itgt2, isrc2] = 0, 0
+            cnt += 1
+        else:
+            continue
+    # end of while
+
+    if not inplace:
+        return A
+
+
 def get_akey(d):
-    """
-    Get a key from a given dictionary.
+    """Get a key from a given dictionary.
     It returns the first key in d.keys().
+
+    Parameters
+    ----------
+    d : dict
+        Dictionary of objects.
+
+    Returns
+    -------
+    obj : object
+        First item of iter(d.keys()).
     """
-    return next( iter(d.keys()) )
+    return next(iter(d.keys()))
 
 
 def get_avalue(d):
-    """
-    Get a value from a given dictionary.
+    """Get a value from a given dictionary.
     It returns the value designated by sfa.get_akey().
+
+    Parameters
+    ----------
+    d : dict
+        Dictionary of objects.
+
+    Returns
+    -------
+    obj : object
+        First item of d[iter(d.keys())].
     """
-    akey = next( iter(d.keys()) )
+    akey = next(iter(d.keys()))
     return d[akey]
