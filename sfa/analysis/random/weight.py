@@ -5,7 +5,11 @@ from .base import BaseRandomSimulator
 
 
 class RandomWeightSimulator(BaseRandomSimulator):
-    
+    def __init__(self, *args, bounds=(-3,0), **kwargs):
+        super().__init__(*args, **kwargs)
+        self._lb = bounds[0]
+        self._ub = bounds[1]
+
     def _randomize(self):
         self._randomize_weights()
                 

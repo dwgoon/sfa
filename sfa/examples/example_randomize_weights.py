@@ -17,8 +17,8 @@ if __name__ == "__main__":
     ds = sfa.DataSet()
     mdata = ds.create(abbr)
 
-    #rs = RandomWeightSimulator(bounds=(-3, 3))
-    rs = RandomStructureSimulator(nswap=200, noself=True)
+    rs = RandomWeightSimulator(bounds=(-3, 3))
+    #rs = RandomStructureSimulator(nswap=200, noself=True)
 
     t_beg = time.time()
     df_res = rs.simulate_multiple(10, alg, mdata, use_norm=True,
