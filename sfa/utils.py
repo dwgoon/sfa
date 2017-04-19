@@ -18,6 +18,7 @@ __all__ = ["FrozenClass",
            "read_sif",
            "normalize",
            "randswap",
+           "randflip",
            "get_akey",
            "get_avalue",]
 
@@ -184,15 +185,15 @@ def normalize(A, norm_in=True, norm_out=True):
 
 # end of def normalize
 
-def randswap(A, nswap=10, noself=True, inplace=False):
+def randswap(A, nsamp=10, noself=True, inplace=False):
     """Randomly rewire the network connections by swapping.
 
     Parameters
     ----------
     A : numpy.ndarray
         Adjacency matrix (connection matrix).
-    nswap : int, optional
-        Number of swaps to rewire the connections.
+    nsamp : int, optional
+        Number of sampled connections to rewire
     noself : bool, optional
         Whether to allow self-loop link.
     inplace : bool, optional
@@ -215,7 +216,7 @@ def randswap(A, nswap=10, noself=True, inplace=False):
         B = A
 
     cnt = 0
-    while cnt < nswap:
+    while cnt < nsamp:
         ir, ic = B.nonzero()
         i1, i2 = np.random.randint(0, ir.size, 2)
 
@@ -237,6 +238,37 @@ def randswap(A, nswap=10, noself=True, inplace=False):
         else:
             continue
     # end of while
+
+    if not inplace:
+        return B
+
+
+def randflip(A, nsamp=10, inplace=False):
+    """Randomly flip the signs of connections.
+
+    Parameters
+    ----------
+    A : numpy.ndarray
+        Adjacency matrix (connection matrix).
+    nsamp : int, optional
+        Number of sampled connections to be flipped.
+    inplace : bool, optional
+        Modify the given adjacency matrix for rewiring.
+
+    Returns
+    -------
+    B : numpy.ndarray
+        New adjacency matrix.
+        None is return when inplace is True.
+    """
+    if not inplace:
+        B = A.copy()
+    else:
+        B = A
+
+    ir, ic = B.nonzero()
+    iflip = np.random.randint(0, ir.size, nsamp)
+    B[ir[iflip], ic[iflip]] *= -1
 
     if not inplace:
         return B

@@ -122,10 +122,10 @@ class BatchResultTable(BaseTable):
                 text_arrow = '─'
 
             self._tb.add_cell(i, self._n_cond_cols + 1 + j,
-                             self._w_cell, self._h_cell,
-                             text=text_arrow,
-                             loc='center',
-                             facecolor=fcolor)
+                              self._w_cell, self._h_cell,
+                              text=text_arrow,
+                              loc='center',
+                              facecolor=fcolor)
         # end of for
 
 
@@ -155,10 +155,10 @@ class BatchResultTable(BaseTable):
 
         for i in range(-1, self._n_conds):
             self._tb.add_cell(i, self._n_cond_cols, self._wgap, self._h_cell,
-                        text='',
-                        loc='center',
-                        edgecolor='none',
-                        facecolor='none')
+                             text='',
+                             loc='center',
+                             edgecolor='none',
+                             facecolor='none')
 
         # end of for
     # end of def
@@ -177,6 +177,7 @@ class BatchResultTable(BaseTable):
 
         self._ax.set_yticks(yticks)
         self._ax.set_yticklabels(ylabels, minor=False)
+        self._ax.tick_params(axis='y', which='major', pad=3)
 
         # Hide the small bars of ticks
         for tick in self._ax.yaxis.get_major_ticks():
@@ -208,7 +209,7 @@ class BatchResultTable(BaseTable):
 
         self._ax.set_xticks(xticks)
         self._ax.set_xticklabels(xlabels, rotation=90, minor=False)
-
+        self._ax.tick_params(axis='x', which='major', pad=3)
 
         # Hide the small bars of ticks
         for tick in self._ax.xaxis.get_major_ticks():
