@@ -83,7 +83,7 @@ class SignalSmoothingWithoutNorm(NetworkPropagation):
         Dc = np.linalg.inv(a*(Ds+S_in+S_out) + (1-a)*np.eye(n))
         """
 
-        # W(original + transposed) = Wn + Wn.T
+        # _W(original + transposed) = Wn + Wn.T
         self._W_ot = 0.5*(Wn + Wn.T)
         self._weight_matrix_invalidated = False
     # end of def _prepare_iterative_solution
@@ -152,7 +152,7 @@ class SignalSmoothingWithoutNorm(NetworkPropagation):
 
         """
         The Dc and W_ot matrices are created or changed
-        in the function, self._prepare_iterative_solution(), depending on W.
+        in the function, self._prepare_iterative_solution(), depending on _W.
         """
 
         if self._weight_matrix_invalidated:

@@ -4,5 +4,5 @@
 from .perturb import analyze_perturb
 
 from .random.weight import RandomWeightSimulator
-from .random.structure import ShuffleConnectionSimulator
+from .random.structure import RandomStructureSimulator
 

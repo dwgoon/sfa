@@ -56,11 +56,11 @@ class Algorithm(ContainerItem):
                 ...
                 ...        
         
-        >>> alg = AnAlgorithm()
-        >>> alg.params = params_obj # Parameters of the algorithm
-        >>> alg.data = data_obj # Data to be analyzed by the algorithm
-        >>> alg.initialize()
-        >>> res = alg.compute()    
+        >>> _alg = AnAlgorithm()
+        >>> _alg.params = params_obj # Parameters of the algorithm
+        >>> _alg.data = data_obj # Data to be analyzed by the algorithm
+        >>> _alg.initialize()
+        >>> res = _alg.compute()
         
     """
     def __init__(self, abbr):
@@ -100,7 +100,6 @@ class Algorithm(ContainerItem):
     @data.setter
     def data(self, obj):
         self._data = obj
-
 
     def initialize(self, network=True, ba=True):
         if network:

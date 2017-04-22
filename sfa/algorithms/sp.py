@@ -34,7 +34,7 @@ class SignalPropagation(NetworkPropagation):
         """
         Prepare to get the matrix for the exact solution:
 
-        x(t+1) = a*W.dot(x(t)) + (1-a)*b, where a is alpha.
+        x(t+1) = a*_W.dot(x(t)) + (1-a)*b, where a is alpha.
 
         When t -> inf, both x(t+1) and x(t) converges to the stationary state.
 

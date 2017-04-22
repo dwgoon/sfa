@@ -112,7 +112,7 @@ class SignalSmoothingWithNorm(SignalSmoothingWithoutNorm):
         # Coefficient matrix
         self._Dc = np.diag(1.0 / (0.5*a*(Ds+S_in+S_out) + (1-a)))
 
-        # W(original + transposed) = Wn + Wn.T
+        # _W(original + transposed) = Wn + Wn.T
         self._W_ot = 0.5*(Wn_norm + Wn_norm.T)
 
         self._weight_matrix_invalidated = False
@@ -182,7 +182,7 @@ class SignalSmoothingWithNorm(SignalSmoothingWithoutNorm):
 
         """
         The Dc and W_ot matrices are created or changed
-        in the function, self._prepare_iterative_solution(), depending on W.
+        in the function, self._prepare_iterative_solution(), depending on _W.
         """
 
         if self._weight_matrix_invalidated:
