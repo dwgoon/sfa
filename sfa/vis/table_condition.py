@@ -17,25 +17,17 @@ from .base import BaseTable
 
 class ConditionTable(BaseTable):
 
-    def __init__(self, conds, colors={}):
-
-        fig, ax = plt.subplots()
-        super().__init__(fig, ax, colors)
-
-        self._set_colors(colors)
+    def __init__(self, conds, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         # Set references for data objects
         self._dfc = conds  # DataFrame of condition cases
 
-        # Set the options of figure and axis
-        self._fig.set_facecolor('white')
-        self._ax.grid(b=False)
-        self._ax.set_frame_on(False)
-        self._ax.invert_yaxis()
-        self._ax.xaxis.tick_top()
+        # Create figure and axis
+        self._create_figure_and_axes()
 
         # Create matplotlib's Table object
-        self._tb = Table(self._ax, bbox=[0, 0, 1, 1])
+        self._tb = Table(self._ax_conds, bbox=[0, 0, 1, 1])
         self._tb.auto_set_font_size(False)
 
         # Calculate size of cell (element of Table object)
@@ -56,11 +48,24 @@ class ConditionTable(BaseTable):
         """
         self._add_row_labels()
         self._add_column_labels()
-
+      
         # Add the table graphic object
-        self._ax.add_table(self._tb)
+        self._ax_conds.add_table(self._tb)
 
     # end of def __init__
+
+    def _create_figure_and_axes(self):
+        fig, ax = plt.subplots()
+        self._fig = fig
+        self._ax_conds = ax
+
+        # Set the options of figure and axis
+        self._fig.set_facecolor('white')
+        self._ax_conds.grid(b=False)
+        self._ax_conds.set_frame_on(False)
+        self._ax_conds.invert_yaxis()
+        self._ax_conds.xaxis.tick_top()
+
 
     def _set_colors(self, colors):
         """Assign default color values, if it is not defined.
@@ -105,7 +110,7 @@ class ConditionTable(BaseTable):
         Add column labels using y-axis
         """
         ylabels = list(self._dfc.index)
-        self._ax.yaxis.tick_left()
+        self._ax_conds.yaxis.tick_left()
 
         yticks = [self._h_cell / 2.0,]  # The position of the first label
 
@@ -113,12 +118,12 @@ class ConditionTable(BaseTable):
         for j in range(1, self._n_conds):
             yticks.append(yticks[j-1] + self._h_cell)
 
-        self._ax.set_yticks(yticks)
-        self._ax.set_yticklabels(ylabels, minor=False)
-        self._ax.tick_params(axis='y', which='major', pad=3)
+        self._ax_conds.set_yticks(yticks)
+        self._ax_conds.set_yticklabels(ylabels, minor=False)
+        self._ax_conds.tick_params(axis='y', which='major', pad=3)
 
         # Hide the small bars of ticks
-        for tick in self._ax.yaxis.get_major_ticks():
+        for tick in self._ax_conds.yaxis.get_major_ticks():
             tick.tick1On = False
             tick.tick2On = False
     # end of def
@@ -133,12 +138,12 @@ class ConditionTable(BaseTable):
         for j in range(1, self._n_cond_cols):
             xticks.append(xticks[j - 1] + self._w_cell)
 
-        self._ax.set_xticks(xticks)
-        self._ax.set_xticklabels(xlabels, rotation=90, minor=False)
-        self._ax.tick_params(axis='x', which='major', pad=3)
+        self._ax_conds.set_xticks(xticks)
+        self._ax_conds.set_xticklabels(xlabels, rotation=90, minor=False)
+        self._ax_conds.tick_params(axis='x', which='major', pad=3)
 
         # Hide the small bars of ticks
-        for tick in self._ax.xaxis.get_major_ticks():
+        for tick in self._ax_conds.xaxis.get_major_ticks():
             tick.tick1On = False
             tick.tick2On = False
     # end of def
@@ -167,7 +172,7 @@ class ConditionTable(BaseTable):
     @column_label_fontsize.setter
     def column_label_fontsize(self, val):
         self._column_label_fontsize = val
-        self._ax.tick_params(axis='x', which='major',
+        self._ax_conds.tick_params(axis='x', which='major',
                              labelsize=self._column_label_fontsize)
 
     @property
@@ -177,7 +182,7 @@ class ConditionTable(BaseTable):
     @row_label_fontsize.setter
     def row_label_fontsize(self, val):
         self._row_label_fontsize = val
-        self._ax.tick_params(axis='y', which='major',
+        self._ax_conds.tick_params(axis='y', which='major',
                              labelsize=self._row_label_fontsize)
 
     @property

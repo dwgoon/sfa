@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
+
 class BaseTable(object):
 
-    def __init__(self, fig, ax, colors={}):
-        self._fig = fig
-        self._ax = ax
-        self._colors = dict(colors)
+    def __init__(self, colors=None):
+        if not colors:
+            self._colors = dict()
+        else:
+            self._colors = dict(colors)
+
+        self._set_colors(colors)
 
         # We should set default values using properties
     # end of def __init__
@@ -14,6 +18,12 @@ class BaseTable(object):
         if prop not in self._colors:
             self._colors[prop] = defval
     # end of def
+
+    def _set_colors(self):
+        raise NotImplementedError()
+
+    def _create_figure(self):
+        raise NotImplementedError()
 
     # Properties
     @property

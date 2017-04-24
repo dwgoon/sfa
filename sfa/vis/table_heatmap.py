@@ -9,13 +9,14 @@ from .base import BaseTable
 
 class HeatmapTable(BaseTable):
 
-    def __init__(self, df, fmt='.3f',
+    def __init__(self, df, args, fmt='.3f',
                  cmap=None, vmin=0.0, vmax=1.0,
-                 annot=True,
-                 colors={}):
+                 annot=True, **kwargs):
 
-        fig, ax = plt.subplots()
-        super().__init__(fig, ax, colors)
+        #fig, ax = plt.subplots()
+        #super().__init__(fig, ax, colors)
+
+        super().__init__(*args, **kwargs)
 
         # # Assign default color values, if it is not defined.
         self._set_default_color('table_edge_color', 'black')
@@ -24,8 +25,9 @@ class HeatmapTable(BaseTable):
         # Set references for data objects
         self._df = df  # A dataFrame
 
+        self._create_figure_and_axes()
         sns.heatmap(self._df,
-                    ax=ax,
+                    ax=self._ax,
                     annot=annot,
                     fmt=fmt,
                     annot_kws={"size": 10},
@@ -35,8 +37,8 @@ class HeatmapTable(BaseTable):
                     cbar_kws={"orientation": "vertical",
                               "pad": 0.02, })
 
-        self._qm = ax.collections[0]
-        #self._qm.set_edgecolor('black')
+        self._qm = self._ax.collections[0]
+        self._qm.set_edgecolor('face')
 
         # Change the labelsize
         cb = self._qm.colorbar
@@ -45,7 +47,7 @@ class HeatmapTable(BaseTable):
         cb_ax_asp = cb.ax.get_aspect()
         cb.ax.set_aspect(cb_ax_asp * 2.0)
 
-        ax.xaxis.tick_top()
+        self._ax.xaxis.tick_top()
         plt.xticks(rotation=90)
         plt.yticks(rotation=0)
 
@@ -54,20 +56,18 @@ class HeatmapTable(BaseTable):
 
 
         # Hide axis labels
-        ax.set_xlabel('')
-        ax.set_ylabel('')
+        self._ax.set_xlabel('')
+        self._ax.set_ylabel('')
 
         # Text element of the heatmap object
         self._texts = []
-        ch = ax.get_children()
+        ch = self._ax.get_children()
         for child in ch:
             if isinstance(child, matplotlib.text.Text):
                 if child.get_text() != '':
                     self._texts.append(child)
 
-
         # Set default values using properties
-        # self._table_fontsize = 10
         self.row_label_fontsize = 10
         self.column_label_fontsize = 10
         self.colorbar_label_fontsize = 10
@@ -75,6 +75,10 @@ class HeatmapTable(BaseTable):
 
     # end of __init__
 
+    def _create_figure_and_axes(self):
+        fig, ax = plt.subplots()
+        self._fig = fig
+        self._ax = ax
 
     # Properties
     @property
