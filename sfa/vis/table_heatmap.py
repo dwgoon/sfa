@@ -11,6 +11,7 @@ class HeatmapTable(BaseTable):
 
     def __init__(self, df, fmt='.3f',
                  cmap=None, vmin=0.0, vmax=1.0,
+                 annot=True,
                  colors={}):
 
         fig, ax = plt.subplots()
@@ -25,7 +26,7 @@ class HeatmapTable(BaseTable):
 
         sns.heatmap(self._df,
                     ax=ax,
-                    annot=True,
+                    annot=annot,
                     fmt=fmt,
                     annot_kws={"size": 10},
                     linecolor=self._colors['table_edge_color'],
@@ -45,8 +46,12 @@ class HeatmapTable(BaseTable):
         cb.ax.set_aspect(cb_ax_asp * 2.0)
 
         ax.xaxis.tick_top()
-        #plt.xticks(rotation=90)
+        plt.xticks(rotation=90)
         plt.yticks(rotation=0)
+
+        self._ax.tick_params(axis='x', which='major', pad=3)
+        self._ax.tick_params(axis='y', which='major', pad=3)
+
 
         # Hide axis labels
         ax.set_xlabel('')

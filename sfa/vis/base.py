@@ -11,8 +11,8 @@ class BaseTable(object):
     # end of def __init__
 
     def _set_default_color(self, prop, defval):
-        if prop not in self.colors:
-            self.colors[prop] = defval
+        if prop not in self._colors:
+            self._colors[prop] = defval
     # end of def
 
     # Properties
