@@ -78,22 +78,22 @@ class BaseGridPlot(object):
             ax.tick_params(axis='y', which='major',
                            labelsize=self._row_label_fontsize)
 
-    # Properties
-    @property
-    def column_label_fontsize(self):
-        raise NotImplementedError()
-
-    @column_label_fontsize.setter
-    def column_label_fontsize(self, val):
-        raise NotImplementedError()
-
-    @property
-    def row_label_fontsize(self):
-        raise NotImplementedError()
-
-    @row_label_fontsize.setter
-    def row_label_fontsize(self, val):
-        raise NotImplementedError()
+    # # Properties
+    # @property
+    # def column_label_fontsize(self):
+    #     raise NotImplementedError()
+    #
+    # @column_label_fontsize.setter
+    # def column_label_fontsize(self, val):
+    #     raise NotImplementedError()
+    #
+    # @property
+    # def row_label_fontsize(self):
+    #     raise NotImplementedError()
+    #
+    # @row_label_fontsize.setter
+    # def row_label_fontsize(self, val):
+    #     raise NotImplementedError()
 
     # @property
     # def text_fontsize(self):

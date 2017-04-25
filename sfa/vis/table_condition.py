@@ -1,16 +1,3 @@
-# -*- coding: utf-8 -*-
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from matplotlib.table import Table
-from matplotlib.gridspec import GridSpec
-
-
-import numpy as np
-import pandas as pd
-
-mpl.rc('font', family='Arial')
-
 from .base import BaseTable
 from .tableaxis import ConditionTableAxis
 

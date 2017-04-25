@@ -38,8 +38,7 @@ class TableAxis(object):
         self._ax.get_yaxis().set_ticks([])
 
     def add_row_labels(self):
-        """
-        Add column labels using y-axis
+        """Add row labels using y-axis
         """
         ylabels = list(self._df.index)
         self._ax.yaxis.tick_left()
