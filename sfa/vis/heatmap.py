@@ -4,30 +4,21 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from .base import BaseTable
+from .base import BaseGridPlot
 
 
-class HeatmapTable(BaseTable):
+class Heatmap(BaseGridPlot):
 
-    def __init__(self, df, args, fmt='.3f',
+    def __init__(self, df, *args, fmt='.3f',
                  cmap=None, vmin=0.0, vmax=1.0,
                  annot=True, **kwargs):
 
-        #fig, ax = plt.subplots()
-        #super().__init__(fig, ax, colors)
-
         super().__init__(*args, **kwargs)
-
-        # # Assign default color values, if it is not defined.
-        self._set_default_color('table_edge_color', 'black')
-        self._set_default_color('colorbar_edge_color', 'black')
 
         # Set references for data objects
         self._df = df  # A dataFrame
-
-        self._create_figure_and_axes()
         sns.heatmap(self._df,
-                    ax=self._ax,
+                    ax=self._axes[0],
                     annot=annot,
                     fmt=fmt,
                     annot_kws={"size": 10},
@@ -37,8 +28,9 @@ class HeatmapTable(BaseTable):
                     cbar_kws={"orientation": "vertical",
                               "pad": 0.02, })
 
-        self._qm = self._ax.collections[0]
-        self._qm.set_edgecolor('face')
+
+        self._qm = self._axes[0].collections[0]
+        #self._qm.set_edgecolor(self._colors['table_edge_color'])
 
         # Change the labelsize
         cb = self._qm.colorbar
@@ -47,21 +39,20 @@ class HeatmapTable(BaseTable):
         cb_ax_asp = cb.ax.get_aspect()
         cb.ax.set_aspect(cb_ax_asp * 2.0)
 
-        self._ax.xaxis.tick_top()
+        self._axes[0].xaxis.tick_top()
         plt.xticks(rotation=90)
         plt.yticks(rotation=0)
 
-        self._ax.tick_params(axis='x', which='major', pad=3)
-        self._ax.tick_params(axis='y', which='major', pad=3)
-
+        self._axes[0].tick_params(axis='x', which='major', pad=3)
+        self._axes[0].tick_params(axis='y', which='major', pad=3)
 
         # Hide axis labels
-        self._ax.set_xlabel('')
-        self._ax.set_ylabel('')
+        self._axes[0].set_xlabel('')
+        self._axes[0].set_ylabel('')
 
         # Text element of the heatmap object
         self._texts = []
-        ch = self._ax.get_children()
+        ch = self._axes[0].get_children()
         for child in ch:
             if isinstance(child, matplotlib.text.Text):
                 if child.get_text() != '':
@@ -71,78 +62,73 @@ class HeatmapTable(BaseTable):
         self.row_label_fontsize = 10
         self.column_label_fontsize = 10
         self.colorbar_label_fontsize = 10
-        self.line_width = 0.5
+        self.linewidth = 0.5
 
     # end of __init__
 
-    def _create_figure_and_axes(self):
-        fig, ax = plt.subplots()
-        self._fig = fig
-        self._ax = ax
+    def _set_colors(self, colors):
+        """Assign default color values for heatmap and colorbar
+        """
+        self._set_default_color('table_edge_color', 'black')
+        self._set_default_color('colorbar_edge_color', 'black')
 
     # Properties
     @property
-    def table_fontsize(self):
-        return self._table_fontsize
+    def text_fontsize(self):
+        return self._text_fontsize
 
-
-    @table_fontsize.setter
-    def table_fontsize(self, val):
+    @text_fontsize.setter
+    def text_fontsize(self, val):
+        """Resize text fonts
         """
-        Resize text fonts
-        """
-        self._table_fontsize = val
+        self._text_fontsize = val
         for t in self._texts:
             t.set_fontsize(val)
-
 
     @property
     def column_label_fontsize(self):
         return self._column_label_fontsize
 
-
     @column_label_fontsize.setter
     def column_label_fontsize(self, val):
         self._column_label_fontsize = val
-        self._ax.tick_params(axis='x', which='major',
-                             labelsize=self._column_label_fontsize)
-
+        self._axes[0].tick_params(
+                        axis='x',
+                        which='major',
+                        labelsize=self._column_label_fontsize)
 
     @property
     def row_label_fontsize(self):
         return self._row_label_fontsize
 
-
     @row_label_fontsize.setter
     def row_label_fontsize(self, val):
         self._row_label_fontsize = val
-        self._ax.tick_params(axis='y', which='major',
-                             labelsize=self._row_label_fontsize)
+        self._axes[0].tick_params(
+                        axis='y',
+                        which='major',
+                        labelsize=self._row_label_fontsize)
 
     @property
     def colorbar_label_fontsize(self):
         return self._colorbar_label_fontsize
-
 
     @row_label_fontsize.setter
     def colorbar_label_fontsize(self, val):
         self._colorbar_label_fontsize = val
         self._qm.colorbar.ax.tick_params(axis='y', labelsize=val)
 
-
     @property
-    def line_width(self):
-        return self._line_width
+    def linewidth(self):
+        return self._linewidth
 
-
-    @line_width.setter
-    def line_width(self, val):
+    @linewidth.setter
+    def linewidth(self, val):
         """
         Adjust the width of table lines
         """
-        self._line_width = val
-        self._qm.set_linewidth(self._line_width)
-
+        self._linewidth = val
+        self._qm.set_linewidth(self._linewidth)
 
     # Read-only properties
     @property
