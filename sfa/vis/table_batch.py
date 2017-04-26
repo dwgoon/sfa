@@ -34,17 +34,16 @@ class BatchResultTable(ConditionTable):
                                          default_position)
 
     def _create_axes(self):
-        self._axes = []
-
+        self._axes = {}
         pos = self._axes_position['condition']
         ax_conds = self._fig.add_subplot(self._gridspec[pos[0], pos[1]])
-        self._axes.append(ax_conds)
+        self._axes['condition'] = ax_conds
 
         pos = self._axes_position['result']
         ax_res = self._fig.add_subplot(self._gridspec[pos[0], pos[1]])
-        self._axes.append(ax_res)
+        self._axes['result'] = ax_res
 
-        for ax in self._axes:
+        for ax in self._axes.values():
             ax.grid(b=False)
             ax.set_frame_on(False)
             ax.invert_yaxis()

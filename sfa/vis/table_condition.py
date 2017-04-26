@@ -21,10 +21,17 @@ class ConditionTable(BaseTable):
         """
         self._set_default_color('cond_up_cell', 'blue')
         self._set_default_color('cond_dn_cell', 'white')
+        
+    def _create_axes(self):
+        super()._create_axes()
+        ax = self._axes['base']
+        self._axes['condition'] = ax
+        del self._axes['base']
 
     def _create_tables(self):
         self._tables = []
-        tb = ConditionTableAxis(self._axes[0], self._dfc, self._colors)
+        tb = ConditionTableAxis(self._axes['condition'],
+                                self._dfc, self._colors)
         tb.fontsize = 4
         tb.linewidth = 0.5
         self._tables.append(tb)

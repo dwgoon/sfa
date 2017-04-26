@@ -18,7 +18,7 @@ class Heatmap(BaseGridPlot):
         # Set references for data objects
         self._df = df  # A dataFrame
         sns.heatmap(self._df,
-                    ax=self._axes[0],
+                    ax=self._axes['base'],
                     annot=annot,
                     fmt=fmt,
                     annot_kws={"size": 10},
@@ -29,7 +29,7 @@ class Heatmap(BaseGridPlot):
                               "pad": 0.02, })
 
 
-        self._qm = self._axes[0].collections[0]
+        self._qm = self._axes['heatmap'].collections[0]
         #self._qm.set_edgecolor(self._colors['table_edge_color'])
 
         # Change the labelsize
@@ -39,20 +39,20 @@ class Heatmap(BaseGridPlot):
         cb_ax_asp = cb.ax.get_aspect()
         cb.ax.set_aspect(cb_ax_asp * 2.0)
 
-        self._axes[0].xaxis.tick_top()
+        self._axes['heatmap'].xaxis.tick_top()
         plt.xticks(rotation=90)
         plt.yticks(rotation=0)
 
-        self._axes[0].tick_params(axis='x', which='major', pad=3)
-        self._axes[0].tick_params(axis='y', which='major', pad=3)
+        self._axes['heatmap'].tick_params(axis='x', which='major', pad=3)
+        self._axes['heatmap'].tick_params(axis='y', which='major', pad=3)
 
         # Hide axis labels
-        self._axes[0].set_xlabel('')
-        self._axes[0].set_ylabel('')
+        self._axes['heatmap'].set_xlabel('')
+        self._axes['heatmap'].set_ylabel('')
 
         # Text element of the heatmap object
         self._texts = []
-        ch = self._axes[0].get_children()
+        ch = self._axes['heatmap'].get_children()
         for child in ch:
             if isinstance(child, matplotlib.text.Text):
                 if child.get_text() != '':
@@ -71,6 +71,12 @@ class Heatmap(BaseGridPlot):
         """
         self._set_default_color('table_edge_color', 'black')
         self._set_default_color('colorbar_edge_color', 'black')
+
+    def _create_axes(self):
+        super()._create_axes()
+        ax = self._axes['base']
+        self._axes['heatmap'] = ax
+        del self._axes['base']
 
     # Properties
     @property
@@ -92,10 +98,10 @@ class Heatmap(BaseGridPlot):
     @column_label_fontsize.setter
     def column_label_fontsize(self, val):
         self._column_label_fontsize = val
-        self._axes[0].tick_params(
-                        axis='x',
-                        which='major',
-                        labelsize=self._column_label_fontsize)
+        self._axes['heatmap'].tick_params(
+                                axis='x',
+                                which='major',
+                                labelsize=self._column_label_fontsize)
 
     @property
     def row_label_fontsize(self):
@@ -104,10 +110,10 @@ class Heatmap(BaseGridPlot):
     @row_label_fontsize.setter
     def row_label_fontsize(self, val):
         self._row_label_fontsize = val
-        self._axes[0].tick_params(
-                        axis='y',
-                        which='major',
-                        labelsize=self._row_label_fontsize)
+        self._axes['heatmap'].tick_params(
+                                axis='y',
+                                which='major',
+                                labelsize=self._row_label_fontsize)
 
     @property
     def colorbar_label_fontsize(self):
@@ -124,8 +130,7 @@ class Heatmap(BaseGridPlot):
 
     @linewidth.setter
     def linewidth(self, val):
-        """
-        Adjust the width of table lines
+        """Adjust the width of table lines
         """
         self._linewidth = val
         self._qm.set_linewidth(self._linewidth)

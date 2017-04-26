@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
+
 class BaseGridPlot(object):
 
     def __init__(self, colors=None, *args, **kwargs):
@@ -48,9 +49,9 @@ class BaseGridPlot(object):
         self._fig.set_facecolor('white')
 
     def _create_axes(self):
-        self._axes = []
+        self._axes = {}
         ax = self._fig.add_subplot(self._gridspec[0, 0])
-        self._axes.append(ax)
+        self._axes['base'] = ax
         ax.grid(b=False)
         ax.set_frame_on(False)
         ax.invert_yaxis()
@@ -63,7 +64,7 @@ class BaseGridPlot(object):
     @column_label_fontsize.setter
     def column_label_fontsize(self, val):
         self._column_label_fontsize = val
-        for ax in self._axes:
+        for ax in self._axes.values():
             ax.tick_params(axis='x', which='major',
                            labelsize=self._column_label_fontsize)
 
@@ -74,7 +75,7 @@ class BaseGridPlot(object):
     @row_label_fontsize.setter
     def row_label_fontsize(self, val):
         self._row_label_fontsize = val
-        for ax in self._axes:
+        for ax in self._axes.values():
             ax.tick_params(axis='y', which='major',
                            labelsize=self._row_label_fontsize)
 
