@@ -242,6 +242,7 @@ class NetworkPropagation(sfa.base.Algorithm):
                 self.apply_perturbations(targets_ptb, inds_ba, vals_ba, W_ptb)
                 self.W = W_ptb
             else:
+                #print(self.data.abbr, targets_ptb, self.data.n2i)
                 self.apply_perturbations(targets_ptb, inds_ba, vals_ba)
 
             b_store = b[inds_ba]

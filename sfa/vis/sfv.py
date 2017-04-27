@@ -106,29 +106,13 @@ def visualize_signal_flow(net, W, n2i, act,
         raise ValueError("color_dn should be 3-dimensional np.ndarray "
                          "or QtGui.QColor")
 
-    # pos_act = act[act > 0]
-    # neg_act = np.abs(act[act < 0])
-    #
-    # if pos_act.size == 0:
-    #     pos_cut = 1.0
-    # else:
-    #     pos_cut = np.percentile(pos_act, pct_up)
-    #
-    # if neg_act.size == 0:
-    #     neg_cut = 1.0
-    # else:
-    #     neg_cut = np.percentile(neg_act, pct_dn)
-
-
     abs_act = np.abs(act)
     thr = np.percentile(abs_act, pct)
     thr = 1 if thr == 0 else thr
 
-
     arr_t = np.zeros_like(act)
 
     for i, elem in enumerate(act):
-        #print("elem:", elem, "thr:", thr)
         t = np.clip(np.abs(elem)/thr, a_min=0, a_max=1)
         arr_t[i] = t
 
@@ -161,7 +145,6 @@ def visualize_signal_flow(net, W, n2i, act,
         else:
             iden_label = '%s_act' % iden.upper()
             if iden_label in net.labels:
-                #del net.labels[iden_label]
                 net.remove_label(net.labels[iden_label])
     # end of for : update nodes and labels
 
@@ -181,7 +164,7 @@ def _update_links(net, W, act, i2n, plw, dlw):
 
         header_old = link.header
         args_header = header_old.width, header_old.height, header_old.offset
-        color_link = None
+        #color_link = None
         if f > 0:
             header = PosHeader(*args_header)
             color_link = QColor(255, 10, 10, 100)
@@ -210,22 +193,21 @@ def _update_links(net, W, act, i2n, plw, dlw):
 def _update_single_label_name(net, node, name,
                               fix_node_size):
     label = net.labels[name]
-    rect = label.boundingRect()
-
-    if not fix_node_size:
-        node.width = 1.1 * rect.width()
-        node.height = 1.1 * rect.height()
-
-    label.setPos(-rect.width() / 2, -rect.height() / 2)  # center
 
     lightness = QColor(node['FILL_COLOR']).lightness()
     label['TEXT_COLOR'] = Qt.black
-    label['FONT_SIZE'] = 12
+    label['FONT_SIZE'] = 10
     label['FONT_FAMILY'] = 'Arial'
     if lightness < 200:
         label['TEXT_COLOR'] = Qt.white
     else:
         label['TEXT_COLOR'] = Qt.black
+
+    rect = label.boundingRect()
+    label.setPos(-rect.width() / 2, -rect.height() / 2)  # center
+    if not fix_node_size:
+        node.width = 1.1 * rect.width()
+        node.height = 1.1 * rect.height()
 
 
 def _update_single_label_activity(net, node, x, fmt, fix_act_label):
@@ -239,7 +221,7 @@ def _update_single_label_activity(net, node, x, fmt, fix_act_label):
         label_x.text = str_x % (x)
 
     if not fix_act_label:
-        label_x.font = QFont('Tahoma', 12)
+        label_x.font = QFont('Arial', 10)
         label_x['TEXT_COLOR'] = QColor(20, 20, 20)
         rect = label_x.boundingRect()
         rect_ln = net.labels[node.name].boundingRect()

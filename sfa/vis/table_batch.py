@@ -51,7 +51,7 @@ class BatchResultTable(ConditionTable):
 
     def _create_tables(self):
         super()._create_tables()
-        tb = ResultTableAxis(self._axes[1],
+        tb = ResultTableAxis(self._axes['result'],
                              self._dfr,
                              self._dfe,
                              self._colors)
