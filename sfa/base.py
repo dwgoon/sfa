@@ -216,13 +216,17 @@ class Data(ContainerItem):
     def vals_ptb(self):
         return self._vals_ptb
 
-    @property  # List of perturbation types
-    def types_ptb(self):
-        return self._types_ptb
+#    @property  # List of perturbation types
+#    def types_ptb(self):
+#        return self._types_ptb
 
     @property
     def iadj_to_idf(self):
         return self._iadj_to_idf
+
+    @iadj_to_idf.setter
+    def iadj_to_idf(self, arr):
+        self._iadj_to_idf = arr
 
     @property
     def has_link_perturb(self):

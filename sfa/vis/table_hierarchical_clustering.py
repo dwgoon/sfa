@@ -19,7 +19,7 @@ class HierarchicalClusteringTable(ConditionTable):
         self._dfs = samples  # DataFrame of samples to be clustered.
         super().__init__(conds, *args, **kwargs)
         self._create_colorbar()
-        self.row_label_fontsize = self._table_tick_fontsize
+        self.column_tick_fontsize = self._table_tick_fontsize
     # end of def __init__
 
     def _parse_kwargs(self, **kwargs):
@@ -240,12 +240,12 @@ class HierarchicalClusteringTable(ConditionTable):
         for t in ticks:
             t.set_fontsize(self._colorbar_tick_fontsize)
 
-    # @column_label_fontsize.setter
-    # def column_label_fontsize(self, val):
-    #     self._column_label_fontsize = val
+    # @column_tick_fontsize.setter
+    # def column_tick_fontsize(self, val):
+    #     self._column_tick_fontsize = val
     #     for ax in self._axes:
     #         ax.tick_params(axis='x', which='major',
-    #                        labelsize=self._column_label_fontsize)
+    #                        labelsize=self._column_tick_fontsize)
 
     # def _set_colors(self, colors):
     #     super()._set_colors(colors)

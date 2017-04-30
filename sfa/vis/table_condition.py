@@ -11,8 +11,8 @@ class ConditionTable(BaseTable):
         Add labels using x and y axes.
         The default values should be assigned before adding labels.
         """
-        self.row_label_fontsize = 5
-        self.column_label_fontsize = 5
+        self.row_tick_fontsize = 5
+        self.column_tick_fontsize = 5
         self._add_labels()
     # end of def __init__
 

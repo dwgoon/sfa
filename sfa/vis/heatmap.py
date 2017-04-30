@@ -59,8 +59,8 @@ class Heatmap(BaseGridPlot):
                     self._texts.append(child)
 
         # Set default values using properties
-        self.row_label_fontsize = 10
-        self.column_label_fontsize = 10
+        self.row_tick_fontsize = 10
+        self.column_tick_fontsize = 10
         self.colorbar_label_fontsize = 10
         self.linewidth = 0.5
 
@@ -92,36 +92,36 @@ class Heatmap(BaseGridPlot):
             t.set_fontsize(val)
 
     @property
-    def column_label_fontsize(self):
-        return self._column_label_fontsize
+    def column_tick_fontsize(self):
+        return self._column_tick_fontsize
 
-    @column_label_fontsize.setter
-    def column_label_fontsize(self, val):
-        self._column_label_fontsize = val
+    @column_tick_fontsize.setter
+    def column_tick_fontsize(self, val):
+        self._column_tick_fontsize = val
         self._axes['heatmap'].tick_params(
                                 axis='x',
                                 which='major',
-                                labelsize=self._column_label_fontsize)
+                                labelsize=self._column_tick_fontsize)
 
     @property
-    def row_label_fontsize(self):
-        return self._row_label_fontsize
+    def row_tick_fontsize(self):
+        return self._row_tick_fontsize
 
-    @row_label_fontsize.setter
-    def row_label_fontsize(self, val):
-        self._row_label_fontsize = val
+    @row_tick_fontsize.setter
+    def row_tick_fontsize(self, val):
+        self._row_tick_fontsize = val
         self._axes['heatmap'].tick_params(
-                                axis='y',
-                                which='major',
-                                labelsize=self._row_label_fontsize)
+                                 axis='y',
+                                 which='major',
+                                 labelsize=self._row_tick_fontsize)
 
     @property
-    def colorbar_label_fontsize(self):
-        return self._colorbar_label_fontsize
+    def colorbar_tick_fontsize(self):
+        return self._colorbar_tick_fontsize
 
-    @row_label_fontsize.setter
-    def colorbar_label_fontsize(self, val):
-        self._colorbar_label_fontsize = val
+    @colorbar_tick_fontsize.setter
+    def colorbar_tick_fontsize(self, val):
+        self._colorbar_tick_fontsize = val
         self._qm.colorbar.ax.tick_params(axis='y', labelsize=val)
 
     @property

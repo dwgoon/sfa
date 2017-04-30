@@ -58,42 +58,42 @@ class BaseGridPlot(object):
         ax.xaxis.tick_top()
 
     @property
-    def column_label_fontsize(self):
-        return self._column_label_fontsize
+    def column_tick_fontsize(self):
+        return self._column_tick_fontsize
 
-    @column_label_fontsize.setter
-    def column_label_fontsize(self, val):
-        self._column_label_fontsize = val
+    @column_tick_fontsize.setter
+    def column_tick_fontsize(self, val):
+        self._column_tick_fontsize = val
         for ax in self._axes.values():
             ax.tick_params(axis='x', which='major',
-                           labelsize=self._column_label_fontsize)
+                           labelsize=self._column_tick_fontsize)
 
     @property
-    def row_label_fontsize(self):
-        return self._row_label_fontsize
+    def row_tick_fontsize(self):
+        return self._row_tick_fontsize
 
-    @row_label_fontsize.setter
-    def row_label_fontsize(self, val):
-        self._row_label_fontsize = val
+    @row_tick_fontsize.setter
+    def row_tick_fontsize(self, val):
+        self._row_tick_fontsize = val
         for ax in self._axes.values():
             ax.tick_params(axis='y', which='major',
-                           labelsize=self._row_label_fontsize)
+                           labelsize=self._row_tick_fontsize)
 
     # # Properties
     # @property
-    # def column_label_fontsize(self):
+    # def column_tick_fontsize(self):
     #     raise NotImplementedError()
     #
-    # @column_label_fontsize.setter
-    # def column_label_fontsize(self, val):
+    # @column_tick_fontsize.setter
+    # def column_tick_fontsize(self, val):
     #     raise NotImplementedError()
     #
     # @property
-    # def row_label_fontsize(self):
+    # def row_tick_fontsize(self):
     #     raise NotImplementedError()
     #
-    # @row_label_fontsize.setter
-    # def row_label_fontsize(self, val):
+    # @row_tick_fontsize.setter
+    # def row_tick_fontsize(self, val):
     #     raise NotImplementedError()
 
     # @property
