@@ -16,8 +16,12 @@ TextLabel = LabelClassFactory.create('TEXT_LABEL')
 
 def visualize_signal_flow(net, W, n2i, act,
                           color_up=None, color_dn=None,
-                          pct=50, dlw=1.0, plw=1.0,
+                          lw_min=1.0,
+                          lw_max=10.0,
+                          pct_link=90,
+                          show_label=True,
                           show_act=True,
+                          pct_act=50,
                           fmt_act='%.5f',
                           fix_node_size=False,
                           fix_act_label=False):
@@ -52,20 +56,29 @@ def visualize_signal_flow(net, W, n2i, act,
     color_dn : numpy.ndarray or QtGui.QColor, optional
         Default is red (i.e., QColor(255, 0, 0)),
         if it is None.
-    pct : int, optional
-        Percentile of activity, which is used to set
-        the maximum value for coloring nodes.
-        Default value is 50.
 
-    dlw : float, optional
-        Link width for unchanged flow, which is 1.
+    lw_min : float, optional
+        Minimum link width, which is also used for unchanged flow.
+        
+    lw_max : float, optional
+        Maximum link width.
 
-    plw : float, optional
-        Parameter for adjusting link width.
-
+    pct_link : int, optional
+        Percentile of link width, which is used to set
+        the maximum value for setting link widths.
+        Default value is 90.
+    
+    show_label : bool, optional
+        Show node label or not.
+        
     show_act : bool, optional
         Show activity label or not.
 
+    pct_act : int, optional
+        Percentile of activity, which is used to set
+        the maximum value for coloring nodes.
+        Default value is 50.
+        
     fmt_act : str, optional
         Format string for activity label.
 
@@ -107,7 +120,7 @@ def visualize_signal_flow(net, W, n2i, act,
                          "or QtGui.QColor")
 
     abs_act = np.abs(act)
-    thr = np.percentile(abs_act, pct)
+    thr = np.percentile(abs_act, pct_act)
     thr = 1 if thr == 0 else thr
 
     arr_t = np.zeros_like(act)
@@ -115,8 +128,6 @@ def visualize_signal_flow(net, W, n2i, act,
     for i, elem in enumerate(act):
         t = np.clip(np.abs(elem)/thr, a_min=0, a_max=1)
         arr_t[i] = t
-
-
 
     for iden, node in net.nodes.items():
         idx = n2i[iden]
@@ -136,8 +147,9 @@ def visualize_signal_flow(net, W, n2i, act,
         node['FILL_COLOR'] = QColor(*color)
 
         node['BORDER_COLOR'] = '#555555'
-        _update_single_label_name(net, node, node.name,
-                                  fix_node_size,)
+        if show_label:
+            _update_single_label_name(net, node, node.name,
+                                      fix_node_size,)
 
         if show_act:
             _update_single_label_activity(net, node, fold, fmt_act,
@@ -148,23 +160,27 @@ def visualize_signal_flow(net, W, n2i, act,
                 net.remove_label(net.labels[iden_label])
     # end of for : update nodes and labels
 
-    _update_links(net, W, act, i2n, plw, dlw)
+    _update_links(net, W, act, i2n, pct_link, lw_min, lw_max)
 
 
+def _update_links(net, W, act, i2n, pct_link, lw_min, lw_max):
+    F = W * act  # Flow matrix
+    log_flows = np.log10(np.abs(F[F.nonzero()]))
+    flow_max = log_flows.max()
+    flow_min = log_flows.min()
+    flow_thr = np.percentile(log_flows, pct_link)
 
-def _update_links(net, W, act, i2n, plw, dlw):
-    F = W * act
     i2n = i2n
     ir, ic = W.nonzero()
     for i, j in zip(ir, ic):
         tgt = i2n[i]
         src = i2n[j]
         f = F[i, j]
+
         link = net.nxdg.edge[src][tgt]['VIS']
 
         header_old = link.header
         args_header = header_old.width, header_old.height, header_old.offset
-        #color_link = None
         if f > 0:
             header = PosHeader(*args_header)
             color_link = QColor(255, 10, 10, 100)
@@ -183,11 +199,19 @@ def _update_links(net, W, act, i2n, plw, dlw):
 
         link.header = header
         link['FILL_COLOR'] = color_link
-        f = np.abs(f)
+
         if f == 0:
-            link.width = dlw
+            link.width = lw_min
         else:
-            link.width = max(plw*abs(np.log(f)), dlw)
+
+            log_f = np.log10(np.abs(f))
+            log_f = np.clip(log_f, a_min=flow_min, a_max=flow_thr)
+            lw = (log_f-flow_min)/(flow_max-flow_min)*(lw_max-lw_min) + lw_min
+            # print("f: %f, log_f: %f, lw: %f"%(f, log_f, lw))
+            link.width = lw
+
+    # print("pct_link: ", pct_link)
+    # print("flow_min: %f, flow_max: %f, flow_thr: %f" % (flow_min, flow_max, flow_thr))
 
 
 def _update_single_label_name(net, node, name,
@@ -200,6 +224,7 @@ def _update_single_label_name(net, node, name,
     label['FONT_FAMILY'] = 'Arial'
     if lightness < 200:
         label['TEXT_COLOR'] = Qt.white
+        label['FONT_BOLD'] = True
     else:
         label['TEXT_COLOR'] = Qt.black
 
