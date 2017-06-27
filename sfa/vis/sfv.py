@@ -194,14 +194,12 @@ def visualize_signal_flow(net, F, act,
 
 
 def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
-    #F = W * act  # Flow matrix
     log_flows = np.log10(np.abs(F[F.nonzero()]))
     flow_max = log_flows.max()
     flow_min = log_flows.min()
     flow_thr = np.percentile(log_flows, pct_link)
 
-    i2n = i2n
-    ir, ic = A.nonzero()
+    ir, ic = F.nonzero()
     for i, j in zip(ir, ic):
         tgt = i2n[i]
         src = i2n[j]
@@ -217,7 +215,7 @@ def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
         elif f < 0:
             header = NegHeader(*args_header)
             color_link = QColor(10, 10, 255, 70)
-        else:
+        else:  # When flow is zero, show the sign of the original link.
             if A[i, j]>0:
                 header = PosHeader(*args_header)
             elif A[i, j]<0:
@@ -237,11 +235,8 @@ def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
             log_f = np.log10(np.abs(f))
             log_f = np.clip(log_f, a_min=flow_min, a_max=flow_thr)
             lw = (log_f-flow_min)/(flow_max-flow_min)*(lw_max-lw_min) + lw_min
-            # print("f: %f, log_f: %f, lw: %f"%(f, log_f, lw))
             link.width = lw
 
-    # print("pct_link: ", pct_link)
-    # print("flow_min: %f, flow_max: %f, flow_thr: %f" % (flow_min, flow_max, flow_thr))
 
 
 def _update_single_label_name(net, node, name,
