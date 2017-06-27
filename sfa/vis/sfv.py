@@ -14,7 +14,20 @@ PosHeader = HeaderClassFactory.create('ARROW')
 TextLabel = LabelClassFactory.create('TEXT_LABEL')
 
 
-def visualize_signal_flow(net, W, n2i, act,
+"""
+def visualize_signal_flow(net, W1, x1, W2, x2, n2i,
+                          ...)
+                          
+                          
+
+
+
+
+"""
+
+def visualize_signal_flow(net, F, act,
+                          A,
+                          n2i,
                           color_up=None, color_dn=None,
                           lw_min=1.0,
                           lw_max=10.0,
@@ -24,7 +37,8 @@ def visualize_signal_flow(net, W, n2i, act,
                           pct_act=50,
                           fmt_act='%.5f',
                           fix_node_size=False,
-                          fix_act_label=False):
+                          fix_act_label=False,
+                          font=None):
     """Visualize signal flow using SFV.
 
     SFV (Seamless Flow Visualization) is a light-weight,
@@ -39,15 +53,22 @@ def visualize_signal_flow(net, W, n2i, act,
     net : sfv.graphics.Network
         Network object that is given by sfv.
 
-    W : numpy.ndarray
-        Weight matrix of the algorithm object.
-    n2i : dict
-        Name to index dictionary.
-
+    F : numpy.ndarray
+        A matrix of signal flows.        
+        It is usually calculated as W2*x1 - W1*x1,
+        where W is weight matrix and
+        x is a vector of activities at steady-state.    
+    
     act : numpy.ndarray
         Change in the activities. It is usually calculated
-        as x_perturb - x_control, where x is
-        the steady-state of activities.
+        as x2 - x1, where x is
+        the a vector of activities at steady-state.    
+    
+    A : numpy.ndarray
+        Adjacency matrix of the network.
+    
+    n2i : dict
+        Name to index dictionary.
 
     color_up : numpy.ndarray or QtGui.QColor, optional
         Default is blue (i.e., QColor(0, 0, 255)),
@@ -90,6 +111,9 @@ def visualize_signal_flow(net, W, n2i, act,
         Change the graphics of activity label or not.
         The activity value is changed irrespective of
         this parameter. Default is False.
+        
+    font : QFont, optional
+        Font for the name and activity labels.
 
     Returns
     -------
@@ -119,6 +143,10 @@ def visualize_signal_flow(net, W, n2i, act,
         raise ValueError("color_dn should be 3-dimensional np.ndarray "
                          "or QtGui.QColor")
 
+    # Set the default font
+    if not font:
+        font = QFont('Arial', 10)
+
     abs_act = np.abs(act)
     thr = np.percentile(abs_act, pct_act)
     thr = 1 if thr == 0 else thr
@@ -145,33 +173,35 @@ def visualize_signal_flow(net, W, n2i, act,
 
         color = np.int32(color)
         node['FILL_COLOR'] = QColor(*color)
+        node['BORDER_WIDTH'] = 2
+        node['BORDER_COLOR'] = QColor(40, 40, 40)  #node['BORDER_COLOR'] = '#555555'
 
-        node['BORDER_COLOR'] = '#555555'
         if show_label:
             _update_single_label_name(net, node, node.name,
-                                      fix_node_size,)
+                                      fix_node_size, font)
 
         if show_act:
-            _update_single_label_activity(net, node, fold, fmt_act,
-                                          fix_act_label)
+            _update_single_label_activity(net, node, fold,
+                                          fix_act_label,
+                                          fmt_act, font)
         else:
             iden_label = '%s_act' % iden.upper()
             if iden_label in net.labels:
                 net.remove_label(net.labels[iden_label])
     # end of for : update nodes and labels
 
-    _update_links(net, W, act, i2n, pct_link, lw_min, lw_max)
+    _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max)
 
 
-def _update_links(net, W, act, i2n, pct_link, lw_min, lw_max):
-    F = W * act  # Flow matrix
+def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
+    #F = W * act  # Flow matrix
     log_flows = np.log10(np.abs(F[F.nonzero()]))
     flow_max = log_flows.max()
     flow_min = log_flows.min()
     flow_thr = np.percentile(log_flows, pct_link)
 
     i2n = i2n
-    ir, ic = W.nonzero()
+    ir, ic = A.nonzero()
     for i, j in zip(ir, ic):
         tgt = i2n[i]
         src = i2n[j]
@@ -183,14 +213,14 @@ def _update_links(net, W, act, i2n, pct_link, lw_min, lw_max):
         args_header = header_old.width, header_old.height, header_old.offset
         if f > 0:
             header = PosHeader(*args_header)
-            color_link = QColor(255, 10, 10, 100)
+            color_link = QColor(255, 10, 10, 70)
         elif f < 0:
             header = NegHeader(*args_header)
-            color_link = QColor(10, 10, 255, 100)
+            color_link = QColor(10, 10, 255, 70)
         else:
-            if W[i, j]>0:
+            if A[i, j]>0:
                 header = PosHeader(*args_header)
-            elif W[i, j]<0:
+            elif A[i, j]<0:
                 header = NegHeader(*args_header)
             else:
                 raise RuntimeError("The logic is abnormal.")
@@ -215,46 +245,48 @@ def _update_links(net, W, act, i2n, pct_link, lw_min, lw_max):
 
 
 def _update_single_label_name(net, node, name,
-                              fix_node_size):
-    label = net.labels[name]
+                              fix_node_size, font):
+    label_name = net.labels[name]
 
     lightness = QColor(node['FILL_COLOR']).lightness()
-    label['TEXT_COLOR'] = Qt.black
-    label['FONT_SIZE'] = 10
-    label['FONT_FAMILY'] = 'Arial'
-    if lightness < 200:
-        label['TEXT_COLOR'] = Qt.white
-        label['FONT_BOLD'] = True
-    else:
-        label['TEXT_COLOR'] = Qt.black
+    label_name['TEXT_COLOR'] = Qt.black
 
-    rect = label.boundingRect()
-    label.setPos(-rect.width() / 2, -rect.height() / 2)  # center
+    label_name['FONT'] = font
+
+    if lightness < 200:
+        label_name['TEXT_COLOR'] = Qt.white
+        label_name['FONT_BOLD'] = True
+    else:
+        label_name['TEXT_COLOR'] = Qt.black
+        label_name['FONT_BOLD'] = False
+
+    rect = label_name.boundingRect()
+    label_name.setPos(-rect.width() / 2, -rect.height() / 2)  # center
     if not fix_node_size:
         node.width = 1.1 * rect.width()
         node.height = 1.1 * rect.height()
 
 
-def _update_single_label_activity(net, node, x, fmt, fix_act_label):
+def _update_single_label_activity(net, node, x, fix_act_label, fmt, font):
     iden = '%s_act' % node.iden.upper()
     str_x = fmt % (x)
     if iden not in net.labels:
-        label_x = TextLabel(node, text=str_x)
-        label_x.iden = iden
+        label_act = TextLabel(node, text=str_x)
+        label_act.iden = iden
     else:
-        label_x = net.labels[iden]
-        label_x.text = str_x % (x)
+        label_act = net.labels[iden]
+        label_act.text = str_x % (x)
 
     if not fix_act_label:
-        label_x.font = QFont('Arial', 10)
-        label_x['TEXT_COLOR'] = QColor(20, 20, 20)
-        rect = label_x.boundingRect()
+        label_act['FONT'] = font
+        label_act['TEXT_COLOR'] = QColor(20, 20, 20)
+        rect = label_act.boundingRect()
         rect_ln = net.labels[node.name].boundingRect()
         pos_x = node.width/2 + 0.5
-        label_x.setPos(pos_x, -rect.height() / 2)
+        label_act.setPos(pos_x, -rect.height() / 2)
 
     if iden not in net.labels:
-        net.add_label(label_x)
+        net.add_label(label_act)
 
 
 
