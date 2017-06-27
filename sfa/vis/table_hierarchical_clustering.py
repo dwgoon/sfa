@@ -26,6 +26,9 @@ class HierarchicalClusteringTable(ConditionTable):
         """Parse the keyword arguments.
         """
 
+        self._vmin = kwargs.get('vmin', None)
+        self._vmax = kwargs.get('vmax', None)
+
         colors_blend = ['red', 'white', np.array([0, 1, 0, 1])]
         default_cmap = sns.blend_palette(colors_blend,
                                          n_colors=100,
@@ -112,7 +115,8 @@ class HierarchicalClusteringTable(ConditionTable):
         sch.set_link_color_palette(['black'])
         if self._row_cluster:
 
-            row_pairwise_dists = distance.pdist(self._dfs)
+            row_pairwise_dists = distance.pdist(self._dfs,
+                                                metric=self._row_metric)
             row_clusters = sch.linkage(row_pairwise_dists,
                                        metric=self._row_metric,
                                        method=self._row_method)
@@ -120,7 +124,7 @@ class HierarchicalClusteringTable(ConditionTable):
             with plt.rc_context({'lines.linewidth': self._row_dend_linewidth}):
                 # Dendrogram for row clustering
                 pos = self._axes_position['row_dendrogram']
-                subgs = self._gridspec[pos[0],pos[1]]
+                subgs = self._gridspec[pos[0], pos[1]]
                 ax_row_den = self._fig.add_subplot(subgs)
                 row_den = sch.dendrogram(row_clusters,
                                          color_threshold=np.inf,
@@ -138,7 +142,8 @@ class HierarchicalClusteringTable(ConditionTable):
             ind_row = self._dfs.index.ravel()
 
         if self._col_cluster:
-            col_pairwise_dists = distance.pdist(self._dfs.T)
+            col_pairwise_dists = distance.pdist(self._dfs.T,
+                                                metric=self._col_metric)
             col_clusters = sch.linkage(col_pairwise_dists,
                                        metric=self._col_metric,
                                        method=self._col_method)
@@ -162,10 +167,12 @@ class HierarchicalClusteringTable(ConditionTable):
         subgs = self._gridspec[pos[0], pos[1]]
         ax_heatmap = self._fig.add_subplot(subgs)
         self._heatmap = ax_heatmap.matshow(self._dfs.iloc[ind_row, ind_col],
-                                            interpolation='nearest',
-                                            aspect='auto',
-                                            #origin='lower',
-                                            cmap=self._cmap)
+                                           vmin=self._vmin,
+                                           vmax=self._vmax,
+                                           interpolation='nearest',
+                                           aspect='auto',
+                                           #origin='lower',
+                                           cmap=self._cmap)
 
         ax_heatmap.grid(b=False)
         ax_heatmap.set_frame_on(True)
@@ -194,7 +201,9 @@ class HierarchicalClusteringTable(ConditionTable):
         pos = self._axes_position['colorbar']
         subgs = self._gridspec[pos[0], pos[1]]
         ax_colorbar = self._fig.add_subplot(subgs)
-        cb = self._fig.colorbar(self._heatmap, ax_colorbar,  drawedges=True)
+
+        cb = self._fig.colorbar(self._heatmap, ax_colorbar,
+                                drawedges=True)
         self._colorbar = cb
         cb.ax.yaxis.set_ticks_position('right')
         cb.ax.yaxis.set_label_position('right')

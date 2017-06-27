@@ -208,6 +208,10 @@ class NetworkPropagation(sfa.base.Algorithm):
             elif type_ptb == 'link':
                 idx = self.data.n2i[target]
                 W_ptb[:, idx] *= val_ptb
+            elif type_ptb == 'isolation':
+                idx = self.data.n2i[target]
+                W_ptb[:, idx] *= val_ptb
+                W_ptb[idx, :] *= val_ptb
             else:
                 raise ValueError("Undefined perturbation type: %s" % (type_ptb))
 
