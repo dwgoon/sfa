@@ -276,7 +276,7 @@ def _update_single_label_activity(net, node, x, fix_act_label, fmt, font):
         label_act['FONT'] = font
         label_act['TEXT_COLOR'] = QColor(20, 20, 20)
         rect = label_act.boundingRect()
-        rect_ln = net.labels[node.name].boundingRect()
+        #rect_ln = net.labels[node.name].boundingRect()
         pos_x = node.width/2 + 0.5
         label_act.setPos(pos_x, -rect.height() / 2)
 
