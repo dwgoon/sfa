@@ -7,3 +7,4 @@ __pycache__/**
 !sfa.png
 sfa.egg-info
 sfa.egg-info/
+/doc/_build/html/_static/**
