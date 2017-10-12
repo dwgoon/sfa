@@ -3,17 +3,37 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Singal Flow Analysis's documentation!
+Singal Flow Analysis (SFA)
 ================================================
 
+SFA is a simulation framework,
+which provides useful data structures and functions
+for efficiently analyzing signal flow in complex networks.
+
+Features
+--------
+- Convenient data structures for analyzing multiple datasets with multiple algorithms (M algorithms vs N datasets).
+- Support for visualizing simulation results and signal flow.
+- Parallel simulations using multiprocessing.
+- User-defined algorithms or datasets.
+
+
+Documentation
+-------------
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
 
-
+   install
+   tutorial
+   algorithm
+   dataset
+   visualization
+   simulation
+   develop
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
