@@ -2,10 +2,10 @@
 
 """
 [Reference]
-Korkut and Wang et al. eLife 2015;4:e04640
-
-[Information]
-
+Korkut and Wang et al.
+Perturbation biology nominates upstream-downstream drug combinations
+in RAF inhibitor resistant melanoma cells
+eLife (2015) 4:e04640
 """
 
 import os

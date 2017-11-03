@@ -17,8 +17,9 @@ __all__ = ["FrozenClass",
            "Singleton",
            "read_sif",
            "normalize",
-           "randswap",
-           "randflip",
+           "rand_swap",
+           "rand_flip",
+           "rand_weights",
            "get_akey",
            "get_avalue",]
 
@@ -87,7 +88,7 @@ def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
     dict_links = defaultdict(list)
     set_nodes = set()
     name_to_idx = {}
-    with codecs.open(filename, "r", encoding="utf-8") as f_in:
+    with codecs.open(filename, "r", encoding="utf-8-sig") as f_in:
         for line in f_in:
             items =  line.strip().split()
             src = items[0]
@@ -185,7 +186,7 @@ def normalize(A, norm_in=True, norm_out=True):
 
 # end of def normalize
 
-def randswap(A, nsamp=10, noself=True, inplace=False):
+def rand_swap(A, nsamp=10, noself=True, inplace=False):
     """Randomly rewire the network connections by swapping.
 
     Parameters
@@ -203,16 +204,16 @@ def randswap(A, nsamp=10, noself=True, inplace=False):
     Returns
     -------
     B : numpy.ndarray
-        New adjacency matrix.
-        None is return when inplace is True.
+        The randomized matrix.
+        The reference of the given W is returned, when inplace is True.
     """
 
 
     if not inplace:
         A_org = A
-        B = A.copy()
+        B = np.array(A, dtype=np.float64)
     else:
-        A_org = A.copy()
+        A_org = np.array(A, dtype=np.float64)
         B = A
 
     cnt = 0
@@ -243,7 +244,7 @@ def randswap(A, nsamp=10, noself=True, inplace=False):
         return B
 
 
-def randflip(A, nsamp=10, inplace=False):
+def rand_flip(A, nsamp=10, inplace=False):
     """Randomly flip the signs of connections.
 
     Parameters
@@ -258,11 +259,11 @@ def randflip(A, nsamp=10, inplace=False):
     Returns
     -------
     B : numpy.ndarray
-        New adjacency matrix.
-        None is return when inplace is True.
+        The randomized matrix.
+        The reference of the given W is returned, when inplace is True.
     """
     if not inplace:
-        B = A.copy()
+        B = np.array(A, dtype=np.float64)
     else:
         B = A
 
@@ -270,8 +271,49 @@ def randflip(A, nsamp=10, inplace=False):
     iflip = np.random.randint(0, ir.size, nsamp)
     B[ir[iflip], ic[iflip]] *= -1
 
+    return B
+
+
+def rand_weights(W, lb=-3, ub=3, inplace=False):
+    """ Randomly sample the weights of connections in W from 10^(lb, ub).
+
+    Parameters
+    ----------
+    W : numpy.ndarray
+        Adjacency (connection) or weight matrix.
+    lb : float, optional
+        The 10's exponent for lower bound
+    inplace : bool, optional
+        Modify the given adjacency matrix for rewiring.
+
+    Returns
+    -------
+    B : numpy.ndarray
+        The randomly sampled weight matrix.
+        The reference of the given W is returned, when inplace is True.
+    """
     if not inplace:
-        return B
+        B = np.array(W, dtype=np.float64)
+    else:
+        if not np.issubdtype(W.dtype, np.floating):
+            raise ValueError("W.dtype given to rand_weights should be "
+                             "a float type, not %s"%(W.dtype))
+
+        B = W
+    # end of if-else
+
+    ir, ic = B.nonzero()
+    weights_rand = 10 ** np.random.uniform(lb, ub,
+                                           size=(ir.size,))
+
+    B[ir, ic] = weights_rand*np.sign(B[ir, ic], dtype=np.float)
+    """The above code is equal to the following:
+    
+    for i in range(ir.size):
+        p, q = ir[i], ic[i]
+        B[p, q] = weights_rand[i] * np.sign(B[p, q], dtype=np.float)
+    """
+    return B
 
 
 def get_akey(d):

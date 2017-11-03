@@ -182,7 +182,6 @@ class NetworkPropagation(sfa.base.Algorithm):
         if hasattr(self.data, 'inputs') and self.data.inputs:
             inds_inputs = [self.data.n2i[inp] for inp in self.data.inputs]
             vals_inputs = [val for val in self.data.inputs.values()]
-            # b[ind_inputs] = val_inputs
             inds.extend(inds_inputs)
             vals.extend(vals_inputs)
             # end of if
@@ -246,7 +245,6 @@ class NetworkPropagation(sfa.base.Algorithm):
                 self.apply_perturbations(targets_ptb, inds_ba, vals_ba, W_ptb)
                 self.W = W_ptb
             else:
-                #print(self.data.abbr, targets_ptb, self.data.n2i)
                 self.apply_perturbations(targets_ptb, inds_ba, vals_ba)
 
             b_store = b[inds_ba]

@@ -228,10 +228,6 @@ class Data(ContainerItem):
     def iadj_to_idf(self, arr):
         self._iadj_to_idf = arr
 
-    @property
-    def has_link_perturb(self):
-        return self._has_link_perturb
-
     # Replaceable (assignable) members
     @property  # DataFrame of experimental conditions
     def df_conds(self):
@@ -257,6 +253,15 @@ class Data(ContainerItem):
     def df_ptb(self, df):
         self._df_ptb = df
 
+    @property
+    def has_link_perturb(self):
+        return self._has_link_perturb
+
+    @has_link_perturb.setter
+    def has_link_perturb(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("has_link_perturb should be boolean.")
+        self._has_link_perturb = val
 
 # end of class Data
 

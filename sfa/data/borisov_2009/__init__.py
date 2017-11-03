@@ -13,7 +13,7 @@ http://doi.org/10.1038/msb.2009.19
   (It is hypothesized that the ODE model is quite well constructed enough to be
   a substitute for real experimental data).
 - The directed network was created by Daewon Lee (dwl@kaist.ac.kr).
-- - The units of EGF and insulin (I) stimulation are nM.
+- The units of EGF and insulin (I) stimulation are nM.
 """
 
 import sys
