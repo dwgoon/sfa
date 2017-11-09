@@ -150,12 +150,12 @@ class AcyclicPathSummation(sfa.base.Algorithm):
                 src, tgt = edge
                 isrc = n2i[src]
                 itgt = n2i[tgt]
-                self._dg.edge[src][tgt]['weight'] = self._W[itgt, isrc]
+                self._dg[src][tgt]['weight'] = self._W[itgt, isrc]
         else:  # Use global weight
             # Assign weights for the edges
             for edge in self._dg.edges():
                 src, tgt = edge
-                self._dg.edge[src][tgt]['weight'] = self._params.weight
+                self._dg[src][tgt]['weight'] = self._params.weight
         # end of if-else
 
         self._weight_matrix_invalidated = True
@@ -212,7 +212,7 @@ class AcyclicPathSummation(sfa.base.Algorithm):
                 names.append(target)
                 vals.append(val_ptb)
             elif type_ptb == 'link':
-                for downstream, attr in dg.edge[target].items():
+                for downstream, attr in dg[target].items():
                     attr["weight"] *= val_ptb
             else:
                 raise ValueError("Undefined perturbation type: %s"%(type_ptb))
@@ -277,8 +277,8 @@ class AcyclicPathSummation(sfa.base.Algorithm):
         for i in range(len(path) - 1):
             src = path[i]
             tgt = path[i + 1]
-            sign = dg.edge[src][tgt]['sign']
-            w = dg.edge[src][tgt]['weight']
+            sign = dg[src][tgt]['sign']
+            w = dg[src][tgt]['weight']
             F *= (sign*w)
 
         # end of for

@@ -174,7 +174,7 @@ def visualize_signal_flow(net, F, act,
         color = np.int32(color)
         node['FILL_COLOR'] = QColor(*color)
         node['BORDER_WIDTH'] = 2
-        node['BORDER_COLOR'] = QColor(40, 40, 40)  #node['BORDER_COLOR'] = '#555555'
+        node['BORDER_COLOR'] = QColor(40, 40, 40)
 
         if show_label:
             _update_single_label_name(net, node, node.name,
@@ -205,7 +205,7 @@ def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
         src = i2n[j]
         f = F[i, j]
 
-        link = net.nxdg.edge[src][tgt]['VIS']
+        link = net.nxdg[src][tgt]['VIS']
 
         header_old = link.header
         args_header = header_old.width, header_old.height, header_old.offset
@@ -282,18 +282,3 @@ def _update_single_label_activity(net, node, x, fix_act_label, fmt, font):
 
     if iden not in net.labels:
         net.add_label(label_act)
-
-
-
-"""<Deprecated documentation>
-    pct_up : int, optional
-        Percentile of up-regulated activity, which is
-        the maximum value for color_up.
-        Default value is 50.
-
-    pct_dn : int, optional
-        Percentile of down-regulated activity, which is
-        the maximum value for color_dn. Absolute values of
-        down-regulated activities are used.
-        Default value is 50.
-"""
