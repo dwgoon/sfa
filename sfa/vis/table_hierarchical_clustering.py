@@ -160,7 +160,8 @@ class HierarchicalClusteringTable(ConditionTable):
                 self._axes['col_dendrogram'] = ax_col_den
                 ind_col = col_den['leaves']
         else:
-            ind_col = self._dfs.columns.ravel()
+            # ind_col = self._dfs.columns.ravel()
+            ind_col = range(self._dfs.columns.size)
 
         # Heatmap
         pos = self._axes_position['heatmap']

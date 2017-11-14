@@ -39,6 +39,12 @@ class Heatmap(BaseGridPlot):
         cb_ax_asp = cb.ax.get_aspect()
         cb.ax.set_aspect(cb_ax_asp * 2.0)
 
+        # Remove inner lines
+        children = cb.colorbar.ax.get_children()
+        for child in children:
+            if isinstance(child, matplotlib.collections.LineCollection):
+                child.set_linewidth(0)
+
         self._axes['heatmap'].xaxis.tick_top()
         plt.xticks(rotation=90)
         plt.yticks(rotation=0)

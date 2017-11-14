@@ -15,9 +15,8 @@ def max_shortest_path_length(nxdg):
     """
     all_spl = nxsp.all_pairs_shortest_path_length(nxdg)
     max_spl = 0
-    for src, targets in all_spl.items():
-        for tgt in targets:
-            spl = all_spl[src][tgt]
+    for src, targets in all_spl:
+        for tgt, spl in targets.items():
             if spl > max_spl:
                 max_spl = spl
         # end of for
