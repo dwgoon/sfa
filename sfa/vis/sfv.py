@@ -14,17 +14,6 @@ PosHeader = HeaderClassFactory.create('ARROW')
 TextLabel = LabelClassFactory.create('TEXT_LABEL')
 
 
-"""
-def visualize_signal_flow(net, W1, x1, W2, x2, n2i,
-                          ...)
-                          
-                          
-
-
-
-
-"""
-
 def visualize_signal_flow(net, F, act,
                           A,
                           n2i,
