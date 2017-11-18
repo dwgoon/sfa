@@ -2,7 +2,7 @@
 
 
 from .perturb import analyze_perturb
-from .effects import calc_effects
+from .influence import calc_influence
 
 from .random.weight import RandomWeightBatchSimulator
 from .random.structure import RandomStructureBatchSimulator
