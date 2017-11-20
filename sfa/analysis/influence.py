@@ -1,8 +1,8 @@
 import numpy as np
 
 
-def calc_effects(W, alpha=0.5, E=None,
-                 max_iter=100, tol=1e-6, get_iter=False):
+def calc_influence(W, alpha=0.5, E=None,
+                   max_iter=100, tol=1e-6, get_iter=False):
     """Calculate the effect matrix.
        It estimates the effects of a node to the other nodes,
        by calculating partial derivative with respect to source nodes,
