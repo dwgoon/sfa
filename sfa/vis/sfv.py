@@ -14,17 +14,6 @@ PosHeader = HeaderClassFactory.create('ARROW')
 TextLabel = LabelClassFactory.create('TEXT_LABEL')
 
 
-"""
-def visualize_signal_flow(net, W1, x1, W2, x2, n2i,
-                          ...)
-                          
-                          
-
-
-
-
-"""
-
 def visualize_signal_flow(net, F, act,
                           A,
                           n2i,
@@ -236,7 +225,6 @@ def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
             log_f = np.clip(log_f, a_min=flow_min, a_max=flow_thr)
             lw = (log_f-flow_min)/(flow_max-flow_min)*(lw_max-lw_min) + lw_min
             link.width = lw
-
 
 
 def _update_single_label_name(net, node, name,

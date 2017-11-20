@@ -139,7 +139,7 @@ class HierarchicalClusteringTable(ConditionTable):
                 # the clustering result.
                 self._dfc = self._dfc.iloc[ind_row, :]
         else:
-            ind_row = self._dfs.index.ravel()
+            ind_row = range(self._dfs.index.size)  #self._dfs.index.ravel()
 
         if self._col_cluster:
             col_pairwise_dists = distance.pdist(self._dfs.T,
