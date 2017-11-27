@@ -188,7 +188,7 @@ def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
     flow_min = log_flows.min()
     flow_thr = np.percentile(log_flows, pct_link)
 
-    ir, ic = F.nonzero()
+    ir, ic = A.nonzero() #F.nonzero()
     for i, j in zip(ir, ic):
         tgt = i2n[i]
         src = i2n[j]
@@ -219,8 +219,9 @@ def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
 
         if f == 0:
             link.width = lw_min
+        elif (flow_max - flow_min) == 0:
+            link.width = 0.5*(lw_max + lw_min)
         else:
-
             log_f = np.log10(np.abs(f))
             log_f = np.clip(log_f, a_min=flow_min, a_max=flow_thr)
             lw = (log_f-flow_min)/(flow_max-flow_min)*(lw_max-lw_min) + lw_min
