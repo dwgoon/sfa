@@ -204,10 +204,6 @@ class Data(ContainerItem):
     def dg(self):  # Directed graph object of NetworkX
         return self._dg
 
-    @property
-    def inputs(self):  # Input conditions
-        return self._inputs
-
     @property  # List of perturbation targets
     def names_ptb(self):
         return self._names_ptb
@@ -229,6 +225,14 @@ class Data(ContainerItem):
         self._iadj_to_idf = arr
 
     # Replaceable (assignable) members
+    @property
+    def inputs(self):  # Input conditions
+        return self._inputs
+
+    @inputs.setter
+    def inputs(self, obj_dict):
+        self._inputs = obj_dict
+
     @property  # DataFrame of experimental conditions
     def df_conds(self):
         return self._df_conds

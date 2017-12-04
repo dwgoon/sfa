@@ -15,7 +15,6 @@ import networkx as nx
 
 __all__ = ["FrozenClass",
            "Singleton",
-           "read_sif",
            "normalize",
            "rand_swap",
            "rand_flip",
@@ -82,66 +81,6 @@ def Singleton(_class):
 http://m.egloos.zum.com/mataeoh/v/7081556
 """
 # end of def Singleton
-
-
-def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
-    dict_links = defaultdict(list)
-    set_nodes = set()
-    name_to_idx = {}
-    with codecs.open(filename, "r", encoding="utf-8-sig") as f_in:
-        for line in f_in:
-            items =  line.strip().split()
-            src = items[0]
-            tgt = items[2]
-            sign = items[1]
-
-            set_nodes.add( src )
-            set_nodes.add( tgt )
-            if sign == sym_pos:
-                dict_links[src].append( (tgt, 1) )
-            else:
-                dict_links[src].append( (tgt, -1) )
-        # end of for
-    # end of with
-
-    if sort == True:
-        list_nodes = sorted(set_nodes)
-    else:
-        list_nodes = list(set_nodes)
-
-    N = len(set_nodes)
-    adj = np.zeros((N, N), dtype=np.int)
-
-    for isrc, name in enumerate(list_nodes):
-        name_to_idx[name] = isrc  # index of source
-    # end of for
-    for name_src in name_to_idx:
-        isrc = name_to_idx[name_src]
-        for name_tgt, sign in dict_links[name_src]:
-            itgt = name_to_idx[name_tgt]
-            adj[itgt, isrc] = sign
-            # end of for
-    # end of for
-
-    if not as_nx:
-        return adj, name_to_idx
-    else: # NetworkX DiGraph
-        dg = nx.DiGraph()
-        # Add nodes
-        for name in list_nodes:
-            dg.add_node(name)
-            
-        # Add edges (links)
-        for name_src in list_nodes:
-            for name_tgt, sign in dict_links[name_src]:
-                dg.add_edge(name_src, name_tgt,
-                            attr_dict={'sign': sign})
-            # end of for
-        # end of for
-        return adj, name_to_idx, dg
-    # end of else
-# end of def
-
 
 def normalize(A, norm_in=True, norm_out=True):
     # Check whether A is a square matrix

@@ -95,7 +95,6 @@ TWIST1	-	E-Cadherin
 ZEB1	-	E-Cadherin
 ZEB2	-	E-Cadherin
 E-Cadherin	-	EMT
-EMT	+	EMT
 EGF	+	EGFR
 EGFR	+	SOS/GRB2
 FGF	+	FGFR

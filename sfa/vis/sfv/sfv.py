@@ -1,17 +1,83 @@
-
 import numpy as np
+import networkx as nx
 
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QColor
 from qtpy.QtCore import QPointF
 from qtpy.QtCore import Qt
 
+import sfv
 from sfv.graphics import LabelClassFactory
 from sfv.graphics import HeaderClassFactory
+
+import sfa
 
 NegHeader = HeaderClassFactory.create('HAMMER')
 PosHeader = HeaderClassFactory.create('ARROW')
 TextLabel = LabelClassFactory.create('TEXT_LABEL')
+
+def create_from_graphics(net, abbr=None, inputs=None, outputs=None):
+    """Create sfv.base.Data object from SIF file.
+
+    Parameters
+    ----------
+    net : sfv.graphics.Network
+        Network graphics object of SFV.
+    abbr : str
+        Abbreviation to denote this data object for the network.
+    inputs : dict, optional
+        Input information with default values
+    outputs : sequence, optional
+        Output information.
+
+    Returns
+    -------
+    obj : sfv.base.Data
+        Data object with the information of network topology.
+
+    """
+
+    if not abbr:
+        abbr = net.name
+
+    class __Data(sfa.base.Data):
+        def __init__(self):
+            self._abbr = abbr
+            self._name = self._abbr
+
+            self._dg = sfv.to_networkx(net)
+            nodes = sorted(self._dg.nodes)
+            self._n2i = {name: i for i, name in enumerate(nodes)}
+            self._i2n = {idx: name for name, idx in self._n2i.items()}
+
+            self._A = nx.to_numpy_array(self._dg, nodes).T
+            ir, ic = self._A.nonzero()
+            for i in range(ir.size):
+                r, c = ir[i], ic[i]
+
+                src = self._i2n[c]
+                tgt = self._i2n[r]
+                sign = self._dg.edges[src, tgt]['SIGN']
+                self._A[r, c] *= sign
+
+            self._inputs = inputs
+
+            if outputs:
+                self._outputs = outputs
+
+            # The following members are not defined due to the lack of data.
+            self._df_conds = None
+            self._df_exp = None
+            self._df_ptb = None
+            self._has_link_perturb = False
+            self._names_ptb = None
+            self._iadj_to_idf = None
+            # end of def __init__
+    # end of def class
+
+    class_name = ''.join([c for c in abbr.title() if c.isalnum()])
+    __Data.__name__ = class_name + "Data"
+    return __Data()
 
 
 def visualize_signal_flow(net, F, act,
@@ -179,10 +245,10 @@ def visualize_signal_flow(net, F, act,
                 net.remove_label(net.labels[iden_label])
     # end of for : update nodes and labels
 
-    _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max)
+    _update_links(net, A, F, i2n, pct_link, lw_min, lw_max)
 
 
-def _update_links(net, A, F, act, i2n, pct_link, lw_min, lw_max):
+def _update_links(net, A, F, i2n, pct_link, lw_min, lw_max):
     log_flows = np.log10(np.abs(F[F.nonzero()]))
     flow_max = log_flows.max()
     flow_min = log_flows.min()
@@ -265,7 +331,6 @@ def _update_single_label_activity(net, node, x, fix_act_label, fmt, font):
         label_act['FONT'] = font
         label_act['TEXT_COLOR'] = QColor(20, 20, 20)
         rect = label_act.boundingRect()
-        rect_ln = net.labels[node.name].boundingRect()
         pos_x = node.width/2 + 0.5
         label_act.setPos(pos_x, -rect.height() / 2)
 

@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 import sfa
-import sfa.vis
+import sfa.plot
 from sfa import calc_accuracy
 from sfa import AlgorithmSet
 from sfa import DataSet
