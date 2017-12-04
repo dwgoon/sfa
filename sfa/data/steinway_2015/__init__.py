@@ -2,17 +2,20 @@
 
 """
 [Reference]
-[1] Steinway, S. N. et al.
+[1] Steinway et al.
+    Combinatorial interventions inhibit TGFβ-driven epithelial-to-mesenchymal
+    transition and support hybrid cellular phenotypes.
+    Npj Systems Biology and Applications (2015)  1(1), 15014.
+
+
+[2] Steinway, S. N. et al.
     Network modeling of TGFβ signaling in hepatocellular carcinoma
     epithelial-to-mesenchymal transition reveals joint sonic hedgehog
     and Wnt pathway activation.
     Cancer Research (2014) 74(21), 5963–77.
 
-[2] Steinway et al.
-    Combinatorial interventions inhibit TGFβ-driven epithelial-to-mesenchymal
-    transition and support hybrid cellular phenotypes.
-    Npj Systems Biology and Applications (2015)  1(1), 15014.
-
+[Information]
+The topology of network is curated from reference [1].
 
 """
 
@@ -32,10 +35,10 @@ class SteinwayData(sfa.base.Data):
 
     def __init__(self):
 
-        self._abbr = "steinway_2014"
-        self._name = "Steinway et al. Cancer Research (2014) 74(21), 5963–77"
+        self._abbr = "steinway_2015"
+        self._name = "Steinway et al. Npj Syst Biol Appl (2015)  1(1), 15014"
         inputs = {}
-        inputs['EGF'] = 1.0
+        inputs['TGFβ'] = 1.0
 
         dpath = os.path.dirname(__file__)
         fpath_network = os.path.join(dpath, 'network.sif')
