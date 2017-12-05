@@ -2,13 +2,10 @@
 
 """
 [Reference]
-Nelander, _S. et al.
+Nelander, S. et al.
 Models from experiments: combinatorial drug perturbations of cancer cells.
 Molecular Systems Biology (2008) 4(1), 216.
 http://doi.org/10.1038/msb.2008.53
-
-[Information]
-
 """
 
 import os

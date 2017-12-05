@@ -15,10 +15,10 @@ import networkx as nx
 
 __all__ = ["FrozenClass",
            "Singleton",
-           "read_sif",
            "normalize",
-           "randswap",
-           "randflip",
+           "rand_swap",
+           "rand_flip",
+           "rand_weights",
            "get_akey",
            "get_avalue",]
 
@@ -82,66 +82,6 @@ http://m.egloos.zum.com/mataeoh/v/7081556
 """
 # end of def Singleton
 
-
-def read_sif(filename, sym_pos='+', sort=True, as_nx=False):
-    dict_links = defaultdict(list)
-    set_nodes = set()
-    name_to_idx = {}
-    with codecs.open(filename, "r", encoding="utf-8") as f_in:
-        for line in f_in:
-            items =  line.strip().split()
-            src = items[0]
-            tgt = items[2]
-            sign = items[1]
-
-            set_nodes.add( src )
-            set_nodes.add( tgt )
-            if sign == sym_pos:
-                dict_links[src].append( (tgt, 1) )
-            else:
-                dict_links[src].append( (tgt, -1) )
-        # end of for
-    # end of with
-
-    if sort == True:
-        list_nodes = sorted(set_nodes)
-    else:
-        list_nodes = list(set_nodes)
-
-    N = len(set_nodes)
-    adj = np.zeros((N, N), dtype=np.int)
-
-    for isrc, name in enumerate(list_nodes):
-        name_to_idx[name] = isrc  # index of source
-    # end of for
-    for name_src in name_to_idx:
-        isrc = name_to_idx[name_src]
-        for name_tgt, sign in dict_links[name_src]:
-            itgt = name_to_idx[name_tgt]
-            adj[itgt, isrc] = sign
-            # end of for
-    # end of for
-
-    if not as_nx:
-        return adj, name_to_idx
-    else: # NetworkX DiGraph
-        dg = nx.DiGraph()
-        # Add nodes
-        for name in list_nodes:
-            dg.add_node(name)
-            
-        # Add edges (links)
-        for name_src in list_nodes:
-            for name_tgt, sign in dict_links[name_src]:
-                dg.add_edge(name_src, name_tgt,
-                            attr_dict={'sign': sign})
-            # end of for
-        # end of for
-        return adj, name_to_idx, dg
-    # end of else
-# end of def
-
-
 def normalize(A, norm_in=True, norm_out=True):
     # Check whether A is a square matrix
     if A.shape[0] != A.shape[1]:
@@ -185,7 +125,7 @@ def normalize(A, norm_in=True, norm_out=True):
 
 # end of def normalize
 
-def randswap(A, nsamp=10, noself=True, inplace=False):
+def rand_swap(A, nsamp=10, noself=True, inplace=False):
     """Randomly rewire the network connections by swapping.
 
     Parameters
@@ -203,16 +143,16 @@ def randswap(A, nsamp=10, noself=True, inplace=False):
     Returns
     -------
     B : numpy.ndarray
-        New adjacency matrix.
-        None is return when inplace is True.
+        The randomized matrix.
+        The reference of the given W is returned, when inplace is True.
     """
 
 
     if not inplace:
         A_org = A
-        B = A.copy()
+        B = np.array(A, dtype=np.float64)
     else:
-        A_org = A.copy()
+        A_org = np.array(A, dtype=np.float64)
         B = A
 
     cnt = 0
@@ -243,7 +183,7 @@ def randswap(A, nsamp=10, noself=True, inplace=False):
         return B
 
 
-def randflip(A, nsamp=10, inplace=False):
+def rand_flip(A, nsamp=10, inplace=False):
     """Randomly flip the signs of connections.
 
     Parameters
@@ -258,11 +198,11 @@ def randflip(A, nsamp=10, inplace=False):
     Returns
     -------
     B : numpy.ndarray
-        New adjacency matrix.
-        None is return when inplace is True.
+        The randomized matrix.
+        The reference of the given W is returned, when inplace is True.
     """
     if not inplace:
-        B = A.copy()
+        B = np.array(A, dtype=np.float64)
     else:
         B = A
 
@@ -270,8 +210,49 @@ def randflip(A, nsamp=10, inplace=False):
     iflip = np.random.randint(0, ir.size, nsamp)
     B[ir[iflip], ic[iflip]] *= -1
 
+    return B
+
+
+def rand_weights(W, lb=-3, ub=3, inplace=False):
+    """ Randomly sample the weights of connections in W from 10^(lb, ub).
+
+    Parameters
+    ----------
+    W : numpy.ndarray
+        Adjacency (connection) or weight matrix.
+    lb : float, optional
+        The 10's exponent for lower bound
+    inplace : bool, optional
+        Modify the given adjacency matrix for rewiring.
+
+    Returns
+    -------
+    B : numpy.ndarray
+        The randomly sampled weight matrix.
+        The reference of the given W is returned, when inplace is True.
+    """
     if not inplace:
-        return B
+        B = np.array(W, dtype=np.float64)
+    else:
+        if not np.issubdtype(W.dtype, np.floating):
+            raise ValueError("W.dtype given to rand_weights should be "
+                             "a float type, not %s"%(W.dtype))
+
+        B = W
+    # end of if-else
+
+    ir, ic = B.nonzero()
+    weights_rand = 10 ** np.random.uniform(lb, ub,
+                                           size=(ir.size,))
+
+    B[ir, ic] = weights_rand*np.sign(B[ir, ic], dtype=np.float)
+    """The above code is equal to the following:
+    
+    for i in range(ir.size):
+        p, q = ir[i], ic[i]
+        B[p, q] = weights_rand[i] * np.sign(B[p, q], dtype=np.float)
+    """
+    return B
 
 
 def get_akey(d):

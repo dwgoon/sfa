@@ -2,7 +2,8 @@
 
 import numpy as np
 
-def analyze_perturb(alg, data, targets, get_trj=False):
+
+def analyze_perturb(alg, data, targets, b=None, get_trj=False):
     """Perform signal flow analysis under perturbations.
 
     Parameters
@@ -15,6 +16,9 @@ def analyze_perturb(alg, data, targets, get_trj=False):
 
     targets : list
         List of node names, which are the keys of data.n2i.
+
+    b : numpy.ndarray
+        Basic vector for signaling sources or basal activities.
 
     get_trj : bool (optional)
         Decide to get the trajectory of activity change.
@@ -37,7 +41,11 @@ def analyze_perturb(alg, data, targets, get_trj=False):
         if get_trj is True.
     """
     N = data.A.shape[0]
-    b = np.zeros((N,), dtype=np.float)
+
+    if b is None:
+        b = np.zeros((N,), dtype=np.float)
+    elif b.size != N:
+        raise TypeError("The size of b should be equal to %d"%(N))
 
     inds = []
     vals = []
@@ -60,7 +68,6 @@ def analyze_perturb(alg, data, targets, get_trj=False):
         W_pert = W_ctrl
         alg.apply_perturbations(targets, inds, vals)
 
-
     b[inds] = vals
     x_pert, trj_pert = alg.propagate_iterative(
                                 W_pert,
@@ -68,7 +75,6 @@ def analyze_perturb(alg, data, targets, get_trj=False):
                                 b,
                                 alg.params.alpha,
                                 get_trj=get_trj)
-
 
     act_change = x_pert - x_ctrl
 
@@ -80,32 +86,37 @@ def analyze_perturb(alg, data, targets, get_trj=False):
     ret = [act_change, F]  # return objects
     if get_trj:
         if trj_pert.shape[0] != trj_ctrl.shape[0]:
-            # Prepare the comparison
-            trjs = [trj_pert, trj_ctrl]
-            ind_trjs = [0, 1]
-            func_key = lambda x: trjs[x].shape[0]
-            
-            # Find smaller and bigger arrays.
-            ind_smaller = min(ind_trjs, key=func_key)
-            ind_bigger = max(ind_trjs, key=func_key)            
-            smaller = trjs[ind_smaller]
-            bigger = trjs[ind_bigger]
-            
-            # Resize the smaller one.
-            smaller_resized = np.zeros_like(bigger)
-            smaller_resized[:smaller.shape[0],:] = smaller
-            smaller_resized[smaller.shape[0]:,:] = smaller[-1,:]
-            
-            if ind_smaller == 0:
-                trj_pert = smaller_resized
-            elif ind_smaller == 1:
-                trj_ctrl = smaller_resized
-            else:
-                err_msg = "Invalid index for trajectories: %d"%(ind_smaller)
-                raise IndexError(err_msg)
+            trj_ctrl, trj_pert = resize_trj(trj_ctrl, trj_pert)
     
         trj_change = trj_pert - trj_ctrl
         ret.append(trj_change)
 
     return tuple(ret)
 
+
+def resize_trj(trj_ctrl, trj_pert):
+    # Prepare the comparison
+    trjs = [trj_pert, trj_ctrl]
+    ind_trjs = [0, 1]
+    func_key = lambda x: trjs[x].shape[0]
+
+    # Find smaller and bigger arrays.
+    ind_smaller = min(ind_trjs, key=func_key)
+    ind_bigger = max(ind_trjs, key=func_key)
+    smaller = trjs[ind_smaller]
+    bigger = trjs[ind_bigger]
+
+    # Resize the smaller one.
+    smaller_resized = np.zeros_like(bigger)
+    smaller_resized[:smaller.shape[0], :] = smaller
+    smaller_resized[smaller.shape[0]:, :] = smaller[-1, :]
+
+    if ind_smaller == 0:
+        trj_pert = smaller_resized
+    elif ind_smaller == 1:
+        trj_ctrl = smaller_resized
+    else:
+        err_msg = "Invalid index for trajectories: %d" % (ind_smaller)
+        raise IndexError(err_msg)
+
+    return trj_ctrl, trj_pert

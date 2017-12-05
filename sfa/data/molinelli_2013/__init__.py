@@ -7,8 +7,6 @@ Perturbation biology: inferring signaling networks in cellular systems.
 PLoS Computational Biology, (2013) 9(12), e1003290.
 http://doi.org/10.1371/journal.pcbi.1003290
 
-[Information]
-
 """
 
 import os

@@ -139,7 +139,7 @@ class HierarchicalClusteringTable(ConditionTable):
                 # the clustering result.
                 self._dfc = self._dfc.iloc[ind_row, :]
         else:
-            ind_row = self._dfs.index.ravel()
+            ind_row = range(self._dfs.index.size)  #self._dfs.index.ravel()
 
         if self._col_cluster:
             col_pairwise_dists = distance.pdist(self._dfs.T,
@@ -160,7 +160,8 @@ class HierarchicalClusteringTable(ConditionTable):
                 self._axes['col_dendrogram'] = ax_col_den
                 ind_col = col_den['leaves']
         else:
-            ind_col = self._dfs.columns.ravel()
+            # ind_col = self._dfs.columns.ravel()
+            ind_col = range(self._dfs.columns.size)
 
         # Heatmap
         pos = self._axes_position['heatmap']

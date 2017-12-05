@@ -12,7 +12,7 @@ for efficiently analyzing signal flow in complex networks.
 
 Features
 --------
-- Convenient data structures for analyzing multiple datasets with multiple algorithms (M algorithms vs N datasets).
+- Convenient data structures for analyzing multiple datasets with multiple algorithms.
 - Support for visualizing simulation results and signal flow.
 - Parallel simulations using multiprocessing.
 - User-defined algorithms or datasets.

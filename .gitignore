@@ -8,3 +8,7 @@ __pycache__/**
 sfa.egg-info
 sfa.egg-info/
 /doc/_build/html/_static/**
+/dist
+/dist/**
+/build
+/build/**

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='sfa',
       version='0.0.1',
@@ -10,7 +10,8 @@ setup(name='sfa',
       author='Daewon Lee',
       author_email='daewon4you@gmail.com',
       license='MIT',
-      packages=['sfa'],
+      packages=find_packages(),
+      package_data = {'': ['*.tsv', '*.sif', '*.json'],},
       install_requires=[
       	  'six',
           'future',
