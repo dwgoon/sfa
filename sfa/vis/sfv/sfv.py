@@ -16,6 +16,7 @@ NegHeader = HeaderClassFactory.create('HAMMER')
 PosHeader = HeaderClassFactory.create('ARROW')
 TextLabel = LabelClassFactory.create('TEXT_LABEL')
 
+
 def create_from_graphics(net, abbr=None, inputs=None, outputs=None):
     """Create sfv.base.Data object from SIF file.
 
@@ -318,7 +319,7 @@ def _update_single_label_name(net, node, name,
 
 
 def _update_single_label_activity(net, node, x, fix_act_label, fmt, font):
-    iden = '%s_act' % node.iden.upper()
+    iden = '%s_act' % node.iden
     str_x = fmt % (x)
     if iden not in net.labels:
         label_act = TextLabel(node, text=str_x)
