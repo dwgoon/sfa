@@ -52,8 +52,8 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
 
     Returns
     -------
-    E : numpy.ndarray
-        Effect matrix.
+    S : numpy.ndarray
+        Influence matrix.
     num_iter : int, optional
         The actual number of iteration.
     """
