@@ -91,22 +91,22 @@ def normalize(A, norm_in=True, norm_out=True):
     # Build propagation matrix (aka. transition matrix) _W from A
     W = A.copy()
 
-    # Norm. in-degree
-    if norm_in == True:
+    # Norm. out-degree
+    if norm_out == True:
         sum_col_A = np.abs(A).sum(axis=0)
         sum_col_A[sum_col_A == 0] = 1
-        if norm_out == False:
+        if norm_in == False:
             Dc = 1 / sum_col_A
         else:
             Dc = 1 / np.sqrt(sum_col_A)
         # end of else
         W = Dc * W  # This is not matrix multiplication
 
-    # Norm. out-degree
-    if norm_out == True:
+    # Norm. in-degree
+    if norm_in == True:
         sum_row_A = np.abs(A).sum(axis=1)
         sum_row_A[sum_row_A == 0] = 1
-        if norm_in == False:
+        if norm_out == False:
             Dr = 1 / sum_row_A
         else:
             Dr = 1 / np.sqrt(sum_row_A)
