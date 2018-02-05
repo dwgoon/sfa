@@ -10,7 +10,7 @@ A simulation framework to analyze signal flows in complex networks.
 * Calculate the influence using only the network topology.
 * Apply multiple algorithms to multiple datasets.
 * Perform large-scale simulations with parallel processing.
-* Suppoer user-defined algorithms and datasets.
+* Support user-defined algorithms and datasets.
 
 ## Python version ##
 * Both Python 2 and 3 are supported.
