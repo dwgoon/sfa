@@ -1,3 +1,5 @@
+..  -*- coding: utf-8 -*-
+
 Installing SFA
 ===============
 
@@ -18,7 +20,7 @@ Now, you can install SFA Python package from the cloned directory.
 If you want to easily update the most recent stable version of the package
 from the repository, use ``develop`` option insead of ``install``.
 
-::
+.. code-block:: bash
 
     $ python setup.py develop
 
@@ -28,15 +30,15 @@ from the repository.
 
 If you don't have permission to the global ``site-packages`` directory,
 you can use the following flags: ``--user``,  ``--home``, and ``--prefix``.
-Refer to the `official document <https://docs.python.org/3.6/install/index.html>`_
+Refer to the `official document <https://docs.python.org/3/install/index.html>`_
 in more details for using the flags.
 
 For example, you can simply install the package with ``--user`` flag.
 
-::
+.. code-block:: bash
 
     $ python setup.py install --user
 
 
-Otherwise, you can also consier
+Otherwise, you can also consider
 `Python virtual environemnts <https://docs.python.org/3/tutorial/venv.html>`_.

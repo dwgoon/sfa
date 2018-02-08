@@ -108,7 +108,6 @@ class Algorithm(ContainerItem):
         if ba:
             self._initialize_basal_activity()
 
-
     def _initialize_network(self):
         pass
 

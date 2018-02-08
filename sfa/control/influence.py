@@ -1,8 +1,8 @@
 import numpy as np
 
-
 def calc_influence(W, alpha=0.5, beta=0.5, S=None,
-                   max_iter=1000, tol=1e-6, get_iter=False):
+                   max_iter=1000, tol=1e-6, get_iter=False,
+                   device="cpu"):
     """Calculate the influence matrix.
        It estimates the effects of a node to the other nodes,
        by calculating partial derivative with respect to source nodes,
@@ -49,6 +49,8 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
         Tolerance for terminating the iteration.
     get_iter : bool, optional
         Determine whether the actual iteration number is returned.
+    device : str, optional, {'CPU', 'GPU:0', 'GPU:1', ...}
+        Select which device to use. 'CPU' is default.
 
     Returns
     -------
@@ -59,6 +61,19 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
     """
     # TODO: Test rendering the above mathematical expressions in LaTeX form.
 
+    device = device.lower()
+    if 'cpu' in device:
+        return _calc_influence_cpu(W, alpha, beta, S,
+                                   max_iter, tol, get_iter)
+    elif 'gpu'in device:
+        _, id_device = device.split(':')
+        return _calc_influence_gpu(W, alpha, beta, S,
+                                   max_iter, tol, get_iter, id_device)
+        
+
+    
+def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
+                        max_iter=1000, tol=1e-6, get_iter=False):
     N = W.shape[0]
     I = np.eye(N, N, dtype=np.float)
     if S is not None:
@@ -78,3 +93,36 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
         return beta*S2, cnt
     else:
         return beta*S2
+    
+
+def _calc_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
+                        max_iter=1000, tol=1e-6, get_iter=False,
+                        id_device=0):    
+    import cupy as cp
+    cp.cuda.Device(id_device).use()    
+    N = W.shape[0]
+    I = cp.eye(N, dtype=cp.float32) #np.eye(N, N, dtype=np.float)
+    if S is not None:
+        S1 = cp.array(S, dtype=cp.float32)
+    else:
+        S1 = cp.eye(N, dtype=cp.float32)
+    
+    S2 = cp.zeros((N,N), dtype=cp.float32)
+    aW = alpha * cp.array(W, dtype=cp.float32)
+    
+    tol_gpu = cp.array(tol)
+    
+    for cnt in range(max_iter):
+        S2[:, :] = cp.dot(S1, aW) + I
+        mat_norm = cp.linalg.norm(S2 - S1)
+        if mat_norm < tol_gpu:
+            break
+        # end of if
+        S1[:, :] = S2
+    # end of for
+    
+    S_fin = beta*S2
+    if get_iter:
+        return S_fin, cnt
+    else:
+        return S_fin

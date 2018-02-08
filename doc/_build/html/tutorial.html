@@ -36,7 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Singal Flow Analysis 0.0.1 documentation" href="index.html"/>
-        <link rel="next" title="Development" href="develop.html"/>
+        <link rel="next" title="Algorithm" href="algorithm.html"/>
         <link rel="prev" title="Installing SFA" href="install.html"/> 
 
   
@@ -92,7 +92,18 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing SFA</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-algorithm-object">Creating algorithm object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-hyperparameter-values">Setting hyperparameter values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-data-object">Creating data object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#accessing-the-members-of-data-object">Accessing the members of data object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analyzing-data-with-algorithm">Analyzing data with algorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="develop.html">Development</a></li>
 </ul>
 
@@ -159,7 +170,217 @@
             
   <div class="section" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
-<p>asdf</p>
+<p>This brief tutorial will guide you to start utilizing SFA.
+We wrote this tutorial assuming users already have the overall knowledge about
+<a class="reference external" href="http://">the original journal paper</a>.</p>
+<div class="section" id="creating-algorithm-object">
+<h2>Creating algorithm object<a class="headerlink" href="#creating-algorithm-object" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> deals with creating and managing the algorithm objects in SFA.
+Thus, we first need to create <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> object.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sfa</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">algs</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">AlgorithmSet</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now, we can create algorithm objects with <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code>.
+Create <cite>Signal Propagation (SP)</cite> algorithm,
+which is designated by its abbreviation, <code class="docutils literal"><span class="pre">SP</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span> <span class="o">=</span> <span class="n">algs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;SP&#39;</span><span class="p">)</span>
+<span class="go">SP algorithm has been created.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">abbr</span>
+<span class="go">&#39;SP&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span>
+<span class="go">SignalPropagation object</span>
+</pre></div>
+</div>
+<p>As <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> has the functionality of dictionary,
+we can also access the created algorithms using the abbreviations as keys.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">algs</span><span class="p">[</span><span class="s1">&#39;SP&#39;</span><span class="p">]</span>
+<span class="go">SignalPropagation object</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-hyperparameter-values">
+<h2>Setting hyperparameter values<a class="headerlink" href="#setting-hyperparameter-values" title="Permalink to this headline">¶</a></h2>
+<p>Algorithms in SFA have hyperparameters that adjust and constrain
+the behavior of the algorithms.
+<code class="docutils literal"><span class="pre">ParameterSet</span></code>, a nested object defined in <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code>,
+have member variables that contain the information
+about the various hyperparameters.
+The below shows the examples of the parameters.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span>
+<span class="go">&lt;sfa.algorithms.sp.SignalPropagation.ParameterSet at 0x25b5a7e5550&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span>
+<span class="go">0.5</span>
+</pre></div>
+</div>
+<p>We can see the default value of <code class="docutils literal"><span class="pre">alpha</span></code> is 0.5.
+<code class="docutils literal"><span class="pre">alpha</span></code> is a hyperparameter that controls the proportion of signal flow
+in determining the next system state, <em>x(t+1)</em>, in the following formula.</p>
+<div class="math">
+\[x(t+1) = \alpha Wx(t) + (1-\alpha)b\]</div>
+<p>Thus, <code class="docutils literal"><span class="pre">0.5</span></code> means the algorithm reflects the effects of signal flow
+on half of estimating <em>x(t+1)</em>.</p>
+<p>We can easily change the value of <code class="docutils literal"><span class="pre">alpha</span></code>
+by assigning a real value between 0 and 1.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="go">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span>
+<span class="go">0.9</span>
+</pre></div>
+</div>
+<p>Another hyperparameter is <code class="docutils literal"><span class="pre">apply_weight_norm</span></code>,
+which designates whether to use link weight normalization.
+The default value is <code class="docutils literal"><span class="pre">False</span></code>, but it is recommended to set it as <code class="docutils literal"><span class="pre">True</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>Refer to the documentation for more details about the other hyperparameters.</p>
+</div>
+<div class="section" id="creating-data-object">
+<h2>Creating data object<a class="headerlink" href="#creating-data-object" title="Permalink to this headline">¶</a></h2>
+<p>Creating and handling data objects in SFA are similar to those of algorithms.
+A data object is also designated by its abbreviation, as in the algorithm.
+For example, the datasets for <a class="reference external" href="http://msb.embopress.org/content/5/1/256">Borisov et al.</a>
+can be created using <code class="docutils literal"><span class="pre">BORISOV_2009</span></code> as follows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdata</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;BORISOV_2009&#39;</span><span class="p">)</span>
+<span class="go">BORISOV_2009 data has been created.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdata</span>  <span class="c1"># Multiple datasets</span>
+<span class="go">{&#39;120m_AUC_EGF=0.001+I=0.1&#39;: BorisovData object,</span>
+<span class="go"> &#39;120m_AUC_EGF=0.001+I=1&#39;: BorisovData object,</span>
+<span class="go"> &#39;120m_AUC_EGF=0.001+I=10&#39;: BorisovData object,</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>The above <code class="docutils literal"><span class="pre">mdata</span></code> or <code class="docutils literal"><span class="pre">ds['BORISOV_2009']</span></code> is a <code class="docutils literal"><span class="pre">dict</span></code> that contains
+multiple dataset objects with different conditions.
+For example, <code class="docutils literal"><span class="pre">120m_AUC_EGF=0.001+I=0.1</span></code> denotes the dataset was created by
+performing a simulation under the stimulation of 0.001M EGF and 0.1M insulin
+using the original ODE model, where the activity of a biomolecule was
+calculated by estimating the area under the curve (AUC) of the time profile.</p>
+<p>We can select a dataset object by using the abbreviation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">mdata</span><span class="p">[</span><span class="s1">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">abbr</span>
+<span class="go">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span>
+</pre></div>
+</div>
+<p>We can also consider a utility function in SFA, <code class="docutils literal"><span class="pre">sfa.get_avalue</span></code>,
+which arbitrarily selects a dataset object from the dictionary.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">get_avalue</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">abbr</span>
+<span class="go">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span>
+</pre></div>
+</div>
+<p>Actually, <code class="docutils literal"><span class="pre">sfa.get_avalue</span></code> returns the first item by applying the
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#next">next()</a>
+built-in fuction to a given <code class="docutils literal"><span class="pre">dict</span></code> object.</p>
+</div>
+<div class="section" id="accessing-the-members-of-data-object">
+<h2>Accessing the members of data object<a class="headerlink" href="#accessing-the-members-of-data-object" title="Permalink to this headline">¶</a></h2>
+<p>The data object (instantiated with a subclass of <code class="docutils literal"><span class="pre">sfa.Data</span></code>) has
+various data structures that are required for using <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code>.
+For example, <code class="docutils literal"><span class="pre">sfa.Data</span></code> object has the information about network topology in
+<code class="docutils literal"><span class="pre">A</span></code> (adjacency matrix in <code class="docutils literal"><span class="pre">numpy</span></code>’s <a class="reference external" href="https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.ndarray.html">ndarray</a>),
+<code class="docutils literal"><span class="pre">dg</span></code> (<code class="docutils literal"><span class="pre">NetworkX</span></code>’s <a class="reference external" href="&lt;https://networkx.github.io/documentation/networkx-1.10/reference/classes.digraph.html&gt;`_">DiGraph</a>),
+and <code class="docutils literal"><span class="pre">n2i</span></code> ( <code class="docutils literal"><span class="pre">dict</span></code> for mapping names to the indices of <code class="docutils literal"><span class="pre">A</span></code>).</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span>  <span class="c1"># Name to index mapper</span>
+<span class="go">{&#39;AKT&#39;: 0,</span>
+<span class="go"> &#39;EGF&#39;: 1,</span>
+<span class="go"> &#39;EGFR&#39;: 2,</span>
+<span class="go"> &#39;ERK&#39;: 3,</span>
+<span class="go"> &#39;GAB1&#39;: 4,</span>
+<span class="go"> &#39;GAB1_SHP2&#39;: 5,</span>
+<span class="go"> &#39;GAB1_pSHP2&#39;: 6,</span>
+<span class="go"> &#39;GS&#39;: 7,</span>
+<span class="go"> &#39;I&#39;: 8,</span>
+<span class="go"> &#39;IR&#39;: 9,</span>
+<span class="go"> &#39;IRS&#39;: 10,</span>
+<span class="go"> &#39;IRS_SHP2&#39;: 11,</span>
+<span class="go"> &#39;MEK&#39;: 12,</span>
+<span class="go"> &#39;PDK1&#39;: 13,</span>
+<span class="go"> &#39;PI3K&#39;: 14,</span>
+<span class="go"> &#39;PIP3&#39;: 15,</span>
+<span class="go"> &#39;RAF&#39;: 16,</span>
+<span class="go"> &#39;RAS&#39;: 17,</span>
+<span class="go"> &#39;RasGAP&#39;: 18,</span>
+<span class="go"> &#39;SFK&#39;: 19,</span>
+<span class="go"> &#39;SHC&#39;: 20,</span>
+<span class="go"> &#39;mTOR&#39;: 21}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">],</span> <span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span>  <span class="c1"># MEK -&gt; ERK</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">]]</span>  <span class="c1"># ERK -| GAB1</span>
+<span class="go">-1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">],</span> <span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGFR&#39;</span><span class="p">]]</span>  <span class="c1"># No link between EGFR and ERK</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">dg</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;SIGN&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;SIGN&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> -| </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">AKT -&gt; mTOR</span>
+<span class="go">AKT -| RAF</span>
+<span class="go">EGF -&gt; EGFR</span>
+<span class="go">EGFR -&gt; RasGAP</span>
+<span class="go">EGFR -&gt; SFK</span>
+<span class="go">EGFR -&gt; PI3K</span>
+<span class="go">EGFR -&gt; GAB1</span>
+<span class="go">EGFR -&gt; GAB1_pSHP2</span>
+<span class="go">EGFR -&gt; SHC</span>
+<span class="go">EGFR -&gt; GS</span>
+<span class="go">ERK -| GAB1</span>
+<span class="go">ERK -| GS</span>
+<span class="go">GAB1 -&gt; GAB1_SHP2</span>
+<span class="go">GAB1 -&gt; GAB1_pSHP2</span>
+<span class="go">GAB1 -&gt; PI3K</span>
+<span class="go">GAB1 -&gt; GS</span>
+<span class="go">GAB1 -&gt; RasGAP</span>
+<span class="go">GAB1_SHP2 -&gt; GAB1_pSHP2</span>
+<span class="go">GAB1_SHP2 -| RasGAP</span>
+<span class="go">GAB1_pSHP2 -&gt; GS</span>
+<span class="go">GAB1_pSHP2 -| RasGAP</span>
+<span class="go">GS -&gt; RAS</span>
+<span class="go">I -&gt; IR</span>
+<span class="go">IR -&gt; RasGAP</span>
+<span class="go">IR -&gt; IRS</span>
+<span class="go">IR -&gt; SFK</span>
+<span class="go">IR -&gt; PI3K</span>
+<span class="go">IRS -&gt; IRS_SHP2</span>
+<span class="go">IRS -&gt; GS</span>
+<span class="go">IRS -&gt; PI3K</span>
+<span class="go">IRS_SHP2 -| RasGAP</span>
+<span class="go">MEK -&gt; ERK</span>
+<span class="go">PDK1 -&gt; AKT</span>
+<span class="go">PI3K -&gt; PIP3</span>
+<span class="go">PIP3 -&gt; PDK1</span>
+<span class="go">PIP3 -&gt; IRS</span>
+<span class="go">PIP3 -&gt; GAB1</span>
+<span class="go">RAF -&gt; MEK</span>
+<span class="go">RAS -&gt; RAF</span>
+<span class="go">RasGAP -| RAS</span>
+<span class="go">SFK -&gt; IRS</span>
+<span class="go">SFK -&gt; GAB1</span>
+<span class="go">SFK -&gt; GAB1_pSHP2</span>
+<span class="go">SFK -&gt; RAF</span>
+<span class="go">SHC -&gt; GS</span>
+<span class="go">mTOR -&gt; AKT</span>
+<span class="go">mTOR -| IRS</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="analyzing-data-with-algorithm">
+<h2>Analyzing data with algorithm<a class="headerlink" href="#analyzing-data-with-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>To make <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code> work with <code class="docutils literal"><span class="pre">sfa.Data</span></code>,
+we should assign the data object to the algorithm object.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Setting the hyperparameters of the algorithm has been finished...</span>
+<span class="n">alg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+<span class="n">alg</span><span class="o">.</span><span class="n">initilize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -172,7 +393,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="develop.html" class="btn btn-neutral float-right" title="Development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="algorithm.html" class="btn btn-neutral float-right" title="Algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="install.html" class="btn btn-neutral" title="Installing SFA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

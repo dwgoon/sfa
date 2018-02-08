@@ -1,3 +1,260 @@
+..  -*- coding: utf-8 -*-
+
 Tutorial
 ========
-asdf
+
+This brief tutorial will guide you to start utilizing SFA.
+We wrote this tutorial assuming users already have the overall knowledge about
+`the original journal paper <http://>`_.
+
+
+
+Creating algorithm object
+--------------------------
+
+``sfa.AlgorithmSet`` deals with creating and managing the algorithm objects in SFA.
+Thus, we first need to create ``sfa.AlgorithmSet`` object.
+
+.. code-block:: python
+
+    >>> import sfa
+    >>> algs = sfa.AlgorithmSet()
+
+
+Now, we can create algorithm objects with ``sfa.AlgorithmSet``.
+Create `Signal Propagation (SP)` algorithm,
+which is designated by its abbreviation, ``SP``.
+
+.. code-block:: python
+
+    >>> alg = algs.create('SP')
+    SP algorithm has been created.
+    >>> alg.abbr
+    'SP'
+    >>> alg
+    SignalPropagation object
+
+As ``sfa.AlgorithmSet`` has the functionality of dictionary,
+we can also access the created algorithms using the abbreviations as keys.
+
+.. code-block:: python
+
+    >>> algs['SP']
+    SignalPropagation object
+
+
+Setting hyperparameter values
+-----------------------------
+
+Algorithms in SFA have hyperparameters that adjust and constrain
+the behavior of the algorithms.
+``ParameterSet``, a nested object defined in ``sfa.Algorithm``,
+have member variables that contain the information
+about the various hyperparameters.
+The below shows the examples of the parameters.
+
+.. code-block:: python
+
+    >>> alg.params
+    <sfa.algorithms.sp.SignalPropagation.ParameterSet at 0x25b5a7e5550>
+    >>> alg.params.alpha
+    0.5
+
+We can see the default value of ``alpha`` is 0.5.
+``alpha`` is a hyperparameter that controls the proportion of signal flow
+in determining the next system state, *x(t+1)*, in the following formula.
+
+.. math::
+
+    x(t+1) = \alpha Wx(t) + (1-\alpha)b
+
+Thus, ``0.5`` means the algorithm reflects the effects of signal flow
+on half of estimating *x(t+1)*.
+
+We can easily change the value of ``alpha``
+by assigning a real value between 0 and 1.
+
+.. code-block:: python
+
+    >>> alg.params.alpha = 0.5
+    0.5
+    >>> alg.params.alpha = 0.9
+    >>> alg.params.alpha
+    0.9
+
+
+Another hyperparameter is ``apply_weight_norm``,
+which designates whether to use link weight normalization.
+The default value is ``False``, but it is recommended to set it as ``True``.
+
+.. code-block:: python
+
+    >>> alg.params.apply_weight_norm
+    False
+    >>> alg.params.apply_weight_norm = True
+
+Refer to the documentation for more details about the other hyperparameters.
+
+
+Creating data object
+--------------------
+
+Creating and handling data objects in SFA are similar to those of algorithms.
+A data object is also designated by its abbreviation, as in the algorithm.
+For example, the datasets for `Borisov et al. <http://msb.embopress.org/content/5/1/256>`_
+can be created using ``BORISOV_2009`` as follows.
+
+.. code-block:: python
+
+    >>> ds = sfa.DataSet()
+    >>> mdata = ds.create('BORISOV_2009')
+    BORISOV_2009 data has been created.
+    >>> mdata  # Multiple datasets
+    {'120m_AUC_EGF=0.001+I=0.1': BorisovData object,
+     '120m_AUC_EGF=0.001+I=1': BorisovData object,
+     '120m_AUC_EGF=0.001+I=10': BorisovData object,
+    ...
+
+
+The above ``mdata`` or ``ds['BORISOV_2009']`` is a ``dict`` that contains
+multiple dataset objects with different conditions.
+For example, ``120m_AUC_EGF=0.001+I=0.1`` denotes the dataset was created by
+performing a simulation under the stimulation of 0.001M EGF and 0.1M insulin
+using the original ODE model, where the activity of a biomolecule was
+calculated by estimating the area under the curve (AUC) of the time profile.
+
+We can select a dataset object by using the abbreviation.
+
+.. code-block:: python
+
+    >>> data = mdata['120m_AUC_EGF=0.001+I=0.1']
+    >>> data.abbr
+    '120m_AUC_EGF=0.001+I=0.1'
+
+We can also consider a utility function in SFA, ``sfa.get_avalue``,
+which arbitrarily selects a dataset object from the dictionary.
+
+.. code-block:: python
+
+    >>> data = sfa.get_avalue(mdata)
+    >>> data.abbr
+    '120m_AUC_EGF=0.001+I=0.1'
+
+Actually, ``sfa.get_avalue`` returns the first item by applying the
+`next() <https://docs.python.org/3/library/functions.html#next>`_
+built-in fuction to a given ``dict`` object.
+
+
+Accessing the members of data object
+------------------------------------
+
+The data object (instantiated with a subclass of ``sfa.Data``) has
+various data structures that are required for using ``sfa.Algorithm``.
+For example, ``sfa.Data`` object has the information about network topology in
+``A`` (adjacency matrix in ``numpy``'s ndarray_),
+``dg`` (``NetworkX``'s DiGraph_),
+and ``n2i`` ( ``dict`` for mapping names to the indices of ``A``).
+
+
+.. code-block:: python
+
+    >>> data.n2i  # Name to index mapper
+    {'AKT': 0,
+     'EGF': 1,
+     'EGFR': 2,
+     'ERK': 3,
+     'GAB1': 4,
+     'GAB1_SHP2': 5,
+     'GAB1_pSHP2': 6,
+     'GS': 7,
+     'I': 8,
+     'IR': 9,
+     'IRS': 10,
+     'IRS_SHP2': 11,
+     'MEK': 12,
+     'PDK1': 13,
+     'PI3K': 14,
+     'PIP3': 15,
+     'RAF': 16,
+     'RAS': 17,
+     'RasGAP': 18,
+     'SFK': 19,
+     'SHC': 20,
+     'mTOR': 21}
+    >>> data.A[n2i['ERK'], n2i['MEK']]  # MEK -> ERK
+    1
+    >>> data.A[n2i['GAB1'], n2i['ERK']]  # ERK -| GAB1
+    -1
+    >>> data.A[n2i['ERK'], n2i['EGFR']]  # No link between EGFR and ERK
+    0
+    >>> for src, trg, attr in data.dg.edges(data=True):
+    ...     if attr['SIGN'] > 0:
+    ...         print('%s -> %s'%(src, trg))
+    ...     elif attr['SIGN'] < 0:
+    ...         print('%s -| %s'%(src, trg))
+    ...
+    AKT -> mTOR
+    AKT -| RAF
+    EGF -> EGFR
+    EGFR -> RasGAP
+    EGFR -> SFK
+    EGFR -> PI3K
+    EGFR -> GAB1
+    EGFR -> GAB1_pSHP2
+    EGFR -> SHC
+    EGFR -> GS
+    ERK -| GAB1
+    ERK -| GS
+    GAB1 -> GAB1_SHP2
+    GAB1 -> GAB1_pSHP2
+    GAB1 -> PI3K
+    GAB1 -> GS
+    GAB1 -> RasGAP
+    GAB1_SHP2 -> GAB1_pSHP2
+    GAB1_SHP2 -| RasGAP
+    GAB1_pSHP2 -> GS
+    GAB1_pSHP2 -| RasGAP
+    GS -> RAS
+    I -> IR
+    IR -> RasGAP
+    IR -> IRS
+    IR -> SFK
+    IR -> PI3K
+    IRS -> IRS_SHP2
+    IRS -> GS
+    IRS -> PI3K
+    IRS_SHP2 -| RasGAP
+    MEK -> ERK
+    PDK1 -> AKT
+    PI3K -> PIP3
+    PIP3 -> PDK1
+    PIP3 -> IRS
+    PIP3 -> GAB1
+    RAF -> MEK
+    RAS -> RAF
+    RasGAP -| RAS
+    SFK -> IRS
+    SFK -> GAB1
+    SFK -> GAB1_pSHP2
+    SFK -> RAF
+    SHC -> GS
+    mTOR -> AKT
+    mTOR -| IRS
+
+
+Analyzing data with algorithm
+-----------------------------
+
+To make ``sfa.Algorithm`` work with ``sfa.Data``,
+we should assign the data object to the algorithm object.
+
+.. code-block:: python
+
+    # Setting the hyperparameters of the algorithm has been finished...
+    alg.data = data
+    alg.initilize()
+
+
+
+.. _ndarray: https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.ndarray.html
+.. _DiGraph: <https://networkx.github.io/documentation/networkx-1.10/reference/classes.digraph.html>`_
