@@ -25,9 +25,11 @@ Documentation
    :maxdepth: 1
 
    install
-   tutorial
-   algorithm
+   tutorial_sfa
+   tutorial_dc
    dataset
+   algorithm
+   control
    visualization
    simulation
    develop

@@ -1,3 +1,6 @@
 Algorithm
 =========
-asdf
+
+
+Defining a new algorithm
+------------------------

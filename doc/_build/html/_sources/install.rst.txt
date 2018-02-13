@@ -1,7 +1,7 @@
 ..  -*- coding: utf-8 -*-
 
-Installing SFA
-===============
+Install
+=======
 
 Currently, we recommend installing from distributed repositories such as GitHub.
 First, download a recent version of the repository as follows.
