@@ -16,9 +16,9 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
        partial derivative as follows.
 
        \begin{align}
-        E_{ij} &= \frac{\partial{x_i}}{\partial{x_j}} \\
-               &= (\alpha W + \alpha^2 W^2 +  ... + \alpha^{\infty}W^{\infty})_{ij} \\
-               &\approx (\alpha W + \alpha^2 W^2 +  ... + \alpha^{l}W^{l})_{ij} \\
+        S_{ij} &= \frac{\partial{x_i}}{\partial{x_j}} \\
+               &= (I + \alpha W + \alpha^2 W^2 +  ... + \alpha^{\infty}W^{\infty})_{ij} \\
+               &\approx (I + \alpha W + \alpha^2 W^2 +  ... + \alpha^{l}W^{l})_{ij} \\
        \end{align}
 
        This is the summation of the weight multiplications along all paths
@@ -26,9 +26,9 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
 
        An iterative method for an approximated solution is as follows.
 
-        S(t+1) = \alpha WS(t) + \alpha W,
+        S(t+1) = \alpha WS(t) + I,
 
-       where $S(0) = I$ and $S(1) = \alpha W$ $(t>1)$.
+       where $S(0) = \beta I$ and $S(1) = \beta(I + \alpha W)$ $(t>1)$.
 
        The iteration continues until $||S(t+1) - S(t)|| \leq tol$.
 
@@ -61,6 +61,9 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
     """
     # TODO: Test rendering the above mathematical expressions in LaTeX form.
 
+    if max_iter < 2:
+        raise ValueError("max_iter should be greater than 2.")
+
     device = device.lower()
     if 'cpu' in device:
         return _calc_influence_cpu(W, alpha, beta, S,
@@ -71,7 +74,6 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
                                    max_iter, tol, get_iter, id_device)
         
 
-    
 def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
                         max_iter=1000, tol=1e-6, get_iter=False):
     N = W.shape[0]
@@ -89,10 +91,12 @@ def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
         # end of if
         S1 = S2
     # end of for
+
+    S_fin = beta * S2
     if get_iter:
-        return beta*S2, cnt
+        return S_fin, cnt
     else:
-        return beta*S2
+        return S_fin
     
 
 def _calc_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
