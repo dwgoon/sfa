@@ -1,0 +1,674 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial: Signal flow analysis &mdash; Singal Flow Analysis 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.0.1 documentation" href="index.html"/>
+        <link rel="next" title="Tutorial: Discovery of control targets" href="tutorial_dc.html"/>
+        <link rel="prev" title="Install" href="install.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial: Signal flow analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-algorithm-object">Creating algorithm object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-hyperparameter-values">Setting hyperparameter values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-data-object">Creating data object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#accessing-the-members-of-data-object">Accessing the members of data object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analyzing-data-with-algorithm">Analyzing data with algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#applying-perturbation-to-link">Applying perturbation to link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#estimating-signal-flows">Estimating signal flows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_dc.html">Tutorial: Discovery of control targets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="develop.html">Development</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial: Signal flow analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial_sfa.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial-signal-flow-analysis">
+<h1>Tutorial: Signal flow analysis<a class="headerlink" href="#tutorial-signal-flow-analysis" title="Permalink to this headline">¶</a></h1>
+<p>This brief tutorial will guide you to start utilizing SFA.
+We wrote this tutorial assuming users already have the overall knowledge about
+<a class="reference external" href="http://">the original journal paper</a>.</p>
+<div class="section" id="creating-algorithm-object">
+<h2>Creating algorithm object<a class="headerlink" href="#creating-algorithm-object" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> deals with creating and managing the algorithm objects in SFA.
+Thus, we first need to create <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> object.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sfa</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">algs</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">AlgorithmSet</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now, we can create algorithm objects with <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code>.
+Create <cite>Signal Propagation (SP)</cite> algorithm,
+which is designated by its abbreviation, <code class="docutils literal"><span class="pre">SP</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span> <span class="o">=</span> <span class="n">algs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;SP&#39;</span><span class="p">)</span>
+<span class="go">SP algorithm has been created.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">abbr</span>
+<span class="go">&#39;SP&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span>
+<span class="go">SignalPropagation object</span>
+</pre></div>
+</div>
+<p>As <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> has the functionality of dictionary,
+we can also access the created algorithms using the abbreviations as keys.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">algs</span><span class="p">[</span><span class="s1">&#39;SP&#39;</span><span class="p">]</span>
+<span class="go">SignalPropagation object</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-hyperparameter-values">
+<h2>Setting hyperparameter values<a class="headerlink" href="#setting-hyperparameter-values" title="Permalink to this headline">¶</a></h2>
+<p>Algorithms in SFA have hyperparameters that adjust and constrain
+the behavior of the algorithms.
+<code class="docutils literal"><span class="pre">ParameterSet</span></code>, a nested object defined in <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code>,
+have member variables that contain the information
+about the various hyperparameters.
+The below shows the examples of the parameters.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span>
+<span class="go">&lt;sfa.algorithms.sp.SignalPropagation.ParameterSet at 0x25b5a7e5550&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span>
+<span class="go">0.5</span>
+</pre></div>
+</div>
+<p>We can see the default value of <code class="docutils literal"><span class="pre">alpha</span></code> is 0.5.
+<code class="docutils literal"><span class="pre">alpha</span></code> is a hyperparameter that controls the proportion of signal flow
+in determining the next system state, <em>x(t+1)</em>, in the following formula.</p>
+<div class="math">
+\[x(t+1) = \alpha Wx(t) + (1-\alpha)b\]</div>
+<p>Thus, <code class="docutils literal"><span class="pre">0.5</span></code> means the algorithm reflects the effects of signal flow
+on half of estimating <em>x(t+1)</em>.</p>
+<p>We can easily change the value of <code class="docutils literal"><span class="pre">alpha</span></code>
+by assigning a real value between 0 and 1.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="go">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span>
+<span class="go">0.9</span>
+</pre></div>
+</div>
+<p>Another hyperparameter is <code class="docutils literal"><span class="pre">apply_weight_norm</span></code>,
+which designates whether to use link weight normalization.
+The default value is <code class="docutils literal"><span class="pre">False</span></code>, but it is recommended to set it as <code class="docutils literal"><span class="pre">True</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>Refer to the documentation for more details about the other hyperparameters.</p>
+</div>
+<div class="section" id="creating-data-object">
+<h2>Creating data object<a class="headerlink" href="#creating-data-object" title="Permalink to this headline">¶</a></h2>
+<p>Creating and handling data objects in SFA are similar to those of algorithms.
+A data object is also designated by its abbreviation, as in the algorithm.
+For example, the datasets for <a class="reference external" href="http://msb.embopress.org/content/5/1/256">Borisov et al.</a>
+can be created using <code class="docutils literal"><span class="pre">BORISOV_2009</span></code> as follows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdata</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;BORISOV_2009&#39;</span><span class="p">)</span>
+<span class="go">BORISOV_2009 data has been created.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdata</span>  <span class="c1"># Multiple datasets.</span>
+<span class="go">{&#39;120m_AUC_EGF=0.001+I=0.1&#39;: BorisovData object,</span>
+<span class="go"> &#39;120m_AUC_EGF=0.001+I=1&#39;: BorisovData object,</span>
+<span class="go"> &#39;120m_AUC_EGF=0.001+I=10&#39;: BorisovData object,</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>The above <code class="docutils literal"><span class="pre">mdata</span></code> or <code class="docutils literal"><span class="pre">ds['BORISOV_2009']</span></code> is a <code class="docutils literal"><span class="pre">dict</span></code> that contains
+multiple dataset objects with different conditions.
+For example, <code class="docutils literal"><span class="pre">120m_AUC_EGF=0.001+I=0.1</span></code> denotes the dataset was created by
+performing a simulation under the stimulation of 0.001M EGF and 0.1M insulin
+using the original ODE model, where the activity of a biomolecule was
+calculated by estimating the area under the curve (AUC) of the time profile.</p>
+<p>We can select a dataset object by using the abbreviation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">mdata</span><span class="p">[</span><span class="s1">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">abbr</span>
+<span class="go">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span>
+</pre></div>
+</div>
+<p>We can also consider a utility function in SFA, <code class="docutils literal"><span class="pre">sfa.get_avalue</span></code>,
+which arbitrarily selects a dataset object from the dictionary.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">get_avalue</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">abbr</span>
+<span class="go">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span>
+</pre></div>
+</div>
+<p>Actually, <code class="docutils literal"><span class="pre">sfa.get_avalue</span></code> returns the first item by applying the
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#next">next()</a>
+built-in fuction to a given <code class="docutils literal"><span class="pre">dict</span></code> object.</p>
+</div>
+<div class="section" id="accessing-the-members-of-data-object">
+<h2>Accessing the members of data object<a class="headerlink" href="#accessing-the-members-of-data-object" title="Permalink to this headline">¶</a></h2>
+<p>The data object (instantiated with a subclass of <code class="docutils literal"><span class="pre">sfa.Data</span></code>) has
+various data structures that are required for using <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code>.
+For example, <code class="docutils literal"><span class="pre">sfa.Data</span></code> object has the information about network topology in
+<code class="docutils literal"><span class="pre">A</span></code> (adjacency matrix in <code class="docutils literal"><span class="pre">numpy</span></code>’s <a class="reference external" href="https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.ndarray.html">ndarray</a>),
+<code class="docutils literal"><span class="pre">dg</span></code> (<code class="docutils literal"><span class="pre">NetworkX</span></code>’s <a class="reference external" href="https://networkx.github.io/documentation/networkx-1.10/reference/classes.digraph.html">DiGraph</a>),
+and <code class="docutils literal"><span class="pre">n2i</span></code> ( <code class="docutils literal"><span class="pre">dict</span></code> for mapping names to the indices of <code class="docutils literal"><span class="pre">A</span></code>).</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span>  <span class="c1"># Name to index mapper.</span>
+<span class="go">{&#39;AKT&#39;: 0,</span>
+<span class="go"> &#39;EGF&#39;: 1,</span>
+<span class="go"> &#39;EGFR&#39;: 2,</span>
+<span class="go"> &#39;ERK&#39;: 3,</span>
+<span class="go"> &#39;GAB1&#39;: 4,</span>
+<span class="go"> &#39;GAB1_SHP2&#39;: 5,</span>
+<span class="go"> &#39;GAB1_pSHP2&#39;: 6,</span>
+<span class="go"> &#39;GS&#39;: 7,</span>
+<span class="go"> &#39;I&#39;: 8,</span>
+<span class="go"> &#39;IR&#39;: 9,</span>
+<span class="go"> &#39;IRS&#39;: 10,</span>
+<span class="go"> &#39;IRS_SHP2&#39;: 11,</span>
+<span class="go"> &#39;MEK&#39;: 12,</span>
+<span class="go"> &#39;PDK1&#39;: 13,</span>
+<span class="go"> &#39;PI3K&#39;: 14,</span>
+<span class="go"> &#39;PIP3&#39;: 15,</span>
+<span class="go"> &#39;RAF&#39;: 16,</span>
+<span class="go"> &#39;RAS&#39;: 17,</span>
+<span class="go"> &#39;RasGAP&#39;: 18,</span>
+<span class="go"> &#39;SFK&#39;: 19,</span>
+<span class="go"> &#39;SHC&#39;: 20,</span>
+<span class="go"> &#39;mTOR&#39;: 21}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">],</span> <span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span>  <span class="c1"># MEK -&gt; ERK</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">]]</span>  <span class="c1"># ERK -| GAB1</span>
+<span class="go">-1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">],</span> <span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGFR&#39;</span><span class="p">]]</span>  <span class="c1"># No link between EGFR and ERK.</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">dg</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;SIGN&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;SIGN&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> -| </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">AKT -&gt; mTOR</span>
+<span class="go">AKT -| RAF</span>
+<span class="go">EGF -&gt; EGFR</span>
+<span class="go">EGFR -&gt; RasGAP</span>
+<span class="go">EGFR -&gt; SFK</span>
+<span class="go">EGFR -&gt; PI3K</span>
+<span class="go">EGFR -&gt; GAB1</span>
+<span class="go">EGFR -&gt; GAB1_pSHP2</span>
+<span class="go">EGFR -&gt; SHC</span>
+<span class="go">EGFR -&gt; GS</span>
+<span class="go">ERK -| GAB1</span>
+<span class="go">ERK -| GS</span>
+<span class="go">GAB1 -&gt; GAB1_SHP2</span>
+<span class="go">GAB1 -&gt; GAB1_pSHP2</span>
+<span class="go">GAB1 -&gt; PI3K</span>
+<span class="go">GAB1 -&gt; GS</span>
+<span class="go">GAB1 -&gt; RasGAP</span>
+<span class="go">GAB1_SHP2 -&gt; GAB1_pSHP2</span>
+<span class="go">GAB1_SHP2 -| RasGAP</span>
+<span class="go">GAB1_pSHP2 -&gt; GS</span>
+<span class="go">GAB1_pSHP2 -| RasGAP</span>
+<span class="go">GS -&gt; RAS</span>
+<span class="go">I -&gt; IR</span>
+<span class="go">IR -&gt; RasGAP</span>
+<span class="go">IR -&gt; IRS</span>
+<span class="go">IR -&gt; SFK</span>
+<span class="go">IR -&gt; PI3K</span>
+<span class="go">IRS -&gt; IRS_SHP2</span>
+<span class="go">IRS -&gt; GS</span>
+<span class="go">IRS -&gt; PI3K</span>
+<span class="go">IRS_SHP2 -| RasGAP</span>
+<span class="go">MEK -&gt; ERK</span>
+<span class="go">PDK1 -&gt; AKT</span>
+<span class="go">PI3K -&gt; PIP3</span>
+<span class="go">PIP3 -&gt; PDK1</span>
+<span class="go">PIP3 -&gt; IRS</span>
+<span class="go">PIP3 -&gt; GAB1</span>
+<span class="go">RAF -&gt; MEK</span>
+<span class="go">RAS -&gt; RAF</span>
+<span class="go">RasGAP -| RAS</span>
+<span class="go">SFK -&gt; IRS</span>
+<span class="go">SFK -&gt; GAB1</span>
+<span class="go">SFK -&gt; GAB1_pSHP2</span>
+<span class="go">SFK -&gt; RAF</span>
+<span class="go">SHC -&gt; GS</span>
+<span class="go">mTOR -&gt; AKT</span>
+<span class="go">mTOR -| IRS</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="analyzing-data-with-algorithm">
+<h2>Analyzing data with algorithm<a class="headerlink" href="#analyzing-data-with-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>To make <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code> work with <code class="docutils literal"><span class="pre">sfa.Data</span></code>,
+we should first assign the data object to the algorithm object.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># Assign the data object to the algorithm.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">initilize</span><span class="p">()</span>  <span class="c1"># Initialize the algorithm object.</span>
+</pre></div>
+</div>
+<p>In the initization of the algorithm (calling <code class="docutils literal"><span class="pre">sfa.Algorithm.initialze</span></code>),
+the algorithm prepares estimaing signal flow
+by performing some necessary tasks such as link weight normalization.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGFR&#39;</span><span class="p">]]</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGFR&#39;</span><span class="p">]]</span>
+<span class="go">0.1889822365046136</span>
+</pre></div>
+</div>
+<p>Note that the element of the weight matrix is different
+from that of adjacency matrix.</p>
+<p>One of the important tasks is to determine
+the values of the basal activity before analyzing signal flow.
+The effects of input stimulation or perturbation are basically reflected to
+the basal activity vector, <em>b</em>.
+For example, EGF stimulation can be reflected to <em>b</em> as follows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">N</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dg</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>  <span class="c1"># The number of nodes; data.A.shape[0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGF&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Now, we can perform the estimation of signal flow,
+and examine how the two outputs, ERK and AKT, have changed.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xs1</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="c1"># xs: x at steady-state</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs1</span>
+<span class="go">array([0.00155625, 0.5       , 0.25      , 0.00165546, 0.02951243,</span>
+<span class="go">       0.00659918, 0.03226491, 0.0367612 , 0.        , 0.        ,</span>
+<span class="go">       0.00608503, 0.0017566 , 0.00331091, 0.00401268, 0.02780067,</span>
+<span class="go">       0.01390033, 0.00662182, 0.00733528, 0.01601391, 0.03340766,</span>
+<span class="go">       0.04724556, 0.00055022])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">]]</span>
+<span class="go">0.0016554557287082902</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;AKT&#39;</span><span class="p">]]</span>
+<span class="go">0.0015562514037656679</span>
+</pre></div>
+</div>
+<p>We can see the signs of the two outputs are positive,
+which means ERK and AKT are upregulated by EGF stimulation.</p>
+<p>Next, let’s apply an inhibitory perturbation to the network.
+For example, we can perturb MEK by setting its basal activity as follows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGF&#39;</span><span class="p">]],</span> <span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span>
+<span class="go">(1.0, -1.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">array([ 0.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,</span>
+<span class="go">        0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.])</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs2</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs2</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span>
+<span class="go">-0.4947084519007513</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs2</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">]]</span>
+<span class="go">-0.24735422595037565</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs2</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;AKT&#39;</span><span class="p">]]</span>
+<span class="go">0.001836795161913794</span>
+</pre></div>
+</div>
+<p>At this time, the sign of ERK is negative,
+which means it is downregulated by MEK inhibition.
+On the other hand, AKT is not downregulated
+by the inhibition under EGF stimulation.</p>
+<p>If we want to examine how the inhibition of MEK affects each node,
+we take the difference between the vectors of two results.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dxs</span> <span class="o">=</span> <span class="n">xs2</span> <span class="o">-</span> <span class="n">xs1</span>  <span class="c1"># Difference between the two results.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dxs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Indices of upregulated nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind_dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dxs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Indices of downregulated nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">ind_up</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">i2n</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>  <span class="c1"># data.i2n: Index to name mapper.</span>
+<span class="go">AKT</span>
+<span class="go">GAB1</span>
+<span class="go">GAB1_SHP2</span>
+<span class="go">GAB1_pSHP2</span>
+<span class="go">GS</span>
+<span class="go">IRS</span>
+<span class="go">IRS_SHP2</span>
+<span class="go">PDK1</span>
+<span class="go">PI3K</span>
+<span class="go">PIP3</span>
+<span class="go">RAF</span>
+<span class="go">RAS</span>
+<span class="go">RasGAP</span>
+<span class="go">mTOR</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">ind_dn</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">i2n</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+<span class="go">ERK</span>
+<span class="go">MEK</span>
+</pre></div>
+</div>
+<p>This result shows that only MEK and ERK are upregulated
+by the inhibition of MEK under EGF stimulation.</p>
+</div>
+<div class="section" id="applying-perturbation-to-link">
+<h2>Applying perturbation to link<a class="headerlink" href="#applying-perturbation-to-link" title="Permalink to this headline">¶</a></h2>
+<p>In some cases, a perturbation should be reflected to link weight,
+not basal activity. For example, if we want to examine what happens
+when PI3K cannot send signal to its downstreams
+(i.e., the out-links of PI3K are removed).</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGF&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="p">[:,</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span> <span class="o">*=</span> <span class="mi">0</span>  <span class="c1"># Remove all the out-link weights.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs3</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs3</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">]]</span>
+<span class="go">0.00172210494367554</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs3</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;AKT&#39;</span><span class="p">]]</span>
+<span class="go">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dxs</span> <span class="o">=</span> <span class="n">xs3</span> <span class="o">-</span> <span class="n">xs1</span>  <span class="c1"># xs1 is the same as the previously computed one.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dxs</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">]]</span>
+<span class="go">6.664921496724974e-05</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dxs</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;AKT&#39;</span><span class="p">]]</span>
+<span class="go">-0.0015562514037656679</span>
+</pre></div>
+</div>
+<p>We can see that AKT is downregulated if all out-links of PI3K are lost.</p>
+</div>
+<div class="section" id="estimating-signal-flows">
+<h2>Estimating signal flows<a class="headerlink" href="#estimating-signal-flows" title="Permalink to this headline">¶</a></h2>
+<p>The estimation of signal flow is defined as
+the multiplication of link weight and activity of the source node.
+The activity is usually is the steady-state activity</p>
+<div class="math">
+\[F(t)_{ij} = W_{ij} \cdot x(t)_{j}\]</div>
+<p>Follwing the definition, we can compute the signal flow as follows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>  <span class="c1"># Obtain the intact weight matrix.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W1</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Get a copy of the weight matrix.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span> <span class="o">=</span> <span class="n">W1</span><span class="o">*</span><span class="n">xs1</span>  <span class="c1"># Element-wise multiplication of each row and xs1</span>
+</pre></div>
+</div>
+<p>Note that the above code snippet is not matix-vector multiplication,
+but it is element-wise multiplication of vectors (<a class="reference external" href="https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.ndarray.html">ndarray</a> in <a class="reference external" href="http://www.numpy.org">NumPy</a>).
+The following shows some of the estimated signal flows.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PIP3&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span>
+<span class="go">0.02780066830505488</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span>
+<span class="go">0.0033109114574165805</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">]]</span>
+<span class="go">-0.0005852919858618747</span>
+</pre></div>
+</div>
+<p>If we want to compare the two conditions,
+we can compute the net signal flow as follows.</p>
+<div class="math">
+\[F_{net} = F_{c2} - F_{c1}\]</div>
+<p>Let’s use the PI3K example of “<a class="reference internal" href="#applying-perturbation-to-link">Applying perturbation to link</a>” again.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">W3</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># alg.W is the intact one.</span>
+<span class="o">&gt;&gt;</span> <span class="n">W3</span><span class="p">[:,</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span> <span class="o">*=</span> <span class="mi">0</span>  <span class="c1"># Apply the PI3K</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">F3</span> <span class="o">=</span> <span class="n">W3</span><span class="o">*</span><span class="n">xs3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Fnet</span> <span class="o">=</span> <span class="n">F3</span> <span class="o">-</span> <span class="n">F1</span>  <span class="c1"># Net signal flow.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Fnet</span><span class="p">[:,</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ir</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ir</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+<span class="o">...</span>     <span class="n">idx_trg</span><span class="p">,</span> <span class="n">idx_src</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="o">...</span>     <span class="n">src</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">i2n</span><span class="p">[</span><span class="n">idx_src</span><span class="p">]</span>
+<span class="o">...</span>     <span class="n">trg</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">i2n</span><span class="p">[</span><span class="n">idx_trg</span><span class="p">]</span>
+<span class="o">...</span>     <span class="n">sf</span> <span class="o">=</span> <span class="n">Fnet</span><span class="p">[</span><span class="n">idx_trg</span><span class="p">,</span> <span class="n">idx_src</span><span class="p">]</span>  <span class="c1"># Signal flow</span>
+<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Net signal flow from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">sf</span><span class="p">))</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">PDK1</span> <span class="nn">to</span> <span class="nn">AKT</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.002837</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">mTOR</span> <span class="nn">to</span> <span class="nn">AKT</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000275</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGF</span> <span class="nn">to</span> <span class="nn">EGFR</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">MEK</span> <span class="nn">to</span> <span class="nn">ERK</span><span class="p">:</span> <span class="mf">0.000133</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGFR</span> <span class="nn">to</span> <span class="nn">GAB1</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">ERK</span> <span class="nn">to</span> <span class="nn">GAB1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000024</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">PIP3</span> <span class="nn">to</span> <span class="nn">GAB1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.004013</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">SFK</span> <span class="nn">to</span> <span class="nn">GAB1</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1</span> <span class="nn">to</span> <span class="nn">GAB1_SHP2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000903</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGFR</span> <span class="nn">to</span> <span class="nn">GAB1_pSHP2</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1</span> <span class="nn">to</span> <span class="nn">GAB1_pSHP2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000451</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1_SHP2</span> <span class="nn">to</span> <span class="nn">GAB1_pSHP2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000160</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">SFK</span> <span class="nn">to</span> <span class="nn">GAB1_pSHP2</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGFR</span> <span class="nn">to</span> <span class="nn">GS</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">ERK</span> <span class="nn">to</span> <span class="nn">GS</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000019</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1</span> <span class="nn">to</span> <span class="nn">GS</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000368</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1_pSHP2</span> <span class="nn">to</span> <span class="nn">GS</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000088</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IRS</span> <span class="nn">to</span> <span class="nn">GS</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000450</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">SHC</span> <span class="nn">to</span> <span class="nn">GS</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">I</span> <span class="nn">to</span> <span class="nn">IR</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IR</span> <span class="nn">to</span> <span class="nn">IRS</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">PIP3</span> <span class="nn">to</span> <span class="nn">IRS</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.004013</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">SFK</span> <span class="nn">to</span> <span class="nn">IRS</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">mTOR</span> <span class="nn">to</span> <span class="nn">IRS</span><span class="p">:</span> <span class="mf">0.000195</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IRS</span> <span class="nn">to</span> <span class="nn">IRS_SHP2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.001102</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">RAF</span> <span class="nn">to</span> <span class="nn">MEK</span><span class="p">:</span> <span class="mf">0.000267</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">PIP3</span> <span class="nn">to</span> <span class="nn">PDK1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.008025</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGFR</span> <span class="nn">to</span> <span class="nn">PI3K</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1</span> <span class="nn">to</span> <span class="nn">PI3K</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000451</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IR</span> <span class="nn">to</span> <span class="nn">PI3K</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IRS</span> <span class="nn">to</span> <span class="nn">PI3K</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000551</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">PI3K</span> <span class="nn">to</span> <span class="nn">PIP3</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.027801</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">AKT</span> <span class="nn">to</span> <span class="nn">RAF</span><span class="p">:</span> <span class="mf">0.000635</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">RAS</span> <span class="nn">to</span> <span class="nn">RAF</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000102</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">SFK</span> <span class="nn">to</span> <span class="nn">RAF</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GS</span> <span class="nn">to</span> <span class="nn">RAS</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000327</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">RasGAP</span> <span class="nn">to</span> <span class="nn">RAS</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000027</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGFR</span> <span class="nn">to</span> <span class="nn">RasGAP</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1</span> <span class="nn">to</span> <span class="nn">RasGAP</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.000368</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1_SHP2</span> <span class="nn">to</span> <span class="nn">RasGAP</span><span class="p">:</span> <span class="mf">0.000130</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">GAB1_pSHP2</span> <span class="nn">to</span> <span class="nn">RasGAP</span><span class="p">:</span> <span class="mf">0.000088</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IR</span> <span class="nn">to</span> <span class="nn">RasGAP</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IRS_SHP2</span> <span class="nn">to</span> <span class="nn">RasGAP</span><span class="p">:</span> <span class="mf">0.000225</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGFR</span> <span class="nn">to</span> <span class="nn">SFK</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">IR</span> <span class="nn">to</span> <span class="nn">SFK</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">EGFR</span> <span class="nn">to</span> <span class="nn">SHC</span><span class="p">:</span> <span class="mf">0.000000</span>
+<span class="n">Net</span> <span class="n">signal</span> <span class="n">flow</span> <span class="kn">from</span> <span class="nn">AKT</span> <span class="nn">to</span> <span class="nn">mTOR</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.001100</span>
+</pre></div>
+</div>
+<p>We can see some links have no change
+in their signal flows between the two conditions.
+Obviously, the signal flow from PI3K to PIP3 has decreased
+due to the perturbation.
+However, the depletion of all out-links of PI3K has upregulated
+the signal flow from MEK to ERK (i.e., positive value).</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial_dc.html" class="btn btn-neutral float-right" title="Tutorial: Discovery of control targets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

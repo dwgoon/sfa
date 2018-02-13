@@ -1,8 +1,9 @@
 import numpy as np
+import scipy as sp
 
 def calc_influence(W, alpha=0.5, beta=0.5, S=None,
                    max_iter=1000, tol=1e-6, get_iter=False,
-                   device="cpu"):
+                   device="cpu", sparse=False):
     """Calculate the influence matrix.
        It estimates the effects of a node to the other nodes,
        by calculating partial derivative with respect to source nodes,
@@ -51,6 +52,8 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
         Determine whether the actual iteration number is returned.
     device : str, optional, {'CPU', 'GPU:0', 'GPU:1', ...}
         Select which device to use. 'CPU' is default.
+    sparse : bool, optional
+        Use sparse matrices for the computation.
 
     Returns
     -------
@@ -66,8 +69,12 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
 
     device = device.lower()
     if 'cpu' in device:
-        return _calc_influence_cpu(W, alpha, beta, S,
-                                   max_iter, tol, get_iter)
+        if sparse:
+            return _calc_influence_cpu_sparse(W, alpha, beta, S,
+                                              max_iter, tol, get_iter)
+        else:
+            return _calc_influence_cpu(W, alpha, beta, S,
+                                       max_iter, tol, get_iter)
     elif 'gpu'in device:
         _, id_device = device.split(':')
         return _calc_influence_gpu(W, alpha, beta, S,
@@ -77,19 +84,23 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
 def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
                         max_iter=1000, tol=1e-6, get_iter=False):
     N = W.shape[0]
-    I = np.eye(N, N, dtype=np.float)
     if S is not None:
         S1 = S
     else:
         S1 = np.eye(N, dtype=np.float)
 
+
+    I = np.eye(N, dtype=np.float)
+    S2 = np.zeros_like(W)
     aW = alpha * W
     for cnt in range(max_iter):
-        S2 = S1.dot(aW) + I
-        if np.linalg.norm(np.abs(S2 - S1)) < tol:
+        S2[:, :] = S1.dot(aW) + I
+        norm = np.linalg.norm(S2 - S1)
+        print("Matrix norm.:", norm)
+        if norm < tol:
             break
         # end of if
-        S1 = S2
+        S1[:, :] = S2
     # end of for
 
     S_fin = beta * S2
@@ -97,7 +108,36 @@ def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
         return S_fin, cnt
     else:
         return S_fin
-    
+
+
+def _calc_influence_cpu_sparse(W, alpha, beta, S,
+                               max_iter, tol, get_iter):
+    N = W.shape[0]
+    if S is not None:
+        S1 = S
+    else:
+        S1 = sp.sparse.lil_matrix(sp.sparse.eye(N, dtype=np.float))
+
+
+    I = sp.sparse.eye(N, dtype=np.float)
+    S2 = sp.sparse.lil_matrix((N,N), dtype=np.float)
+    aW = sp.sparse.csc_matrix(alpha * W)
+    for cnt in range(max_iter):
+        S2[:, :] = S1.dot(aW) + I
+        norm = sp.sparse.linalg.norm(S2 - S1)
+        print("Matrix norm.:", norm)
+        if norm < tol:
+            break
+        # end of if
+        S1[:, :] = S2
+    # end of for
+
+    S_fin = beta * S2
+    if get_iter:
+        return S_fin, cnt
+    else:
+        return S_fin
+
 
 def _calc_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
                         max_iter=1000, tol=1e-6, get_iter=False,
