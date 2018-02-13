@@ -499,8 +499,9 @@ Let's use the PI3K example of "`Applying perturbation to link`_" again.
 
 We can see some links have no change
 in their signal flows between the two conditions.
-Obviously, the signal flow from PI3K to PIP3 decreased due to the perturbation.
-However, the depletion of all out-links of PI3K upregulates
+Obviously, the signal flow from PI3K to PIP3 has decreased
+due to the perturbation.
+However, the depletion of all out-links of PI3K has upregulated
 the signal flow from MEK to ERK (i.e., positive value).
 
 
