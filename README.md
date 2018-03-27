@@ -20,4 +20,6 @@ A simulation framework to analyze signal flows in complex networks.
 http://sfa.readthedocs.io
 
 ## References ##
-[TODO] The published papers will be cited here.
+Daewon Lee & Kwang-Hyun Cho </br>
+"Topological estimation of signal fow in complex signaling networks" </br>
+[*Scientific Reports* (2018) **8**:5262](https://www.nature.com/articles/s41598-018-23643-5) </br>
