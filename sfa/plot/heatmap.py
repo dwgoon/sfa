@@ -40,7 +40,7 @@ class Heatmap(BaseGridPlot):
         cb.ax.set_aspect(cb_ax_asp * 2.0)
 
         # Remove inner lines
-        children = cb.colorbar.ax.get_children()
+        children = cb.ax.get_children()
         for child in children:
             if isinstance(child, matplotlib.collections.LineCollection):
                 child.set_linewidth(0)
@@ -82,7 +82,7 @@ class Heatmap(BaseGridPlot):
         super()._create_axes()
         ax = self._axes['base']
         self._axes['heatmap'] = ax
-        del self._axes['base']
+        #del self._axes['base']
 
     # Properties
     @property
