@@ -178,8 +178,8 @@ class HierarchicalClusteringTable(ConditionTable):
         ax_heatmap.grid(b=False)
         ax_heatmap.set_frame_on(True)
         ax_heatmap.xaxis.tick_bottom()
-        self._clean_axis(ax_heatmap)
         self._axes['heatmap'] = ax_heatmap
+        self._clean_axis(ax_heatmap)
 
         # Remove the y-labels of condition table
         #ax_conds = self._axes['condition']
@@ -189,7 +189,7 @@ class HierarchicalClusteringTable(ConditionTable):
         ax_heatmap.set_xticklabels(np.array(self._dfs.columns[ind_col]),
                                    rotation=90, minor=False)
 
-        ax_heatmap.tick_params(axis='x', which='major', pad=3)
+        ax_heatmap.tick_params(axis='x', which='major', pad=-2)
 
         # Remove the tick lines
         for line in ax_heatmap.get_xticklines():
@@ -204,11 +204,15 @@ class HierarchicalClusteringTable(ConditionTable):
         ax_colorbar = self._fig.add_subplot(subgs)
 
         cb = self._fig.colorbar(self._heatmap, ax_colorbar,
-                                drawedges=True)
+                                drawedges=False)  #True)
         self._colorbar = cb
-        cb.ax.yaxis.set_ticks_position('right')
+        #cb.ax.yaxis.set_ticks_position('right')
+        #self._clean_axis(cb.ax)
+        # for sp in cb.ax.spines.values():
+        #     sp.set_visible(False)
+        cb.ax.yaxis.set_ticks_position('none')
+        cb.ax.yaxis.set_tick_params(pad=-2)
         cb.ax.yaxis.set_label_position('right')
-        cb.ax.yaxis.set_tick_params(pad=2)
         cb.outline.set_edgecolor('black')
         cb.outline.set_linewidth(self._table_linewidth)
         self.colorbar_fontsize = self._colorbar_tick_fontsize
@@ -216,8 +220,10 @@ class HierarchicalClusteringTable(ConditionTable):
     def _clean_axis(self, ax):
         """Remove ticks, tick labels, and frame from axis
         """
-        ax.get_xaxis().set_ticks([])
-        ax.get_yaxis().set_ticks([])
+        ax.xaxis.set_ticks_position('none')
+        ax.yaxis.set_ticks_position('none')
+        ax.xaxis.set_ticks([])
+        ax.yaxis.set_ticks([])
         for sp in ax.spines.values():
             sp.set_visible(False)
 

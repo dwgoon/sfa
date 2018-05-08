@@ -69,14 +69,17 @@ class TableAxis(object):
         for j in range(1, self._ncols):
             xticks.append(xticks[j - 1] + self._w_cell)
 
+        self._ax.xaxis.set_ticks_position('none')
+
+        # # Hide the small bars of ticks
+        # for tick in self._ax.xaxis.get_major_ticks():
+        #     tick.tick1On = False
+        #     tick.tick2On = False
+
         self._ax.set_xticks(xticks)
         self._ax.set_xticklabels(xlabels, rotation=90, minor=False)
-        self._ax.tick_params(axis='x', which='major', pad=3)
+        self._ax.tick_params(axis='x', which='major', pad=-2)
 
-        # Hide the small bars of ticks
-        for tick in self._ax.xaxis.get_major_ticks():
-            tick.tick1On = False
-            tick.tick2On = False
     # end of def
 
     @property

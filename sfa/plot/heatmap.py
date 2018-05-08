@@ -49,7 +49,7 @@ class Heatmap(BaseGridPlot):
         plt.xticks(rotation=90)
         plt.yticks(rotation=0)
 
-        self._axes['heatmap'].tick_params(axis='x', which='major', pad=3)
+        self._axes['heatmap'].tick_params(axis='x', which='major', pad=-2)
         self._axes['heatmap'].tick_params(axis='y', which='major', pad=3)
 
         # Hide axis labels
