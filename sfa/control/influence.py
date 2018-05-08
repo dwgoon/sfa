@@ -1,9 +1,20 @@
 import numpy as np
 import scipy as sp
+import pandas as pd
 
-def calc_influence(W, alpha=0.5, beta=0.5, S=None,
-                   max_iter=1000, tol=1e-6, get_iter=False,
-                   device="cpu", sparse=False):
+
+def calc_influence(W,
+                   alpha=0.5,
+                   beta=0.5,
+                   S=None,
+                   rtype='df',
+                   outputs=None,
+                   n2i=None,
+                   max_iter=1000,
+                   tol=1e-6,
+                   get_iter=False,
+                   device="cpu",
+                   sparse=False):
     """Calculate the influence matrix.
        It estimates the effects of a node to the other nodes,
        by calculating partial derivative with respect to source nodes,
@@ -44,6 +55,12 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
         Hyperparameter for adjusting the effect of basal activity.
     S : numpy.ndarray, optional
         Initial influence matrix.
+    rtype: str (optional)
+        Return object type: 'df' or 'array'.
+    outputs: list (or iterable) of str, optional
+        Names of output nodes, which is necessary for 'df' rtype.
+    n2i: dict, optional
+        Name to index dict, which is necessary for 'df' rtype.
     max_iter : int, optional
         The maximum iteration number for the estimation.
     tol : float, optional
@@ -57,8 +74,10 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
 
     Returns
     -------
-    S : numpy.ndarray
-        Influence matrix.
+    S : numpy.ndarray, optional
+        2D array of influence.
+    df : pd.DataFrame, optional
+        Influences for each output in DataFrame.
     num_iter : int, optional
         The actual number of iteration.
     """
@@ -68,18 +87,49 @@ def calc_influence(W, alpha=0.5, beta=0.5, S=None,
         raise ValueError("max_iter should be greater than 2.")
 
     device = device.lower()
+
     if 'cpu' in device:
         if sparse:
-            return _calc_influence_cpu_sparse(W, alpha, beta, S,
-                                              max_iter, tol, get_iter)
+            ret = _calc_influence_cpu_sparse(W, alpha, beta, S,
+                                               max_iter, tol, get_iter)
         else:
-            return _calc_influence_cpu(W, alpha, beta, S,
-                                       max_iter, tol, get_iter)
+            ret = _calc_influence_cpu(W, alpha, beta, S,
+                                        max_iter, tol, get_iter)
     elif 'gpu'in device:
         _, id_device = device.split(':')
-        return _calc_influence_gpu(W, alpha, beta, S,
-                                   max_iter, tol, get_iter, id_device)
-        
+        ret = _calc_influence_gpu(W, alpha, beta, S,
+                                  max_iter, tol, get_iter, id_device)
+
+    if get_iter:
+        S_ret, num_iter = ret
+    else:
+        S_ret = ret
+
+    if rtype == 'array':
+        return ret
+    elif rtype == 'df':
+        if not outputs:
+            err_msg = "outputs should be designated for 'df' return type."
+            raise ValueError(err_msg)
+
+        df = pd.DataFrame(columns=outputs)
+
+        for trg in outputs:
+            for src in n2i:
+                if src == trg:
+                    df.loc[src, trg] = np.inf
+
+                idx_src = n2i[src]
+                idx_trg = n2i[trg]
+                df.loc[src, trg] = S_ret[idx_trg, idx_src]
+
+        if get_iter:
+            return df, num_iter
+        else:
+            return df
+    else:
+        raise ValueError("Unknown return type: %s"%(rtype))
+
 
 def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
                         max_iter=1000, tol=1e-6, get_iter=False):
@@ -89,14 +139,12 @@ def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
     else:
         S1 = np.eye(N, dtype=np.float)
 
-
     I = np.eye(N, dtype=np.float)
     S2 = np.zeros_like(W)
     aW = alpha * W
     for cnt in range(max_iter):
         S2[:, :] = S1.dot(aW) + I
         norm = np.linalg.norm(S2 - S1)
-        print("Matrix norm.:", norm)
         if norm < tol:
             break
         # end of if
@@ -125,7 +173,6 @@ def _calc_influence_cpu_sparse(W, alpha, beta, S,
     for cnt in range(max_iter):
         S2[:, :] = S1.dot(aW) + I
         norm = sp.sparse.linalg.norm(S2 - S1)
-        print("Matrix norm.:", norm)
         if norm < tol:
             break
         # end of if

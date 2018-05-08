@@ -36,13 +36,12 @@ def splo(nxdg, sources, outputs, rtype='df'):
        ----------
        nxdg: NetworkX.DiGraph
            A directed network in NetworkX.
-       sources: list (or iteratable)
+       sources: list (or iterable) of str
            Names of source nodes in nxdg.
-       outputs: list (or iteratable)
+       outputs: list (or iterable) of str
            Names of output nodes in nxdg.
-
        rtype: str (optional)
-           Return object type: 'dict' or 'df'.
+           Return object type: 'df' or 'dict'.
 
        Returns
        -------
@@ -63,7 +62,7 @@ def splo(nxdg, sources, outputs, rtype='df'):
                                                  src,
                                                  trg)
             except nx.NetworkXNoPath:
-                splo = np.inf
+                continue  # splo = np.inf
 
             dict_splo[trg][src] = splo
 
