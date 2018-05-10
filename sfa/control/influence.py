@@ -4,8 +4,8 @@ import pandas as pd
 
 
 def calc_influence(W,
-                   alpha=0.5,
-                   beta=0.5,
+                   alpha=0.9,
+                   beta=0.1,
                    S=None,
                    rtype='df',
                    outputs=None,
