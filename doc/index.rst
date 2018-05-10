@@ -22,17 +22,17 @@ Documentation
 -------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    install
-   tutorial_sfa
-   tutorial_dc
+   tutorials
    dataset
    algorithm
    control
    visualization
    simulation
    develop
+   api/modules
 
 Indices and tables
 ------------------

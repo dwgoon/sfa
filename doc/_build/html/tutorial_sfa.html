@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorial: Signal flow analysis &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  <title>Signal flow analysis &mdash; Singal Flow Analysis 0.1.0 documentation</title>
   
 
   
@@ -36,8 +36,9 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Tutorial: Discovery of control targets" href="tutorial_dc.html"/>
-        <link rel="prev" title="Install" href="install.html"/> 
+        <link rel="up" title="Tutorials" href="tutorials.html"/>
+        <link rel="next" title="Discovery of control targets" href="tutorial_dc.html"/>
+        <link rel="prev" title="Tutorials" href="tutorials.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -92,23 +93,28 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial: Signal flow analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#creating-algorithm-object">Creating algorithm object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#setting-hyperparameter-values">Setting hyperparameter values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#creating-data-object">Creating data object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#accessing-the-members-of-data-object">Accessing the members of data object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#analyzing-data-with-algorithm">Analyzing data with algorithm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#applying-perturbation-to-link">Applying perturbation to link</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#estimating-signal-flows">Estimating signal flows</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Signal flow analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-algorithm-object">Creating algorithm object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-hyperparameter-values">Setting hyperparameter values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-data-object">Creating data object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-members-of-data-object">Accessing the members of data object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analyzing-data-with-algorithm">Analyzing data with algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#applying-perturbation-to-link">Applying perturbation to link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#estimating-signal-flows">Estimating signal flows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-dataset-with-network-structure">Creating a dataset with network structure</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_dc.html">Tutorial: Discovery of control targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_dc.html">Discovery of control targets</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="control.html">Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">sfa</a></li>
 </ul>
 
             
@@ -153,7 +159,9 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Tutorial: Signal flow analysis</li>
+          <li><a href="tutorials.html">Tutorials</a> &raquo;</li>
+        
+      <li>Signal flow analysis</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -172,23 +180,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tutorial-signal-flow-analysis">
-<h1>Tutorial: Signal flow analysis<a class="headerlink" href="#tutorial-signal-flow-analysis" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="signal-flow-analysis">
+<h1>Signal flow analysis<a class="headerlink" href="#signal-flow-analysis" title="Permalink to this headline">¶</a></h1>
 <p>This brief tutorial will guide you to start utilizing SFA.
 We wrote this tutorial assuming users already have the overall knowledge about
-<a class="reference external" href="http://">the original journal paper</a>.</p>
+<a href="#id1"><span class="problematic" id="id2">`</span></a>the original journal paper</p>
+<blockquote>
+<div>&lt;<a class="reference external" href="https://www.nature.com/articles/s41598-018-23643-5">https://www.nature.com/articles/s41598-018-23643-5</a>&gt;`_.</div></blockquote>
 <div class="section" id="creating-algorithm-object">
 <h2>Creating algorithm object<a class="headerlink" href="#creating-algorithm-object" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> deals with creating and managing the algorithm objects in SFA.
-Thus, we first need to create <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> object.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sfa</span>
+<p><code class="docutils literal notranslate"><span class="pre">sfa.AlgorithmSet</span></code> deals with creating and managing the algorithm objects in SFA.
+Thus, we first need to create <code class="docutils literal notranslate"><span class="pre">sfa.AlgorithmSet</span></code> object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sfa</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">algs</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">AlgorithmSet</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Now, we can create algorithm objects with <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code>.
+<p>Now, we can create algorithm objects with <code class="docutils literal notranslate"><span class="pre">sfa.AlgorithmSet</span></code>.
 Create <cite>Signal Propagation (SP)</cite> algorithm,
-which is designated by its abbreviation, <code class="docutils literal"><span class="pre">SP</span></code>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span> <span class="o">=</span> <span class="n">algs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;SP&#39;</span><span class="p">)</span>
+which is designated by its abbreviation, <code class="docutils literal notranslate"><span class="pre">SP</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span> <span class="o">=</span> <span class="n">algs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;SP&#39;</span><span class="p">)</span>
 <span class="go">SP algorithm has been created.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">abbr</span>
 <span class="go">&#39;SP&#39;</span>
@@ -196,9 +206,9 @@ which is designated by its abbreviation, <code class="docutils literal"><span cl
 <span class="go">SignalPropagation object</span>
 </pre></div>
 </div>
-<p>As <code class="docutils literal"><span class="pre">sfa.AlgorithmSet</span></code> has the functionality of dictionary,
+<p>As <code class="docutils literal notranslate"><span class="pre">sfa.AlgorithmSet</span></code> has the functionality of dictionary,
 we can also access the created algorithms using the abbreviations as keys.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">algs</span><span class="p">[</span><span class="s1">&#39;SP&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">algs</span><span class="p">[</span><span class="s1">&#39;SP&#39;</span><span class="p">]</span>
 <span class="go">SignalPropagation object</span>
 </pre></div>
 </div>
@@ -207,36 +217,36 @@ we can also access the created algorithms using the abbreviations as keys.</p>
 <h2>Setting hyperparameter values<a class="headerlink" href="#setting-hyperparameter-values" title="Permalink to this headline">¶</a></h2>
 <p>Algorithms in SFA have hyperparameters that adjust and constrain
 the behavior of the algorithms.
-<code class="docutils literal"><span class="pre">ParameterSet</span></code>, a nested object defined in <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ParameterSet</span></code>, a nested object defined in <code class="docutils literal notranslate"><span class="pre">sfa.Algorithm</span></code>,
 have member variables that contain the information
 about the various hyperparameters.
 The below shows the examples of the parameters.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span>
 <span class="go">&lt;sfa.algorithms.sp.SignalPropagation.ParameterSet at 0x25b5a7e5550&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span>
 <span class="go">0.5</span>
 </pre></div>
 </div>
-<p>We can see the default value of <code class="docutils literal"><span class="pre">alpha</span></code> is 0.5.
-<code class="docutils literal"><span class="pre">alpha</span></code> is a hyperparameter that controls the proportion of signal flow
+<p>We can see the default value of <code class="docutils literal notranslate"><span class="pre">alpha</span></code> is 0.5.
+<code class="docutils literal notranslate"><span class="pre">alpha</span></code> is a hyperparameter that controls the proportion of signal flow
 in determining the next system state, <em>x(t+1)</em>, in the following formula.</p>
-<div class="math">
+<div class="math notranslate nohighlight">
 \[x(t+1) = \alpha Wx(t) + (1-\alpha)b\]</div>
-<p>Thus, <code class="docutils literal"><span class="pre">0.5</span></code> means the algorithm reflects the effects of signal flow
+<p>Thus, <code class="docutils literal notranslate"><span class="pre">0.5</span></code> means the algorithm reflects the effects of signal flow
 on half of estimating <em>x(t+1)</em>.</p>
-<p>We can easily change the value of <code class="docutils literal"><span class="pre">alpha</span></code>
+<p>We can easily change the value of <code class="docutils literal notranslate"><span class="pre">alpha</span></code>
 by assigning a real value between 0 and 1.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="go">0.5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.9</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span>
 <span class="go">0.9</span>
 </pre></div>
 </div>
-<p>Another hyperparameter is <code class="docutils literal"><span class="pre">apply_weight_norm</span></code>,
+<p>Another hyperparameter is <code class="docutils literal notranslate"><span class="pre">apply_weight_norm</span></code>,
 which designates whether to use link weight normalization.
-The default value is <code class="docutils literal"><span class="pre">False</span></code>, but it is recommended to set it as <code class="docutils literal"><span class="pre">True</span></code>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span>
+The default value is <code class="docutils literal notranslate"><span class="pre">False</span></code>, but it is recommended to set it as <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
 </pre></div>
@@ -248,8 +258,8 @@ The default value is <code class="docutils literal"><span class="pre">False</spa
 <p>Creating and handling data objects in SFA are similar to those of algorithms.
 A data object is also designated by its abbreviation, as in the algorithm.
 For example, the datasets for <a class="reference external" href="http://msb.embopress.org/content/5/1/256">Borisov et al.</a>
-can be created using <code class="docutils literal"><span class="pre">BORISOV_2009</span></code> as follows.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+can be created using <code class="docutils literal notranslate"><span class="pre">BORISOV_2009</span></code> as follows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mdata</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;BORISOV_2009&#39;</span><span class="p">)</span>
 <span class="go">BORISOV_2009 data has been created.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mdata</span>  <span class="c1"># Multiple datasets.</span>
@@ -259,38 +269,38 @@ can be created using <code class="docutils literal"><span class="pre">BORISOV_20
 <span class="gp">...</span>
 </pre></div>
 </div>
-<p>The above <code class="docutils literal"><span class="pre">mdata</span></code> or <code class="docutils literal"><span class="pre">ds['BORISOV_2009']</span></code> is a <code class="docutils literal"><span class="pre">dict</span></code> that contains
+<p>The above <code class="docutils literal notranslate"><span class="pre">mdata</span></code> or <code class="docutils literal notranslate"><span class="pre">ds['BORISOV_2009']</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> that contains
 multiple dataset objects with different conditions.
-For example, <code class="docutils literal"><span class="pre">120m_AUC_EGF=0.001+I=0.1</span></code> denotes the dataset was created by
+For example, <code class="docutils literal notranslate"><span class="pre">120m_AUC_EGF=0.001+I=0.1</span></code> denotes the dataset was created by
 performing a simulation under the stimulation of 0.001M EGF and 0.1M insulin
 using the original ODE model, where the activity of a biomolecule was
 calculated by estimating the area under the curve (AUC) of the time profile.</p>
 <p>We can select a dataset object by using the abbreviation.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">mdata</span><span class="p">[</span><span class="s1">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">mdata</span><span class="p">[</span><span class="s1">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">abbr</span>
 <span class="go">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span>
 </pre></div>
 </div>
-<p>We can also consider a utility function in SFA, <code class="docutils literal"><span class="pre">sfa.get_avalue</span></code>,
+<p>We can also consider a utility function in SFA, <code class="docutils literal notranslate"><span class="pre">sfa.get_avalue</span></code>,
 which arbitrarily selects a dataset object from the dictionary.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">get_avalue</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">get_avalue</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">abbr</span>
 <span class="go">&#39;120m_AUC_EGF=0.001+I=0.1&#39;</span>
 </pre></div>
 </div>
-<p>Actually, <code class="docutils literal"><span class="pre">sfa.get_avalue</span></code> returns the first item by applying the
+<p>Actually, <code class="docutils literal notranslate"><span class="pre">sfa.get_avalue</span></code> returns the first item by applying the
 <a class="reference external" href="https://docs.python.org/3/library/functions.html#next">next()</a>
-built-in fuction to a given <code class="docutils literal"><span class="pre">dict</span></code> object.</p>
+built-in fuction to a given <code class="docutils literal notranslate"><span class="pre">dict</span></code> object.</p>
 </div>
 <div class="section" id="accessing-the-members-of-data-object">
 <h2>Accessing the members of data object<a class="headerlink" href="#accessing-the-members-of-data-object" title="Permalink to this headline">¶</a></h2>
-<p>The data object (instantiated with a subclass of <code class="docutils literal"><span class="pre">sfa.Data</span></code>) has
-various data structures that are required for using <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code>.
-For example, <code class="docutils literal"><span class="pre">sfa.Data</span></code> object has the information about network topology in
-<code class="docutils literal"><span class="pre">A</span></code> (adjacency matrix in <code class="docutils literal"><span class="pre">numpy</span></code>’s <a class="reference external" href="https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.ndarray.html">ndarray</a>),
-<code class="docutils literal"><span class="pre">dg</span></code> (<code class="docutils literal"><span class="pre">NetworkX</span></code>’s <a class="reference external" href="https://networkx.github.io/documentation/networkx-1.10/reference/classes.digraph.html">DiGraph</a>),
-and <code class="docutils literal"><span class="pre">n2i</span></code> ( <code class="docutils literal"><span class="pre">dict</span></code> for mapping names to the indices of <code class="docutils literal"><span class="pre">A</span></code>).</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span>  <span class="c1"># Name to index mapper.</span>
+<p>The data object (instantiated with a subclass of <code class="docutils literal notranslate"><span class="pre">sfa.Data</span></code>) has
+various data structures that are required for using <code class="docutils literal notranslate"><span class="pre">sfa.Algorithm</span></code>.
+For example, <code class="docutils literal notranslate"><span class="pre">sfa.Data</span></code> object has the information about network topology in
+<code class="docutils literal notranslate"><span class="pre">A</span></code> (adjacency matrix in <code class="docutils literal notranslate"><span class="pre">numpy</span></code>’s <a class="reference external" href="https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.ndarray.html">ndarray</a>),
+<code class="docutils literal notranslate"><span class="pre">dg</span></code> (<code class="docutils literal notranslate"><span class="pre">NetworkX</span></code>’s <a class="reference external" href="https://networkx.github.io/documentation/networkx-1.10/reference/classes.digraph.html">DiGraph</a>),
+and <code class="docutils literal notranslate"><span class="pre">n2i</span></code> ( <code class="docutils literal notranslate"><span class="pre">dict</span></code> for mapping names to the indices of <code class="docutils literal notranslate"><span class="pre">A</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span>  <span class="c1"># Name to index mapper.</span>
 <span class="go">{&#39;AKT&#39;: 0,</span>
 <span class="go"> &#39;EGF&#39;: 1,</span>
 <span class="go"> &#39;EGFR&#39;: 2,</span>
@@ -377,18 +387,18 @@ and <code class="docutils literal"><span class="pre">n2i</span></code> ( <code c
 </div>
 <div class="section" id="analyzing-data-with-algorithm">
 <h2>Analyzing data with algorithm<a class="headerlink" href="#analyzing-data-with-algorithm" title="Permalink to this headline">¶</a></h2>
-<p>To make <code class="docutils literal"><span class="pre">sfa.Algorithm</span></code> work with <code class="docutils literal"><span class="pre">sfa.Data</span></code>,
+<p>To make <code class="docutils literal notranslate"><span class="pre">sfa.Algorithm</span></code> work with <code class="docutils literal notranslate"><span class="pre">sfa.Data</span></code>,
 we should first assign the data object to the algorithm object.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># Assign the data object to the algorithm.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">initilize</span><span class="p">()</span>  <span class="c1"># Initialize the algorithm object.</span>
 </pre></div>
 </div>
-<p>In the initization of the algorithm (calling <code class="docutils literal"><span class="pre">sfa.Algorithm.initialze</span></code>),
+<p>In the initization of the algorithm (calling <code class="docutils literal notranslate"><span class="pre">sfa.Algorithm.initialze</span></code>),
 the algorithm prepares estimaing signal flow
 by performing some necessary tasks such as link weight normalization.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGFR&#39;</span><span class="p">]]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGFR&#39;</span><span class="p">]]</span>
 <span class="go">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;GAB1&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGFR&#39;</span><span class="p">]]</span>
 <span class="go">0.1889822365046136</span>
@@ -401,7 +411,7 @@ the values of the basal activity before analyzing signal flow.
 The effects of input stimulation or perturbation are basically reflected to
 the basal activity vector, <em>b</em>.
 For example, EGF stimulation can be reflected to <em>b</em> as follows.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">N</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dg</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>  <span class="c1"># The number of nodes; data.A.shape[0]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGF&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
@@ -409,7 +419,7 @@ For example, EGF stimulation can be reflected to <em>b</em> as follows.</p>
 </div>
 <p>Now, we can perform the estimation of signal flow,
 and examine how the two outputs, ERK and AKT, have changed.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xs1</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="c1"># xs: x at steady-state</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xs1</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="c1"># xs: x at steady-state</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xs1</span>
 <span class="go">array([0.00155625, 0.5       , 0.25      , 0.00165546, 0.02951243,</span>
 <span class="go">       0.00659918, 0.03226491, 0.0367612 , 0.        , 0.        ,</span>
@@ -426,7 +436,7 @@ and examine how the two outputs, ERK and AKT, have changed.</p>
 which means ERK and AKT are upregulated by EGF stimulation.</p>
 <p>Next, let’s apply an inhibitory perturbation to the network.
 For example, we can perturb MEK by setting its basal activity as follows.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGF&#39;</span><span class="p">]],</span> <span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span>
 <span class="go">(1.0, -1.0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
@@ -448,7 +458,7 @@ On the other hand, AKT is not downregulated
 by the inhibition under EGF stimulation.</p>
 <p>If we want to examine how the inhibition of MEK affects each node,
 we take the difference between the vectors of two results.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dxs</span> <span class="o">=</span> <span class="n">xs2</span> <span class="o">-</span> <span class="n">xs1</span>  <span class="c1"># Difference between the two results.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dxs</span> <span class="o">=</span> <span class="n">xs2</span> <span class="o">-</span> <span class="n">xs1</span>  <span class="c1"># Difference between the two results.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ind_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dxs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Indices of upregulated nodes</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ind_dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dxs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Indices of downregulated nodes</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">ind_up</span><span class="p">:</span>
@@ -482,7 +492,7 @@ by the inhibition of MEK under EGF stimulation.</p>
 not basal activity. For example, if we want to examine what happens
 when PI3K cannot send signal to its downstreams
 (i.e., the out-links of PI3K are removed).</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;EGF&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="p">[:,</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span> <span class="o">*=</span> <span class="mi">0</span>  <span class="c1"># Remove all the out-link weights.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xs3</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
@@ -504,10 +514,10 @@ when PI3K cannot send signal to its downstreams
 <p>The estimation of signal flow is defined as
 the multiplication of link weight and activity of the source node.
 The activity is usually is the steady-state activity</p>
-<div class="math">
+<div class="math notranslate nohighlight">
 \[F(t)_{ij} = W_{ij} \cdot x(t)_{j}\]</div>
 <p>Follwing the definition, we can compute the signal flow as follows.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>  <span class="c1"># Obtain the intact weight matrix.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>  <span class="c1"># Obtain the intact weight matrix.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">W1</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Get a copy of the weight matrix.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span> <span class="o">=</span> <span class="n">W1</span><span class="o">*</span><span class="n">xs1</span>  <span class="c1"># Element-wise multiplication of each row and xs1</span>
 </pre></div>
@@ -515,7 +525,7 @@ The activity is usually is the steady-state activity</p>
 <p>Note that the above code snippet is not matix-vector multiplication,
 but it is element-wise multiplication of vectors (<a class="reference external" href="https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.ndarray.html">ndarray</a> in <a class="reference external" href="http://www.numpy.org">NumPy</a>).
 The following shows some of the estimated signal flows.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PIP3&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PIP3&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span>
 <span class="go">0.02780066830505488</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">F1</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;ERK&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;MEK&#39;</span><span class="p">]]</span>
 <span class="go">0.0033109114574165805</span>
@@ -525,10 +535,10 @@ The following shows some of the estimated signal flows.</p>
 </div>
 <p>If we want to compare the two conditions,
 we can compute the net signal flow as follows.</p>
-<div class="math">
+<div class="math notranslate nohighlight">
 \[F_{net} = F_{c2} - F_{c1}\]</div>
 <p>Let’s use the PI3K example of “<a class="reference internal" href="#applying-perturbation-to-link">Applying perturbation to link</a>” again.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">W3</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># alg.W is the intact one.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">W3</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># alg.W is the intact one.</span>
 <span class="o">&gt;&gt;</span> <span class="n">W3</span><span class="p">[:,</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;PI3K&#39;</span><span class="p">]]</span> <span class="o">*=</span> <span class="mi">0</span>  <span class="c1"># Apply the PI3K</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">F3</span> <span class="o">=</span> <span class="n">W3</span><span class="o">*</span><span class="n">xs3</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">Fnet</span> <span class="o">=</span> <span class="n">F3</span> <span class="o">-</span> <span class="n">F1</span>  <span class="c1"># Net signal flow.</span>
@@ -596,6 +606,13 @@ due to the perturbation.
 However, the depletion of all out-links of PI3K has upregulated
 the signal flow from MEK to ERK (i.e., positive value).</p>
 </div>
+<div class="section" id="creating-a-dataset-with-network-structure">
+<h2>Creating a dataset with network structure<a class="headerlink" href="#creating-a-dataset-with-network-structure" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Describe how to define own datasets only with network topology.</li>
+<li>Explanation for the members of Data class.</li>
+</ul>
+</div>
 </div>
 
 
@@ -608,10 +625,10 @@ the signal flow from MEK to ERK (i.e., positive value).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tutorial_dc.html" class="btn btn-neutral float-right" title="Tutorial: Discovery of control targets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tutorial_dc.html" class="btn btn-neutral float-right" title="Discovery of control targets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="install.html" class="btn btn-neutral" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tutorials.html" class="btn btn-neutral" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -620,7 +637,7 @@ the signal flow from MEK to ERK (i.e., positive value).</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee.
 
     </p>
   </div>

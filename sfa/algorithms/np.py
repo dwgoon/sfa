@@ -13,100 +13,139 @@ import sfa.base
 import sfa.utils
 
 
+class NetworkPropagationParameterSet(sfa.base.ParameterSet):
+    """
+    An object that deals with the parameters
+    of ``sfa.algorithms.np.NetworkPropagation`` base algorithm.
+
+    Attributes
+    ----------
+    alpha : float
+    lim_iter : int
+    apply_weight_norm : bool
+    use_rel_change : bool
+    exsol_forbidden : bool
+    no_inputs : bool
+    """
+
+    def __init__(self):
+        self.initialize()
+        self._freeze()
+
+    def initialize(self):
+        """Initialize the parameters with default values.
+        """
+        self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
+        self._lim_iter = 1000
+        self._apply_weight_norm = False
+        self._use_rel_change = False
+        self._exsol_forbidden = False
+        self._no_inputs = False
+
+    @property
+    def alpha(self):
+        r"""Hyperparameter, :math:`\alpha` ~ (0, 1).
+         It controls the portion of signal flow
+         in determining the activity.
+         The default value is 0.5.
+        """
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, val):
+        if not isinstance(val, float):
+            raise TypeError("alpha should be a float type value in (0,1).")
+        elif (val <= 0.0) or (val >= 1.0):
+            raise ValueError("alpha should be within (0,1).")
+        else:
+            self._alpha = val
+
+    @property
+    def lim_iter(self):
+        """Number of maximum iterations in the iterative method.
+        """
+        return self._lim_iter
+
+    @lim_iter.setter
+    def lim_iter(self, val):
+        if not isinstance(val, int):
+            raise TypeError("lim_iter is a integer type value.")
+        elif val < 0:
+            raise ValueError("lim_iter should be greater than 0.")
+        else:
+            self._lim_iter = val
+
+    @property
+    def apply_weight_norm(self):
+        """Apply the link weight normalization.
+        """
+        return self._apply_weight_norm
+
+    @apply_weight_norm.setter
+    def apply_weight_norm(self, val):
+        if not isinstance(val, bool):
+            raise TypeError(
+                "apply_weight_norm should be a bool type value.")
+        self._apply_weight_norm = val
+
+    @property
+    def use_rel_change(self):
+        """Use relative change for prediction.
+        """
+
+        return self._use_rel_change
+
+    @use_rel_change.setter
+    def use_rel_change(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("use_rel_change should be a bool type value.")
+        self._use_rel_change = val
+
+    @property
+    def exsol_forbidden(self):
+        """Forbid the propagation computation
+           based on the exact solution.
+           In other words, use the iterative method.
+        """
+        return self._exsol_forbidden
+
+    @exsol_forbidden.setter
+    def exsol_forbidden(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("exsol_forbidden should be boolean type.")
+
+        self._exsol_forbidden = val
+
+    @property
+    def no_inputs(self):
+        """Do not apply the effects of inputs in a given network.
+        """
+        return self._no_inputs
+
+    @no_inputs.setter
+    def no_inputs(self, val):
+        if not isinstance(val, bool):
+            raise TypeError("no_inputs is bool type.")
+        self._no_inputs = val
+# end of def class ParameterSet
+
+
 class NetworkPropagation(sfa.base.Algorithm):
-    class ParameterSet(sfa.utils.FrozenClass):
-        """
-        Parameters of NetworkPropagation base algorithm.
-        """
+    """A base class that defines the basic functionality of
+       network propagation algorithms.
 
-        def __init__(self):
-            self.initialize()
-            self._freeze()
-
-        def initialize(self):
-            self._alpha = 0.5  # float value in (0, 1). The default value is 0.5.
-            self._apply_weight_norm = False
-            self._use_rel_change = False
-            self._exsol_forbidden = False
-            self._lim_iter = 1000
-            self._no_inputs = False
-
-        @property
-        def alpha(self):
-            return self._alpha
-
-        @alpha.setter
-        def alpha(self, val):
-            if not isinstance(val, float):
-                raise TypeError("alpha should be a float type value in (0,1).")
-            elif (val <= 0.0) or (val >= 1.0):
-                raise ValueError("alpha should be within (0,1).")
-            else:
-                self._alpha = val
-
-        @property
-        def apply_weight_norm(self):
-            return self._apply_weight_norm
-
-        @apply_weight_norm.setter
-        def apply_weight_norm(self, val):
-            if not isinstance(val, bool):
-                raise TypeError(
-                    "apply_weight_norm should be a bool type value.")
-            self._apply_weight_norm = val
-
-        @property
-        def use_rel_change(self):
-            return self._use_rel_change
-
-        @use_rel_change.setter
-        def use_rel_change(self, val):
-            if not isinstance(val, bool):
-                raise TypeError("use_rel_change should be a bool type value.")
-            self._use_rel_change = val
-
-        @property
-        def exsol_forbidden(self):
-            return self._exsol_forbidden
-
-        @exsol_forbidden.setter
-        def exsol_forbidden(self, val):
-            if not isinstance(val, bool):
-                raise TypeError("exsol_forbidden should be boolean type.")
-
-            self._exsol_forbidden = val
-
-        @property
-        def lim_iter(self):
-            return self._lim_iter
-
-        @lim_iter.setter
-        def lim_iter(self, val):
-            if not isinstance(val, int):
-                raise TypeError("lim_iter is a integer type value.")
-            elif val < 0:
-                raise ValueError("lim_iter should be greater than 0.")
-            else:
-                self._lim_iter = val
-
-        @property
-        def no_inputs(self):
-            return self._no_inputs
-
-        @no_inputs.setter
-        def no_inputs(self, val):
-            if not isinstance(val, bool):
-                raise TypeError("no_inputs is bool type.")
-            self._no_inputs = val
-
-    # end of def class ParameterSet
+    Attributes
+    ----------
 
 
+    """
 
     def __init__(self, abbr):
+        """Constructor of NetworkPropagation.
+        """
         super().__init__(abbr)
         self._name = "Abstract base class for network propagation algorithms"
-        self._params = self.ParameterSet()
+        self._params = NetworkPropagationParameterSet()
 
         # The following members are assigned the instances in initialize()
         self._W = None
@@ -139,7 +178,8 @@ class NetworkPropagation(sfa.base.Algorithm):
 
     # end of _W.setter
 
-    def _initialize_network(self):
+    def initialize_network(self):
+
         # Matrix normalization for getting transition matrix
         if self._params.apply_weight_norm:
             self.W = sfa.utils.normalize(self.data.A)
@@ -164,17 +204,24 @@ class NetworkPropagation(sfa.base.Algorithm):
     # end of def _initialize_network
 
     def _check_dimension(self, mat, mat_name):
-        # Check whether a given matrix is a square matrix.
+        """Check whether a given matrix is a square matrix.
+        """
         if mat.shape[0] != mat.shape[1]:
             raise ValueError("The %s should be square matrix." % (mat_name))
     # end of def _check_dimension
 
-    def _initialize_basal_activity(self):
+    def initialize_basal_activity(self):
         N = self.data.A.shape[0]  # Number of state variables
         self._b = np.zeros(N)
     # end of def
 
     def apply_inputs(self, inds, vals):
+        """
+
+        Parameters
+        ----------
+
+        """
         if self._params.no_inputs:
             return
 
@@ -217,7 +264,7 @@ class NetworkPropagation(sfa.base.Algorithm):
     # end of def apply_perturbations
 
     def compute_batch(self):
-        """Algorithm perform the computation with the given data"""
+
         df_exp = self.data.df_exp  # Result of experiment
 
         # Simulation result
@@ -274,12 +321,14 @@ class NetworkPropagation(sfa.base.Algorithm):
 
     # end of def compute_batch
 
-    def _prepare_exact_solution(self):
-        """Prepare to get the matrix for the exact solution"""
+    def prepare_exact_solution(self):
+        """Prepare to get the matrix for the exact solution.
+        """
     # end of def _prepare_exact_solution
 
-    def _prepare_iterative_solution(self):
-        """Prepare to get the solution from the iterative method"""
+    def prepare_iterative_solution(self):
+        """Prepare to get the solution from the iterative method.
+        """
     # end of def _prepare_iterative_solution
 
     def compute(self, b):
@@ -297,18 +346,68 @@ class NetworkPropagation(sfa.base.Algorithm):
     # end of def compute
 
     def propagate_exact(self, b):
-        """The exact solution of network propagation"""
+        """Obtain the activity at steady-state
+        based on the exact solution of network propagation.
+
+        Parameters
+        ----------
+        b : numpy.ndarray
+            1D array of basal activity.
+
+        Returns
+        -------
+        x : numpy.ndarray
+            The exact solution of the activity at steady-state
+            in 1D array.
+        """
         raise NotImplementedError("propagate_exact is not implemented")
 
     def propagate_iterative(self,
                             W,
                             xi,
                             b,
-                            a,
-                            lim_iter,
-                            tol,
-                            get_trj):
-        """The iterative solution of network propagation"""
+                            a=0.5,
+                            lim_iter=1000,
+                            tol=1e-5,
+                            get_trj=False):
+
+        r"""Compute network propagation based on the iterative method.
+        This method should be used if we want to obtain the trajectory.
+
+        Parameters
+        ----------
+        W: numpy.ndarray
+            2D array for weight matrix.
+        xi: numpy.ndarray
+            1D array for initial state.
+        b: numpy.ndarray
+            1D array for basal activity.
+        a: real number, optional
+            Hyperparameter, :math:`\alpha`, ~ (0, 1).
+            The default value is 0.5.
+        lim_iter: int, optional
+            Number of maximum iterations in the iterative method.
+            Computation terminates when the iteration reaches ``lim_iter``.
+            The default value is 1000.
+        tol: float, optional
+            Tolerance for terminating iteration.
+            Iteration continues, if Frobenius norm of
+            :math:`x(t+1)-x(t)` is greater than ``tol``.
+            The default value is 1e-5.
+        get_trj: bool, optional
+            Determine whether the trajectory of the state is returned.
+            If get_trj is true, the trajectory is returned.
+
+        Returns
+        -------
+        x : numpy.ndarray
+            1D array of the activity after the computation.
+        trj : numpy.ndarray
+            2D array where the row represents a state of the activity.
+
+        See also
+        --------
+        """
         raise NotImplementedError("propagate_iterative is not implemented")
     # end of def propagate_iterative
 

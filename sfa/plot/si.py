@@ -77,8 +77,8 @@ def siplot(df_splo,
                  alpha=alpha)
 
         ax.set_title('SPLO=%d'%(splo))
-
         ax.set_xlabel('')
+
         ax.xaxis.set_major_formatter(FormatStrFormatter(fmt_inf))
         ax.tick_params(axis='x',
                        which='major',
@@ -92,7 +92,7 @@ def siplot(df_splo,
 
         plt.yticks(yvals, names)
 
-                # Draw zero line.
+        # Draw zero line.
         if not((influence <= 0).all() or (influence >= 0).all()):
             ax.vlines(x=0.0, ymin=0, ymax=yvals[-1]+1, color=zcolor)
 

@@ -36,7 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Tutorial: Signal flow analysis" href="tutorial_sfa.html"/>
+        <link rel="next" title="Tutorials" href="tutorials.html"/>
         <link rel="prev" title="Singal Flow Analysis (SFA)" href="index.html"/> 
 
   
@@ -92,14 +92,14 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_sfa.html">Tutorial: Signal flow analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_dc.html">Tutorial: Discovery of control targets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="control.html">Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">sfa</a></li>
 </ul>
 
             
@@ -167,27 +167,27 @@
 <h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
 <p>Currently, we recommend installing from distributed repositories such as GitHub.
 First, download a recent version of the repository as follows.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ git clone https://github.com/dwgoon/sfa.git sfa
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/dwgoon/sfa.git sfa
 </pre></div>
 </div>
 <p>Now, you can install SFA Python package from the cloned directory.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sfa
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sfa
 $ python setup.py install
 </pre></div>
 </div>
 <p>If you want to easily update the most recent stable version of the package
-from the repository, use <code class="docutils literal"><span class="pre">develop</span></code> option insead of <code class="docutils literal"><span class="pre">install</span></code>.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python setup.py develop
+from the repository, use <code class="docutils literal notranslate"><span class="pre">develop</span></code> option insead of <code class="docutils literal notranslate"><span class="pre">install</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py develop
 </pre></div>
 </div>
-<p>Now, running <code class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span> <span class="pre">origin</span> <span class="pre">master</span></code> is enough to update the package
+<p>Now, running <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span> <span class="pre">origin</span> <span class="pre">master</span></code> is enough to update the package
 from the repository.</p>
-<p>If you don’t have permission to the global <code class="docutils literal"><span class="pre">site-packages</span></code> directory,
-you can use the following flags: <code class="docutils literal"><span class="pre">--user</span></code>,  <code class="docutils literal"><span class="pre">--home</span></code>, and <code class="docutils literal"><span class="pre">--prefix</span></code>.
+<p>If you don’t have permission to the global <code class="docutils literal notranslate"><span class="pre">site-packages</span></code> directory,
+you can use the following flags: <code class="docutils literal notranslate"><span class="pre">--user</span></code>,  <code class="docutils literal notranslate"><span class="pre">--home</span></code>, and <code class="docutils literal notranslate"><span class="pre">--prefix</span></code>.
 Refer to the <a class="reference external" href="https://docs.python.org/3/install/index.html">official document</a>
 in more details for using the flags.</p>
-<p>For example, you can simply install the package with <code class="docutils literal"><span class="pre">--user</span></code> flag.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python setup.py install --user
+<p>For example, you can simply install the package with <code class="docutils literal notranslate"><span class="pre">--user</span></code> flag.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install --user
 </pre></div>
 </div>
 <p>Otherwise, you can also consider
@@ -204,7 +204,7 @@ in more details for using the flags.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tutorial_sfa.html" class="btn btn-neutral float-right" title="Tutorial: Signal flow analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="Singal Flow Analysis (SFA)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -216,7 +216,7 @@ in more details for using the flags.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee.
 
     </p>
   </div>

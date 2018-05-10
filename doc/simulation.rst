@@ -1,7 +1,6 @@
 Simulation
 ==========
 
-
 Randomizing network structure
 -----------------------------
 

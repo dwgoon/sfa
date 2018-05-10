@@ -5,4 +5,4 @@ from .table_batch import BatchResultTable
 from .table_condition import ConditionTable
 from .table_hierarchical_clustering import HierarchicalClusteringTable
 
-from .si import plot_si
+from .si import siplot

@@ -109,6 +109,8 @@ http://stackoverflow.com/questions/3387691/python-how-to-perfectly-override-a-di
 """
 # end of def class
 
+excluded = ['np.py']
+
 @Singleton
 class AlgorithmSet(Container):
     _instance = None
@@ -129,7 +131,8 @@ class AlgorithmSet(Container):
         if not self._all_keys:
             self._all_keys = []
             for entity in os.listdir(self._dpath):
-                if re.match(r"[^_]\w+\.py$", entity):
+                if re.match(r"[^_]\w+\.py$", entity) \
+                   and entity not in excluded:
                     mod_name = entity.split('.')[0]  # Module name
                     print(mod_name, entity)
                     key = mod_name.upper()
@@ -169,7 +172,8 @@ class AlgorithmSet(Container):
         Import all algorithms, based on file names
         """
         for entity in os.listdir(self._dpath):
-            if re.match(r"[^_]\w+\.py", entity):
+            if re.match(r"[^_]\w+\.py", entity) \
+               and entity not in excluded:
                 mod_name = entity.split('.')[0]  # Module name
                 self._create_single(mod_name)
         # end of for

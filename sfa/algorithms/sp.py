@@ -6,37 +6,38 @@ if sys.version_info <= (2, 8):
 
 import numpy as np
 
-import sfa.base
-import sfa.utils
+from .np import NetworkPropagation
+from .np import NetworkPropagationParameterSet
 
-from ._np import NetworkPropagation
 
 def create_algorithm(abbr):
     return SignalPropagation(abbr)
 # end of def
 
 
+class SignalPropagationParameterSet(NetworkPropagationParameterSet):
+    def initialize(self):
+        super().initialize()
+# end of class ParameterSet
+
+
 class SignalPropagation(NetworkPropagation):
-
-    class ParameterSet(NetworkPropagation.ParameterSet):
-        def initialize(self):
-            super().initialize()
-    # end of class ParameterSet
-
 
     def __init__(self, abbr):
         super().__init__(abbr)
         self._name = "Signal propagation algorithm"
     # end of def __init__
 
-
-    def _prepare_exact_solution(self):
+    def prepare_exact_solution(self):
         """
         Prepare to get the matrix for the exact solution:
 
-        x(t+1) = a*_W.dot(x(t)) + (1-a)*b, where a is alpha.
+        .. :math
+            x(t+1) = a*_W.dot(x(t)) + (1-a)*b, where $a$ is alpha.
 
-        When t -> inf, both x(t+1) and x(t) converges to the stationary state.
+        When $t -> inf$, both $x(t+1)$ and $x(t)$
+        converges to the stationary state.
+
 
         Then, s = aW*s + (1-a)b
               (I-aW)*s = (1-a)b
@@ -51,9 +52,9 @@ class SignalPropagation(NetworkPropagation):
         self._M = (1-a)*np.linalg.inv(M0)
     # end of def _prepare_exact_solution
 
-    def _prepare_iterative_solution(self):
-        pass
-    # end of def _prepare_iterative_solution
+    def prepare_iterative_solution(self):
+        pass  # Nothing...
+    # end of def prepare_iterative_solution
 
     def propagate_exact(self, b):
         if self._weight_matrix_invalidated:
@@ -70,47 +71,14 @@ class SignalPropagation(NetworkPropagation):
                             lim_iter=1000,
                             tol=1e-5,
                             get_trj=False):
-        """
-        Network propagation calculation based on iteration.
 
-        Parameters
-        ------------------
-        W: numpy.ndarray
-           weight matrix (transition matrix)
-        xi: numpy.ndarray
-            Initial state
-        b: numpy.ndarray
-            Basal activity
-        a: real number (optional)
-            Propagation rate.
-        lim_iter: integer (optioanl)
-            Limitation of iterations for propagation.
-            Propagation terminates, when the iterat
-
-            ion is reached.
-        tol: real number (optional)
-            Tolerance for terminating iteration
-            Iteration continues, if Frobenius norm of (x(t+1)-x(t)) is
-            greater than tol.
-        get_trj: bool (optional)
-            Determine whether trajectory of the state and propagation matrix
-            is returned. If get_trj is true, the trajectory is returned.
-
-        Returns
-        -------
-        xp: numpy.ndarray
-            State after propagation
-        trj_x: numpy.ndarray
-            Trajectory of the state transition
-
-        See also
-        --------
-        """
 
         n = W.shape[0]
         # Initial values
-        x0 = np.zeros((n,), dtype=np.float)
-        x0[:] = xi
+
+        #x0 = np.zeros((n,), dtype=np.float)
+        #x0[:] = xi
+        x0 = np.array(xi, dtype=np.float64)
 
         x_t1 = x0.copy()
 
@@ -123,7 +91,7 @@ class SignalPropagation(NetworkPropagation):
         num_iter = 0
         for i in range(lim_iter):
             # Main formula
-            x_t2 = a * W.dot(x_t1) + (1 - a) * b
+            x_t2 = a*W.dot(x_t1) + (1-a)*b
             num_iter += 1
             # Check termination condition
             if np.linalg.norm(x_t2 - x_t1) <= tol:

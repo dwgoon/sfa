@@ -13,13 +13,15 @@ import sfa.utils
 
 __all__ = ['Algorithm', 'Data', 'Result']
 
+
 @six.add_metaclass(abc.ABCMeta)
 class ContainerItem():
+    """
+    The base class that defines the item object of
+    ``sfa.containers.Container``.
+
+    """
     def __init__(self, abbr=None, name=None):
-        """
-        abbr: Abbreviation (or symbol) representing this item
-        name: Full name of this item
-        """
         self._abbr = abbr
         self._name = name
 
@@ -32,6 +34,8 @@ class ContainerItem():
 
     @property
     def abbr(self):
+        """Abbreviation or symbol representing this item.
+        """
         return self._abbr
 
     @abbr.setter
@@ -40,6 +44,8 @@ class ContainerItem():
 
     @property
     def name(self):
+        """Full name or description of this item.
+        """
         return self._name
 
     @name.setter
@@ -47,33 +53,50 @@ class ContainerItem():
         self._name = val
 
 
+class ParameterSet(sfa.utils.FrozenClass):
+    """The base class of ParameterSet objects.
+    """
+
+    def __init__(self, abbr):
+        """
+        """
+        super().__init__(abbr)
+
+
 class Algorithm(ContainerItem):
-    """The algorithms should implement compute method.
-    
+    """The base class of Algorithm classes.
+
+    Attributes
+    ----------
+    abbr : str
+    name : str
+    data : sfa.base.Data
+    params : sfa.base.ParameterSet
+    result : sfa.base.Result
+
     Examples
     --------
-        >>> class AnAlgorithm(sfa.Algorithm):
+        >>> class AnAlgorithm(sfa.base.Algorithm):
+                # Definition of algorithm ...
                 ...
-                ...        
         
-        >>> _alg = AnAlgorithm()
-        >>> _alg.params = params_obj # Parameters of the algorithm
-        >>> _alg.data = data_obj # Data to be analyzed by the algorithm
-        >>> _alg.initialize()
-        >>> res = _alg.compute()
+        >>> alg = AnAlgorithm()
+        >>> alg.params = params_obj # Parameters of the algorithm
+        >>> alg.data = data_obj # Data to be analyzed by the algorithm
+        >>> alg.initialize()
+        >>> res = alg.compute()
         
     """
     def __init__(self, abbr):
-        """
-        abbr: Abbreviation of algorithm name
-        name: Full name of this algorithm
-        """
         super().__init__(abbr)
         self._data = None
         self._params = None
         self._result = None
 
     def copy(self, is_deep=False):
+        """
+
+        """
         if is_deep:
             copy.deepcopy(self)
         else:
@@ -82,11 +105,18 @@ class Algorithm(ContainerItem):
     # Read-only properties
     @property
     def result(self):
+        """The object of ``sfa.base.Result``.
+           The result of computing the batch.
+        """
         return self._result
 
     # Read & write properties
     @property
     def params(self):
+        """The object of ``sfa.base.ParameterSet``.
+           Parameters of the algorithm can accessed
+           through this member.
+        """
         return self._params
         
     @params.setter
@@ -95,6 +125,10 @@ class Algorithm(ContainerItem):
     
     @property
     def data(self):
+        """The object of ``sfa.base.Data``.
+            Data to be processed based on the algorithm
+            can accessed through this member.
+        """
         return self._data
         
     @data.setter
@@ -102,24 +136,47 @@ class Algorithm(ContainerItem):
         self._data = obj
 
     def initialize(self, network=True, ba=True):
+        """
+        """
         if network:
-            self._initialize_network()
+            self.initialize_network()
 
         if ba:
-            self._initialize_basal_activity()
+            self.initialize_basal_activity()
 
-    def _initialize_network(self):
+    def initialize_network(self):
+        """Initialize the data structures related to network.
+        """
         pass
 
-    def _initialize_basal_activity(self):
+    def initialize_basal_activity(self):
+        """Initialize the basal activity, :math:`b`.
+        """
         pass
 
     @abc.abstractmethod
     def compute(self, b):
+        r"""Process the assigned data
+            with the given basal activity, :math:`b`.
+
+        Parameters
+        ----------
+        b : numpy.ndarray
+            1D array of basal activity.
+
+
+        Returns
+        -------
+        x : numpy.ndarray
+            1D-array object of activity at steady-state.
+        """
         raise NotImplementedError("compute() should be implemented")
 
     @abc.abstractmethod
     def compute_batch(self):
+        """Process the assigned data that contains a batch data.
+           The result is stored in ``result`` member.
+        """
         raise NotImplementedError("compute_batch() should be implemented")
 
 # end of class Algorithm        

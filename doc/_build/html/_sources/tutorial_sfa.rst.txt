@@ -1,11 +1,12 @@
 ..  -*- coding: utf-8 -*-
 
-Tutorial: Signal flow analysis
-==============================
+Signal flow analysis
+====================
 
 This brief tutorial will guide you to start utilizing SFA.
 We wrote this tutorial assuming users already have the overall knowledge about
-`the original journal paper <http://>`_.
+`the original journal paper
+ <https://www.nature.com/articles/s41598-018-23643-5>`_.
 
 
 
@@ -503,6 +504,15 @@ Obviously, the signal flow from PI3K to PIP3 has decreased
 due to the perturbation.
 However, the depletion of all out-links of PI3K has upregulated
 the signal flow from MEK to ERK (i.e., positive value).
+
+
+Creating a dataset with network structure
+-----------------------------------------
+
+
+- Describe how to define own datasets only with network topology.
+- Explanation for the members of Data class.
+
 
 
 .. _NumPy: http://www.numpy.org
