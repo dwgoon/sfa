@@ -15,7 +15,7 @@ def calc_influence(W,
                    get_iter=False,
                    device="cpu",
                    sparse=False):
-    """Calculate the influence matrix.
+    r"""Calculate the influence matrix.
        It estimates the effects of a node to the other nodes,
        by calculating partial derivative with respect to source nodes,
        based on a simple iterative method.

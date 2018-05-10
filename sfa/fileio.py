@@ -19,6 +19,9 @@ def read_inputs(fpath):
     inputs = {}
     with codecs.open(fpath, "r", encoding="utf-8-sig") as fin:
         for line in fin:
+            if line.isspace():
+                continue
+
             items = line.split()
             node = items[0].strip()
             defval = float(items[1].strip())
@@ -32,6 +35,9 @@ def read_sif(fpath, str_act='+', str_inh='-', sort=True, as_nx=False):
     name_to_idx = {}
     with codecs.open(fpath, "r", encoding="utf-8-sig") as fin:
         for line in fin:
+            if line.isspace():
+                continue
+
             items = line.strip().split()
             src = items[0]
             tgt = items[2]

@@ -7,11 +7,16 @@ import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.ticker import FormatStrFormatter
+from matplotlib import rcParams
 
+rcParams['font.family'] = 'sans-serif'
+rcParams['font.sans-serif'] = ['Arial']
 
 def siplot(df_splo,
            df_inf,
            output,
+           min_splo=None,
+           max_splo=None,
            thr_inf=1e-10,
            fmt_inf='%f',
            fig=None,
@@ -26,8 +31,18 @@ def siplot(df_splo,
            yfontsize=8):
 
     # SPLO-Influence Data
+    if not min_splo:
+        min_splo = df_splo.min()
+
+    if not max_splo:
+        max_splo = df_splo.max()
+
+    mask_splo = (min_splo <= df_splo) & (df_splo <= max_splo)
+    df_splo = df_splo[mask_splo]
+
     df_splo = pd.DataFrame(df_splo)
     df_splo.columns = ['SPLO']
+
 
     if output in df_splo.index:
         df_splo.drop(output, inplace=True)
@@ -99,24 +114,52 @@ def siplot(df_splo,
         # Set limitations
         ax.set_ylim(0, cnt_max +1)
 
-        # Filter bar graphics.
-        bars = []
-        cnt_bars = 0
-        for obj in ax.get_children():
-            if cnt_bars == cnt_max:
-                break
-            if isinstance(obj, Rectangle):
-                bars.append(obj)
-                obj.set_color(color)
-                cnt_bars += 1
-
-        # end of for
-
         if designated:
+            # Filter bar graphics.
+            bars = []
+            cnt_bars = 0
+            for obj in ax.get_children():
+                if cnt_bars == cnt_max:
+                    break
+                if isinstance(obj, Rectangle):
+                    bars.append(obj)
+                    obj.set_color(color)
+                    cnt_bars += 1
+            # end of for
+
+            # Change the bars of the designated names.
             for i, name in enumerate(names):
                 if name in designated:
                     bars[i].set_color(dcolor)
             # end of for
+
+            # Change the text colors of the designated names.
+            for obj in ax.get_yticklabels():
+                name = obj.get_text()
+                if name in designated:
+                    obj.set_color(dcolor)
+            # end of for
+    # end of for
+
+    # Make zero notation more simple.
+    fig.canvas.draw()
+    for ax in fig.axes:
+        labels = []
+        for obj in ax.get_xticklabels():
+            try:
+                text = obj.get_text()
+                num = float(text)
+            except ValueError:
+                labels.append(text)
+                continue
+
+            if num == 0:
+                labels.append('0')
+            else:
+                labels.append(text)
+        # end of for
+        ax.set_xticklabels(labels)
+        # end of for
     # end of for
 
     return fig
