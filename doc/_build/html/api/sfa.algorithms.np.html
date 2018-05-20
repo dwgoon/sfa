@@ -1,0 +1,614 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.algorithms.np module &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../index.html"/>
+        <link rel="up" title="sfa.algorithms package" href="sfa.algorithms.html"/>
+        <link rel="prev" title="sfa.algorithms package" href="sfa.algorithms.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../develop.html">Development</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">sfa</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sfa.html">sfa package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="sfa.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="sfa.algorithms.html">sfa.algorithms package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.analysis.html">sfa.analysis package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.control.html">sfa.control package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.data.html">sfa.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.plot.html">sfa.plot package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.vis.html">sfa.vis package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#module-sfa">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">sfa</a> &raquo;</li>
+        
+          <li><a href="sfa.html">sfa package</a> &raquo;</li>
+        
+          <li><a href="sfa.algorithms.html">sfa.algorithms package</a> &raquo;</li>
+        
+      <li>sfa.algorithms.np module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/sfa.algorithms.np.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sfa.algorithms.np">
+<span id="sfa-algorithms-np-module"></span><h1>sfa.algorithms.np module<a class="headerlink" href="#module-sfa.algorithms.np" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sfa.algorithms.np.NetworkPropagation">
+<em class="property">class </em><code class="descclassname">sfa.algorithms.np.</code><code class="descname">NetworkPropagation</code><span class="sig-paren">(</span><em>abbr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sfa.base.html#sfa.base.Algorithm" title="sfa.base.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">sfa.base.Algorithm</span></code></a></p>
+<dl class="docutils">
+<dt>A base class that defines the basic functionality of</dt>
+<dd>network propagation algorithms.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>W</strong></dt>
+<dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">abbr</span></code></dt>
+<dd><p class="first last">Abbreviation or symbol representing this item.</p>
+</dd>
+<dt><strong>b</strong></dt>
+<dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></dt>
+<dd><p class="first last">The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.Data</span></code>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></dt>
+<dd><p class="first last">Full name or description of this item.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></dt>
+<dd><p class="first last">The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.ParameterSet</span></code>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">result</span></code></dt>
+<dd><p class="first last">The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.Result</span></code>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.apply_inputs" title="sfa.algorithms.np.NetworkPropagation.apply_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_inputs</span></code></a>(inds,&nbsp;vals)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.compute" title="sfa.algorithms.np.NetworkPropagation.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(b)</td>
+<td>Process the assigned data     with the given basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.compute_batch" title="sfa.algorithms.np.NetworkPropagation.compute_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_batch</span></code></a>()</td>
+<td>Process the assigned data that contains a batch data.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.initialize_basal_activity" title="sfa.algorithms.np.NetworkPropagation.initialize_basal_activity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_basal_activity</span></code></a>()</td>
+<td>Initialize the basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.initialize_network" title="sfa.algorithms.np.NetworkPropagation.initialize_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_network</span></code></a>()</td>
+<td>Initialize the data structures related to network.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.prepare_exact_solution" title="sfa.algorithms.np.NetworkPropagation.prepare_exact_solution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_exact_solution</span></code></a>()</td>
+<td>Prepare to get the matrix for the exact solution.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.prepare_iterative_solution" title="sfa.algorithms.np.NetworkPropagation.prepare_iterative_solution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_iterative_solution</span></code></a>()</td>
+<td>Prepare to get the solution from the iterative method.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.propagate_exact" title="sfa.algorithms.np.NetworkPropagation.propagate_exact"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate_exact</span></code></a>(b)</td>
+<td>Obtain the activity at steady-state based on the exact solution of network propagation.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagation.propagate_iterative" title="sfa.algorithms.np.NetworkPropagation.propagate_iterative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">propagate_iterative</span></code></a>(W,&nbsp;xi,&nbsp;b[,&nbsp;a,&nbsp;lim_iter,&nbsp;…])</td>
+<td>Compute network propagation based on the iterative method.</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="70%" />
+<col width="30%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>apply_perturbations</strong></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td><strong>copy</strong></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td><strong>initialize</strong></td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagation.W">
+<code class="descname">W</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.W" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.apply_inputs">
+<code class="descname">apply_inputs</code><span class="sig-paren">(</span><em>inds</em>, <em>vals</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.apply_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.apply_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.apply_perturbations">
+<code class="descname">apply_perturbations</code><span class="sig-paren">(</span><em>targets</em>, <em>inds</em>, <em>vals</em>, <em>W_ptb=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.apply_perturbations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.apply_perturbations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagation.b">
+<code class="descname">b</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.b" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.compute">
+<code class="descname">compute</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.compute" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Process the assigned data</dt>
+<dd>with the given basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>b</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">1D array of basal activity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">1D-array object of activity at steady-state.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.compute_batch">
+<code class="descname">compute_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.compute_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.compute_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the assigned data that contains a batch data.
+The result is stored in <code class="docutils literal notranslate"><span class="pre">result</span></code> member.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.initialize_basal_activity">
+<code class="descname">initialize_basal_activity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.initialize_basal_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.initialize_basal_activity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.initialize_network">
+<code class="descname">initialize_network</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.initialize_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.initialize_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the data structures related to network.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.prepare_exact_solution">
+<code class="descname">prepare_exact_solution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.prepare_exact_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.prepare_exact_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare to get the matrix for the exact solution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.prepare_iterative_solution">
+<code class="descname">prepare_iterative_solution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.prepare_iterative_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.prepare_iterative_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare to get the solution from the iterative method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.propagate_exact">
+<code class="descname">propagate_exact</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.propagate_exact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.propagate_exact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain the activity at steady-state
+based on the exact solution of network propagation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>b</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">1D array of basal activity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">The exact solution of the activity at steady-state
+in 1D array.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagation.propagate_iterative">
+<code class="descname">propagate_iterative</code><span class="sig-paren">(</span><em>W</em>, <em>xi</em>, <em>b</em>, <em>a=0.5</em>, <em>lim_iter=1000</em>, <em>tol=1e-05</em>, <em>get_trj=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagation.propagate_iterative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagation.propagate_iterative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute network propagation based on the iterative method.
+This method should be used if we want to obtain the trajectory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>W: numpy.ndarray</strong></dt>
+<dd><p class="first last">2D array for weight matrix.</p>
+</dd>
+<dt><strong>xi: numpy.ndarray</strong></dt>
+<dd><p class="first last">1D array for initial state.</p>
+</dd>
+<dt><strong>b: numpy.ndarray</strong></dt>
+<dd><p class="first last">1D array for basal activity.</p>
+</dd>
+<dt><strong>a: real number, optional</strong></dt>
+<dd><p class="first last">Hyperparameter, <span class="math notranslate nohighlight">\(\alpha\)</span>, ~ (0, 1).
+The default value is 0.5.</p>
+</dd>
+<dt><strong>lim_iter: int, optional</strong></dt>
+<dd><p class="first last">Number of maximum iterations in the iterative method.
+Computation terminates when the iteration reaches <code class="docutils literal notranslate"><span class="pre">lim_iter</span></code>.
+The default value is 1000.</p>
+</dd>
+<dt><strong>tol: float, optional</strong></dt>
+<dd><p class="first last">Tolerance for terminating iteration.
+Iteration continues, if Frobenius norm of
+<span class="math notranslate nohighlight">\(x(t+1)-x(t)\)</span> is greater than <code class="docutils literal notranslate"><span class="pre">tol</span></code>.
+The default value is 1e-5.</p>
+</dd>
+<dt><strong>get_trj: bool, optional</strong></dt>
+<dd><p class="first last">Determine whether the trajectory of the state is returned.
+If get_trj is true, the trajectory is returned.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">1D array of the activity after the computation.</p>
+</dd>
+<dt><strong>trj</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">2D array where the row represents a state of the activity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet">
+<em class="property">class </em><code class="descclassname">sfa.algorithms.np.</code><code class="descname">NetworkPropagationParameterSet</code><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagationParameterSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sfa.base.ParameterSet</span></code></p>
+<p>An object that deals with the parameters
+of <code class="docutils literal notranslate"><span class="pre">sfa.algorithms.np.NetworkPropagation</span></code> base algorithm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagationParameterSet.alpha" title="sfa.algorithms.np.NetworkPropagationParameterSet.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Hyperparameter, <span class="math notranslate nohighlight">\(\alpha\)</span> ~ (0, 1).</p>
+</dd>
+<dt><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagationParameterSet.lim_iter" title="sfa.algorithms.np.NetworkPropagationParameterSet.lim_iter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lim_iter</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of maximum iterations in the iterative method.</p>
+</dd>
+<dt><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagationParameterSet.apply_weight_norm" title="sfa.algorithms.np.NetworkPropagationParameterSet.apply_weight_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_weight_norm</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">Apply the link weight normalization.</p>
+</dd>
+<dt><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagationParameterSet.use_rel_change" title="sfa.algorithms.np.NetworkPropagationParameterSet.use_rel_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">use_rel_change</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">Use relative change for prediction.</p>
+</dd>
+<dt><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagationParameterSet.exsol_forbidden" title="sfa.algorithms.np.NetworkPropagationParameterSet.exsol_forbidden"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exsol_forbidden</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">Forbid the propagation computation based on the exact solution.</p>
+</dd>
+<dt><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagationParameterSet.no_inputs" title="sfa.algorithms.np.NetworkPropagationParameterSet.no_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">no_inputs</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">Do not apply the effects of inputs in a given network.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#sfa.algorithms.np.NetworkPropagationParameterSet.initialize" title="sfa.algorithms.np.NetworkPropagationParameterSet.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>()</td>
+<td>Initialize the parameters with default values.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet.alpha">
+<code class="descname">alpha</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet.alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hyperparameter, <span class="math notranslate nohighlight">\(\alpha\)</span> ~ (0, 1).
+It controls the portion of signal flow
+in determining the activity.
+The default value is 0.5.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet.apply_weight_norm">
+<code class="descname">apply_weight_norm</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet.apply_weight_norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the link weight normalization.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet.exsol_forbidden">
+<code class="descname">exsol_forbidden</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet.exsol_forbidden" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forbid the propagation computation
+based on the exact solution.
+In other words, use the iterative method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/algorithms/np.html#NetworkPropagationParameterSet.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the parameters with default values.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet.lim_iter">
+<code class="descname">lim_iter</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet.lim_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of maximum iterations in the iterative method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet.no_inputs">
+<code class="descname">no_inputs</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet.no_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not apply the effects of inputs in a given network.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sfa.algorithms.np.NetworkPropagationParameterSet.use_rel_change">
+<code class="descname">use_rel_change</code><a class="headerlink" href="#sfa.algorithms.np.NetworkPropagationParameterSet.use_rel_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use relative change for prediction.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="sfa.algorithms.html" class="btn btn-neutral" title="sfa.algorithms package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

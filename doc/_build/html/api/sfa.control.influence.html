@@ -1,0 +1,359 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.control.influence module &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../index.html"/>
+        <link rel="up" title="sfa.control package" href="sfa.control.html"/>
+        <link rel="next" title="sfa.data package" href="sfa.data.html"/>
+        <link rel="prev" title="sfa.control package" href="sfa.control.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../develop.html">Development</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">sfa</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sfa.html">sfa package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="sfa.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sfa.algorithms.html">sfa.algorithms package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.analysis.html">sfa.analysis package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="sfa.control.html">sfa.control package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.data.html">sfa.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.plot.html">sfa.plot package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.vis.html">sfa.vis package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#module-sfa">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">sfa</a> &raquo;</li>
+        
+          <li><a href="sfa.html">sfa package</a> &raquo;</li>
+        
+          <li><a href="sfa.control.html">sfa.control package</a> &raquo;</li>
+        
+      <li>sfa.control.influence module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/sfa.control.influence.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sfa.control.influence">
+<span id="sfa-control-influence-module"></span><h1>sfa.control.influence module<a class="headerlink" href="#module-sfa.control.influence" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="sfa.control.influence.calc_influence">
+<code class="descclassname">sfa.control.influence.</code><code class="descname">calc_influence</code><span class="sig-paren">(</span><em>W</em>, <em>alpha=0.9</em>, <em>beta=0.1</em>, <em>S=None</em>, <em>rtype='df'</em>, <em>outputs=None</em>, <em>n2i=None</em>, <em>max_iter=1000</em>, <em>tol=1e-07</em>, <em>get_iter=False</em>, <em>device='cpu'</em>, <em>sparse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/control/influence.html#calc_influence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.control.influence.calc_influence" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Calculate the influence matrix.</dt>
+<dd><p class="first">It estimates the effects of a node to the other nodes,
+by calculating partial derivative with respect to source nodes,
+based on a simple iterative method.</p>
+<p>Based on the below difference equation,</p>
+<p>x(t+1) = alpha*W.dot(x(t)) + (1-alpha)*b</p>
+<p>The influence matrix, S, is calculated using chain rule of
+partial derivative as follows.</p>
+<dl class="docutils">
+<dt>begin{align}</dt>
+<dd><dl class="first last docutils">
+<dt>S_{ij} &amp;= frac{partial{x_i}}{partial{x_j}} \</dt>
+<dd>&amp;= (I + alpha W + alpha^2 W^2 +  … + alpha^{infty}W^{infty})_{ij} \
+&amp;approx (I + alpha W + alpha^2 W^2 +  … + alpha^{l}W^{l})_{ij} \</dd>
+</dl>
+</dd>
+</dl>
+<p>end{align}</p>
+<p>This is the summation of the weight multiplications along all paths
+including cycles. $S_{ij}$ denotes the influence of node (j) on node (i).</p>
+<p>An iterative method for an approximated solution is as follows.</p>
+<blockquote>
+<div>S(t+1) = alpha WS(t) + I,</div></blockquote>
+<p>where $S(0) = beta I$ and $S(1) = beta(I + alpha W)$ $(t&gt;1)$.</p>
+<p class="last">The iteration continues until $||S(t+1) - S(t)|| leq tol$.</p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>W</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Weight matrix.</p>
+</dd>
+<dt><strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Hyperparameter for adjusting the effect of signal flow.</p>
+</dd>
+<dt><strong>beta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Hyperparameter for adjusting the effect of basal activity.</p>
+</dd>
+<dt><strong>S</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray, optional</span></dt>
+<dd><p class="first last">Initial influence matrix.</p>
+</dd>
+<dt><strong>rtype: str (optional)</strong></dt>
+<dd><p class="first last">Return object type: ‘df’ or ‘array’.</p>
+</dd>
+<dt><strong>outputs: list (or iterable) of str, optional</strong></dt>
+<dd><p class="first last">Names of output nodes, which is necessary for ‘df’ rtype.</p>
+</dd>
+<dt><strong>n2i: dict, optional</strong></dt>
+<dd><p class="first last">Name to index dict, which is necessary for ‘df’ rtype.</p>
+</dd>
+<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The maximum iteration number for the estimation.</p>
+</dd>
+<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Tolerance for terminating the iteration.</p>
+</dd>
+<dt><strong>get_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Determine whether the actual iteration number is returned.</p>
+</dd>
+<dt><strong>device</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional, {‘CPU’, ‘GPU:0’, ‘GPU:1’, …}</span></dt>
+<dd><p class="first last">Select which device to use. ‘CPU’ is default.</p>
+</dd>
+<dt><strong>sparse</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Use sparse matrices for the computation.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>S</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray, optional</span></dt>
+<dd><p class="first last">2D array of influence.</p>
+</dd>
+<dt><strong>df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.DataFrame, optional</span></dt>
+<dd><p class="first last">Influences for each output in DataFrame.</p>
+</dd>
+<dt><strong>num_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The actual number of iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sfa.data.html" class="btn btn-neutral float-right" title="sfa.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sfa.control.html" class="btn btn-neutral" title="sfa.control package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

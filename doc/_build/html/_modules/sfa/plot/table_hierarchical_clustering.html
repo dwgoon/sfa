@@ -1,0 +1,517 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.plot.table_hierarchical_clustering &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.plot.table_hierarchical_clustering</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.plot.table_hierarchical_clustering</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.spatial.distance</span> <span class="k">as</span> <span class="nn">distance</span>
+<span class="kn">import</span> <span class="nn">scipy.cluster.hierarchy</span> <span class="k">as</span> <span class="nn">sch</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">gridspec</span>
+
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+<span class="kn">from</span> <span class="nn">.table_condition</span> <span class="k">import</span> <span class="n">ConditionTable</span>
+
+
+<div class="viewcode-block" id="HierarchicalClusteringTable"><a class="viewcode-back" href="../../../api/sfa.plot.table_hierarchical_clustering.html#sfa.plot.table_hierarchical_clustering.HierarchicalClusteringTable">[docs]</a><span class="k">class</span> <span class="nc">HierarchicalClusteringTable</span><span class="p">(</span><span class="n">ConditionTable</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conds</span><span class="p">,</span>  <span class="n">samples</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Set references for data objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span> <span class="o">=</span> <span class="n">samples</span>  <span class="c1"># DataFrame of samples to be clustered.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">conds</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_colorbar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_tick_fontsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_tick_fontsize</span>
+    <span class="c1"># end of def __init__</span>
+
+    <span class="k">def</span> <span class="nf">_parse_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse the keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;vmin&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;vmax&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">colors_blend</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span>
+        <span class="n">default_cmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">blend_palette</span><span class="p">(</span><span class="n">colors_blend</span><span class="p">,</span>
+                                         <span class="n">n_colors</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                         <span class="n">as_cmap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cmap&#39;</span><span class="p">,</span> <span class="n">default_cmap</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dim</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dim&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wspace</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wspace&#39;</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hspace</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hspace&#39;</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">)</span>
+
+        <span class="n">default_width_ratios</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="mf">0.25</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="mf">0.05</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="n">default_height_ratios</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_dfc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_width_ratios</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;width_ratios&#39;</span><span class="p">,</span>
+                                        <span class="n">default_width_ratios</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_height_ratios</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;height_ratios&#39;</span><span class="p">,</span>
+                                         <span class="n">default_height_ratios</span><span class="p">)</span>
+
+        <span class="n">default_position</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;condition&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+                            <span class="s1">&#39;heatmap&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
+                            <span class="s1">&#39;row_dendrogram&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+                            <span class="s1">&#39;col_dendrogram&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
+                            <span class="s1">&#39;colorbar&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">])}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes_position</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;axes_position&#39;</span><span class="p">,</span>
+                                         <span class="n">default_position</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_cluster</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;row_cluster&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_col_cluster</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;col_cluster&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_cluster</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_row_method</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;row_method&#39;</span><span class="p">,</span> <span class="s1">&#39;single&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_row_metric</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;row_metric&#39;</span><span class="p">,</span> <span class="s1">&#39;cityblock&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_row_dend_linewidth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;row_dend_linewidth&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_cluster</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_col_method</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;col_method&#39;</span><span class="p">,</span> <span class="s1">&#39;single&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_col_metric</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;col_metric&#39;</span><span class="p">,</span> <span class="s1">&#39;cityblock&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_col_dend_linewidth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;col_dend_linewidth&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table_linewidth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;table_linewidth&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table_tick_fontsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;table_tick_fontsize&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar_tick_fontsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;colorbar_tick_fontsize&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># pos = self._axes_position[&#39;heatmap&#39;]</span>
+        <span class="c1"># ax_heatmap = self._fig.add_subplot(self._gridspec[pos[0], pos[1]])</span>
+        <span class="c1"># self._axes.append(ax_heatmap)</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes_position</span><span class="p">[</span><span class="s1">&#39;condition&#39;</span><span class="p">]</span>
+        <span class="n">ax_conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gridspec</span><span class="p">[</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;condition&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax_conds</span>
+        <span class="n">ax_conds</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_conds</span><span class="o">.</span><span class="n">set_frame_on</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_conds</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+        <span class="n">ax_conds</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">tick_bottom</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_perform_clustering</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_create_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_create_tables</span><span class="p">()</span>
+        <span class="n">ax_heatmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Draw lines on table and heatmap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_linewidth</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
+                               <span class="n">linewidth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_table_linewidth</span><span class="p">,</span>
+                               <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
+                               <span class="n">linewidth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_table_linewidth</span><span class="p">,</span>
+                               <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_perform_clustering</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sch</span><span class="o">.</span><span class="n">set_link_color_palette</span><span class="p">([</span><span class="s1">&#39;black&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_cluster</span><span class="p">:</span>
+
+            <span class="n">row_pairwise_dists</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="p">,</span>
+                                                <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_row_metric</span><span class="p">)</span>
+            <span class="n">row_clusters</span> <span class="o">=</span> <span class="n">sch</span><span class="o">.</span><span class="n">linkage</span><span class="p">(</span><span class="n">row_pairwise_dists</span><span class="p">,</span>
+                                       <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_row_metric</span><span class="p">,</span>
+                                       <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_row_method</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">rc_context</span><span class="p">({</span><span class="s1">&#39;lines.linewidth&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_dend_linewidth</span><span class="p">}):</span>
+                <span class="c1"># Dendrogram for row clustering</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes_position</span><span class="p">[</span><span class="s1">&#39;row_dendrogram&#39;</span><span class="p">]</span>
+                <span class="n">subgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gridspec</span><span class="p">[</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">ax_row_den</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">subgs</span><span class="p">)</span>
+                <span class="n">row_den</span> <span class="o">=</span> <span class="n">sch</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">row_clusters</span><span class="p">,</span>
+                                         <span class="n">color_threshold</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                                         <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+                <span class="n">ax_row_den</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean_axis</span><span class="p">(</span><span class="n">ax_row_den</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;row_dendrogram&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax_row_den</span>
+
+                <span class="n">ind_row</span> <span class="o">=</span> <span class="n">row_den</span><span class="p">[</span><span class="s1">&#39;leaves&#39;</span><span class="p">]</span>
+                <span class="c1"># Rearrange the DataFrame for condition according to</span>
+                <span class="c1"># the clustering result.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dfc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dfc</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ind_row</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ind_row</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>  <span class="c1">#self._dfs.index.ravel()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_cluster</span><span class="p">:</span>
+            <span class="n">col_pairwise_dists</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                                <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_col_metric</span><span class="p">)</span>
+            <span class="n">col_clusters</span> <span class="o">=</span> <span class="n">sch</span><span class="o">.</span><span class="n">linkage</span><span class="p">(</span><span class="n">col_pairwise_dists</span><span class="p">,</span>
+                                       <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_col_metric</span><span class="p">,</span>
+                                       <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_col_method</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">rc_context</span><span class="p">({</span><span class="s1">&#39;lines.linewidth&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_dend_linewidth</span><span class="p">}):</span>
+                <span class="c1"># Dendrogram for column clustering</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes_position</span><span class="p">[</span><span class="s1">&#39;col_dendrogram&#39;</span><span class="p">]</span>
+                <span class="n">ax_col_den</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gridspec</span><span class="p">[</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="n">col_den</span> <span class="o">=</span> <span class="n">sch</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">col_clusters</span><span class="p">,</span>
+                                         <span class="n">color_threshold</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                                         <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+                <span class="n">ax_col_den</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean_axis</span><span class="p">(</span><span class="n">ax_col_den</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;col_dendrogram&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax_col_den</span>
+                <span class="n">ind_col</span> <span class="o">=</span> <span class="n">col_den</span><span class="p">[</span><span class="s1">&#39;leaves&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># ind_col = self._dfs.columns.ravel()</span>
+            <span class="n">ind_col</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="c1"># Heatmap</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes_position</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span>
+        <span class="n">subgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gridspec</span><span class="p">[</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">ax_heatmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">subgs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_heatmap</span> <span class="o">=</span> <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ind_row</span><span class="p">,</span> <span class="n">ind_col</span><span class="p">],</span>
+                                           <span class="n">vmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_vmin</span><span class="p">,</span>
+                                           <span class="n">vmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_vmax</span><span class="p">,</span>
+                                           <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span>
+                                           <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                                           <span class="c1">#origin=&#39;lower&#39;,</span>
+                                           <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span><span class="p">)</span>
+
+        <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">set_frame_on</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">tick_bottom</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax_heatmap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_axis</span><span class="p">(</span><span class="n">ax_heatmap</span><span class="p">)</span>
+
+        <span class="c1"># Remove the y-labels of condition table</span>
+        <span class="c1">#ax_conds = self._axes[&#39;condition&#39;]</span>
+
+        <span class="c1"># Add column labels</span>
+        <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfs</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">ind_col</span><span class="p">]),</span>
+                                   <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Remove the tick lines</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">get_xticklines</span><span class="p">():</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">set_markersize</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ax_heatmap</span><span class="o">.</span><span class="n">get_yticklines</span><span class="p">():</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">set_markersize</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_colorbar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes_position</span><span class="p">[</span><span class="s1">&#39;colorbar&#39;</span><span class="p">]</span>
+        <span class="n">subgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gridspec</span><span class="p">[</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">ax_colorbar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">subgs</span><span class="p">)</span>
+
+        <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_heatmap</span><span class="p">,</span> <span class="n">ax_colorbar</span><span class="p">,</span>
+                                <span class="n">drawedges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1">#True)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar</span> <span class="o">=</span> <span class="n">cb</span>
+        <span class="c1">#cb.ax.yaxis.set_ticks_position(&#39;right&#39;)</span>
+        <span class="c1">#self._clean_axis(cb.ax)</span>
+        <span class="c1"># for sp in cb.ax.spines.values():</span>
+        <span class="c1">#     sp.set_visible(False)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">pad</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">outline</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">outline</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_table_linewidth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colorbar_fontsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar_tick_fontsize</span>
+
+    <span class="k">def</span> <span class="nf">_clean_axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove ticks, tick labels, and frame from axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">([])</span>
+        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">sp</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add only column labels for condition table. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tb</span><span class="o">.</span><span class="n">add_column_labels</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">table_linewidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_linewidth</span>
+
+    <span class="nd">@table_linewidth</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">table_linewidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table_linewidth</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colorbar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colorbar_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar_tick_fontsize</span>
+
+    <span class="nd">@colorbar_fontsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colorbar_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar_tick_fontsize</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="n">ticks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">get_ticklabels</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_colorbar_tick_fontsize</span><span class="p">)</span>
+</div>
+    <span class="c1"># @column_tick_fontsize.setter</span>
+    <span class="c1"># def column_tick_fontsize(self, val):</span>
+    <span class="c1">#     self._column_tick_fontsize = val</span>
+    <span class="c1">#     for ax in self._axes:</span>
+    <span class="c1">#         ax.tick_params(axis=&#39;x&#39;, which=&#39;major&#39;,</span>
+    <span class="c1">#                        labelsize=self._column_tick_fontsize)</span>
+
+    <span class="c1"># def _set_colors(self, colors):</span>
+    <span class="c1">#     super()._set_colors(colors)</span>
+    <span class="c1">#</span>
+    <span class="c1"># def _add_labels(self):</span>
+    <span class="c1">#     super()._add_labels()  # Add labels for condition table</span>
+
+
+    <span class="c1"># def _add_column_labels(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;Add column labels using x-axis</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     xlabels = list(self._dfs.columns)</span>
+    <span class="c1">#     ax_heatmap.set_xticks(np.arange(self._dfs.shape[0]))</span>
+    <span class="c1">#     ax_heatmap.set_xticklabels(xlabels,</span>
+    <span class="c1">#                                rotation=90, minor=False)</span>
+    <span class="c1">#     ax_heatmap.tick_params(axis=&#39;x&#39;, which=&#39;major&#39;, pad=3)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Hide the small bars of ticks</span>
+    <span class="c1">#     for tick in self._ax.xaxis.get_major_ticks():</span>
+    <span class="c1">#         tick.tick1On = False</span>
+    <span class="c1">#         tick.tick2On = False</span>
+    <span class="c1"># # # end of def</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

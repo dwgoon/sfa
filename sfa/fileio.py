@@ -29,7 +29,7 @@ def read_inputs(fpath):
     return inputs
 
 
-def read_sif(fpath, str_act='+', str_inh='-', sort=True, as_nx=False):
+def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
     dict_links = defaultdict(list)
     set_nodes = set()
     name_to_idx = {}
@@ -45,12 +45,15 @@ def read_sif(fpath, str_act='+', str_inh='-', sort=True, as_nx=False):
 
             set_nodes.add(src)
             set_nodes.add(tgt)
-            if sign == str_act:
-                dict_links[src].append((tgt, 1))
-            elif sign == str_inh:
-                dict_links[src].append((tgt, -1))
-            else:
-                raise ValueError("Undefined link type: %s"%(sign))
+            int_sign = signs[sign]
+            dict_links[src].append((tgt, int_sign))
+
+            # if sign == str_act:
+            #     dict_links[src].append((tgt, 1))
+            # elif sign == str_inh:
+            #     dict_links[src].append((tgt, -1))
+            # else:
+            #     raise ValueError("Undefined link type: %s"%(sign))
 
         # end of for
     # end of with
@@ -68,9 +71,9 @@ def read_sif(fpath, str_act='+', str_inh='-', sort=True, as_nx=False):
     # end of for
     for name_src in name_to_idx:
         isrc = name_to_idx[name_src]
-        for name_tgt, sign in dict_links[name_src]:
+        for name_tgt, int_sign in dict_links[name_src]:
             itgt = name_to_idx[name_tgt]
-            adj[itgt, isrc] = sign
+            adj[itgt, isrc] = int_sign
             # end of for
     # end of for
 

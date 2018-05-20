@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.plot.tableaxis &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.plot.tableaxis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.plot.tableaxis</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.table</span> <span class="k">import</span> <span class="n">Table</span>
+
+
+<div class="viewcode-block" id="TableAxis"><a class="viewcode-back" href="../../../api/sfa.plot.tableaxis.html#sfa.plot.tableaxis.TableAxis">[docs]</a><span class="k">class</span> <span class="nc">TableAxis</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span> <span class="o">=</span> <span class="n">colors</span>
+
+        <span class="c1"># Create matplotlib&#39;s Table object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="o">.</span><span class="n">auto_set_font_size</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_cell_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_cells</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_ticks</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_calculate_cell_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># The number of total rows and columns of the table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ncols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Calculate the width and height of a single cell in the table</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_w_cell</span> <span class="o">=</span> <span class="n">L</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ncols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h_cell</span> <span class="o">=</span> <span class="n">H</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span>
+
+    <span class="k">def</span> <span class="nf">_add_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_remove_ticks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">([])</span>
+
+<div class="viewcode-block" id="TableAxis.add_row_labels"><a class="viewcode-back" href="../../../api/sfa.plot.tableaxis.html#sfa.plot.tableaxis.TableAxis.add_row_labels">[docs]</a>    <span class="k">def</span> <span class="nf">add_row_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add row labels using y-axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ylabels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">tick_left</span><span class="p">()</span>
+
+        <span class="n">yticks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_h_cell</span><span class="o">/</span><span class="mf">2.0</span><span class="p">]</span>  <span class="c1"># The position of the first label</span>
+
+        <span class="c1"># The row labels of condition subtable</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">):</span>
+            <span class="n">yticks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yticks</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h_cell</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yticks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">ylabels</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Hide the small bars of ticks</span>
+        <span class="k">for</span> <span class="n">tick</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">get_major_ticks</span><span class="p">():</span>
+            <span class="n">tick</span><span class="o">.</span><span class="n">tick1On</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">tick</span><span class="o">.</span><span class="n">tick2On</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># end of def</span></div>
+
+<div class="viewcode-block" id="TableAxis.add_column_labels"><a class="viewcode-back" href="../../../api/sfa.plot.tableaxis.html#sfa.plot.tableaxis.TableAxis.add_column_labels">[docs]</a>    <span class="k">def</span> <span class="nf">add_column_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add column labels using x-axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xlabels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">xticks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_w_cell</span><span class="o">/</span><span class="mf">2.0</span><span class="p">]</span>  <span class="c1"># The position of the first label</span>
+        <span class="c1"># The column labels of condition subtable</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ncols</span><span class="p">):</span>
+            <span class="n">xticks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xticks</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_w_cell</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+
+        <span class="c1"># # Hide the small bars of ticks</span>
+        <span class="c1"># for tick in self._ax.xaxis.get_major_ticks():</span>
+        <span class="c1">#     tick.tick1On = False</span>
+        <span class="c1">#     tick.tick2On = False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xlabels</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+</div>
+    <span class="c1"># end of def</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_fontsize</span>
+
+    <span class="nd">@fontsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resize text fonts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table_fontsize</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">linewidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linewidth</span>
+
+    <span class="nd">@linewidth</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">linewidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adjust the width of table lines</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linewidth</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="n">celld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="o">.</span><span class="n">get_celld</span><span class="p">()</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">celld</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_linewidth</span><span class="p">)</span>
+</div>
+
+<div class="viewcode-block" id="ConditionTableAxis"><a class="viewcode-back" href="../../../api/sfa.plot.tableaxis.html#sfa.plot.tableaxis.ConditionTableAxis">[docs]</a><span class="k">class</span> <span class="nc">ConditionTableAxis</span><span class="p">(</span><span class="n">TableAxis</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_add_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">fcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;cond_up_cell&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;cond_dn_cell&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_w_cell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h_cell</span><span class="p">,</span>
+                              <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">fcolor</span><span class="p">)</span>
+</div>
+
+<div class="viewcode-block" id="ResultTableAxis"><a class="viewcode-back" href="../../../api/sfa.plot.tableaxis.html#sfa.plot.tableaxis.ResultTableAxis">[docs]</a><span class="k">class</span> <span class="nc">ResultTableAxis</span><span class="p">(</span><span class="n">TableAxis</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">dfr</span><span class="p">,</span> <span class="n">dfe</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dfr</span> <span class="o">=</span> <span class="n">dfr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dfe</span> <span class="o">=</span> <span class="n">dfe</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">dfr</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add cells for representing the agreement between</span>
+<span class="sd">        the results of simulation and experiment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">val_cons</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfr</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">val_cons</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">fcolor</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;result_up_cell&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">val_cons</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">fcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;result_dn_cell&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The value of result table element &quot;</span>
+                                 <span class="s2">&quot;should be bool.&quot;</span><span class="p">)</span>
+
+            <span class="n">val_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dfe</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">val_exp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">text_arrow</span> <span class="o">=</span> <span class="s1">&#39;UP&#39;</span>
+            <span class="k">elif</span> <span class="n">val_exp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">text_arrow</span> <span class="o">=</span> <span class="s1">&#39;DN&#39;</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># val_Exp == 0</span>
+                <span class="n">text_arrow</span> <span class="o">=</span> <span class="s1">&#39;─&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_w_cell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h_cell</span><span class="p">,</span>
+                              <span class="n">text</span><span class="o">=</span><span class="n">text_arrow</span><span class="p">,</span>
+                              <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                              <span class="n">facecolor</span><span class="o">=</span><span class="n">fcolor</span><span class="p">)</span>
+        <span class="c1"># end of for</span>
+
+        <span class="c1"># Set colors of the result</span>
+        <span class="n">celld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="o">.</span><span class="n">get_celld</span><span class="p">()</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dfr</span><span class="p">):</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">celld</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span>
+
+            <span class="c1"># Set colors</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">tcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;result_up_text&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;result_dn_text&#39;</span><span class="p">]</span>
+            <span class="c1"># end of if-else</span>
+
+            <span class="c1"># Adjust text</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">set_text_props</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">tcolor</span><span class="p">,</span>
+                                <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+        <span class="c1"># end of for</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

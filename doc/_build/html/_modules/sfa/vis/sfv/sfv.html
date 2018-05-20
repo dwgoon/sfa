@@ -1,0 +1,569 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.vis.sfv.sfv &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.vis.sfv.sfv</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.vis.sfv.sfv</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="k">import</span> <span class="n">QFont</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="k">import</span> <span class="n">QColor</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">QPointF</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Qt</span>
+
+<span class="kn">import</span> <span class="nn">sfv</span>
+<span class="kn">from</span> <span class="nn">sfv.graphics</span> <span class="k">import</span> <span class="n">LabelClassFactory</span>
+<span class="kn">from</span> <span class="nn">sfv.graphics</span> <span class="k">import</span> <span class="n">HeaderClassFactory</span>
+
+<span class="kn">import</span> <span class="nn">sfa</span>
+
+<span class="n">NegHeader</span> <span class="o">=</span> <span class="n">HeaderClassFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;HAMMER&#39;</span><span class="p">)</span>
+<span class="n">PosHeader</span> <span class="o">=</span> <span class="n">HeaderClassFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;ARROW&#39;</span><span class="p">)</span>
+<span class="n">TextLabel</span> <span class="o">=</span> <span class="n">LabelClassFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;TEXT_LABEL&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="create_from_graphics"><a class="viewcode-back" href="../../../../api/sfa.vis.sfv.sfv.html#sfa.vis.sfv.sfv.create_from_graphics">[docs]</a><span class="k">def</span> <span class="nf">create_from_graphics</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">abbr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create sfv.base.Data object from SIF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : sfv.graphics.Network</span>
+<span class="sd">        Network graphics object of SFV.</span>
+<span class="sd">    abbr : str</span>
+<span class="sd">        Abbreviation to denote this data object for the network.</span>
+<span class="sd">    inputs : dict, optional</span>
+<span class="sd">        Input information with default values</span>
+<span class="sd">    outputs : sequence, optional</span>
+<span class="sd">        Output information.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj : sfv.base.Data</span>
+<span class="sd">        Data object with the information of network topology.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">abbr</span><span class="p">:</span>
+        <span class="n">abbr</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">class</span> <span class="nc">__Data</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Data</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span> <span class="o">=</span> <span class="n">abbr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span> <span class="o">=</span> <span class="n">sfv</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes</span><span class="p">)}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">ir</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ir</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+                <span class="n">tgt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span><span class="p">[</span><span class="n">r</span><span class="p">]</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">][</span><span class="s1">&#39;SIGN&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">*=</span> <span class="n">sign</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+
+            <span class="k">if</span> <span class="n">outputs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span> <span class="o">=</span> <span class="n">outputs</span>
+
+            <span class="c1"># The following members are not defined due to the lack of data.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_conds</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_exp</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_ptb</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_has_link_perturb</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_names_ptb</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_iadj_to_idf</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># end of def __init__</span>
+    <span class="c1"># end of def class</span>
+
+    <span class="n">class_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">abbr</span><span class="o">.</span><span class="n">title</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()])</span>
+    <span class="n">__Data</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">class_name</span> <span class="o">+</span> <span class="s2">&quot;Data&quot;</span>
+    <span class="k">return</span> <span class="n">__Data</span><span class="p">()</span>
+</div>
+
+<div class="viewcode-block" id="visualize_signal_flow"><a class="viewcode-back" href="../../../../api/sfa.vis.sfv.sfv.html#sfa.vis.sfv.sfv.visualize_signal_flow">[docs]</a><span class="k">def</span> <span class="nf">visualize_signal_flow</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span>
+                          <span class="n">A</span><span class="p">,</span>
+                          <span class="n">n2i</span><span class="p">,</span>
+                          <span class="n">color_up</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color_dn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">lw_min</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                          <span class="n">lw_max</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                          <span class="n">pct_link</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+                          <span class="n">show_label</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">show_act</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">pct_act</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                          <span class="n">fmt_act</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.5f</span><span class="s1">&#39;</span><span class="p">,</span>
+                          <span class="n">fix_node_size</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">fix_act_label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">font</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Visualize signal flow using SFV.</span>
+
+<span class="sd">    SFV (Seamless Flow Visualization) is a light-weight,</span>
+<span class="sd">    programming-oriented python package to visualize</span>
+<span class="sd">    graphs and networks.</span>
+
+<span class="sd">    This function is used in the SFV function,</span>
+<span class="sd">    &#39;execute(nav, net)&#39;, which is called in SFV program.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : sfv.graphics.Network</span>
+<span class="sd">        Network object that is given by sfv.</span>
+
+<span class="sd">    F : numpy.ndarray</span>
+<span class="sd">        A matrix of signal flows.        </span>
+<span class="sd">        It is usually calculated as W2*x1 - W1*x1,</span>
+<span class="sd">        where W is weight matrix and</span>
+<span class="sd">        x is a vector of activities at steady-state.    </span>
+<span class="sd">    </span>
+<span class="sd">    act : numpy.ndarray</span>
+<span class="sd">        Change in the activities. It is usually calculated</span>
+<span class="sd">        as x2 - x1, where x is</span>
+<span class="sd">        the a vector of activities at steady-state.    </span>
+<span class="sd">    </span>
+<span class="sd">    A : numpy.ndarray</span>
+<span class="sd">        Adjacency matrix of the network.</span>
+<span class="sd">    </span>
+<span class="sd">    n2i : dict</span>
+<span class="sd">        Name to index dictionary.</span>
+
+<span class="sd">    color_up : numpy.ndarray or QtGui.QColor, optional</span>
+<span class="sd">        Default is blue (i.e., QColor(0, 0, 255)),</span>
+<span class="sd">        if it is None.</span>
+
+<span class="sd">    color_dn : numpy.ndarray or QtGui.QColor, optional</span>
+<span class="sd">        Default is red (i.e., QColor(255, 0, 0)),</span>
+<span class="sd">        if it is None.</span>
+
+<span class="sd">    lw_min : float, optional</span>
+<span class="sd">        Minimum link width, which is also used for unchanged flow.</span>
+<span class="sd">        </span>
+<span class="sd">    lw_max : float, optional</span>
+<span class="sd">        Maximum link width.</span>
+
+<span class="sd">    pct_link : int, optional</span>
+<span class="sd">        Percentile of link width, which is used to set</span>
+<span class="sd">        the maximum value for setting link widths.</span>
+<span class="sd">        Default value is 90.</span>
+<span class="sd">    </span>
+<span class="sd">    show_label : bool, optional</span>
+<span class="sd">        Show node label or not.</span>
+<span class="sd">        </span>
+<span class="sd">    show_act : bool, optional</span>
+<span class="sd">        Show activity label or not.</span>
+
+<span class="sd">    pct_act : int, optional</span>
+<span class="sd">        Percentile of activity, which is used to set</span>
+<span class="sd">        the maximum value for coloring nodes.</span>
+<span class="sd">        Default value is 50.</span>
+<span class="sd">        </span>
+<span class="sd">    fmt_act : str, optional</span>
+<span class="sd">        Format string for activity label.</span>
+
+<span class="sd">    fix_node_size : bool, optional</span>
+<span class="sd">        Change the size of node or not.</span>
+<span class="sd">        Default is False.</span>
+
+<span class="sd">    fix_act_label : bool, optional</span>
+<span class="sd">        Change the graphics of activity label or not.</span>
+<span class="sd">        The activity value is changed irrespective of</span>
+<span class="sd">        this parameter. Default is False.</span>
+<span class="sd">        </span>
+<span class="sd">    font : QFont, optional</span>
+<span class="sd">        Font for the name and activity labels.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">i2n</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">n2i</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">color_white</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">color_up</span><span class="p">:</span>
+        <span class="n">color_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color_up</span><span class="p">,</span> <span class="n">QColor</span><span class="p">):</span>
+        <span class="n">color_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">color_up</span><span class="o">.</span><span class="n">red</span><span class="p">(),</span>
+                             <span class="n">color_up</span><span class="o">.</span><span class="n">green</span><span class="p">(),</span>
+                             <span class="n">color_up</span><span class="o">.</span><span class="n">blue</span><span class="p">()])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;color_up should be 3-dimensional np.ndarray &quot;</span>
+                         <span class="s2">&quot;or QtGui.QColor&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">color_dn</span><span class="p">:</span>
+        <span class="n">color_dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color_dn</span><span class="p">,</span> <span class="n">QColor</span><span class="p">):</span>
+        <span class="n">color_dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">color_dn</span><span class="o">.</span><span class="n">red</span><span class="p">(),</span>
+                             <span class="n">color_dn</span><span class="o">.</span><span class="n">green</span><span class="p">(),</span>
+                             <span class="n">color_dn</span><span class="o">.</span><span class="n">blue</span><span class="p">()])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;color_dn should be 3-dimensional np.ndarray &quot;</span>
+                         <span class="s2">&quot;or QtGui.QColor&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Set the default font</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">font</span><span class="p">:</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">abs_act</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+    <span class="n">thr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">abs_act</span><span class="p">,</span> <span class="n">pct_act</span><span class="p">)</span>
+    <span class="n">thr</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">thr</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">thr</span>
+
+    <span class="n">arr_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">act</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span><span class="o">/</span><span class="n">thr</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">arr_t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+
+    <span class="k">for</span> <span class="n">iden</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">n2i</span><span class="p">[</span><span class="n">iden</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fix_node_size</span><span class="p">:</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="mi">20</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">radius</span>
+
+        <span class="n">fold</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">fold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">color_white</span> <span class="o">+</span> <span class="n">arr_t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">color_up</span> <span class="o">-</span> <span class="n">color_white</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">fold</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">color_white</span> <span class="o">+</span> <span class="n">arr_t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">color_dn</span> <span class="o">-</span> <span class="n">color_white</span><span class="p">)</span>
+
+        <span class="n">color</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">node</span><span class="p">[</span><span class="s1">&#39;FILL_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="o">*</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">node</span><span class="p">[</span><span class="s1">&#39;BORDER_WIDTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">node</span><span class="p">[</span><span class="s1">&#39;BORDER_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_label</span><span class="p">:</span>
+            <span class="n">_update_single_label_name</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                      <span class="n">fix_node_size</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_act</span><span class="p">:</span>
+            <span class="n">_update_single_label_activity</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">fold</span><span class="p">,</span>
+                                          <span class="n">fix_act_label</span><span class="p">,</span>
+                                          <span class="n">fmt_act</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">iden_label</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_act&#39;</span> <span class="o">%</span> <span class="n">iden</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">iden_label</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
+                <span class="n">net</span><span class="o">.</span><span class="n">remove_label</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">iden_label</span><span class="p">])</span>
+    <span class="c1"># end of for : update nodes and labels</span>
+
+    <span class="n">_update_links</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">i2n</span><span class="p">,</span> <span class="n">pct_link</span><span class="p">,</span> <span class="n">lw_min</span><span class="p">,</span> <span class="n">lw_max</span><span class="p">)</span>
+</div>
+
+<span class="k">def</span> <span class="nf">_update_links</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">i2n</span><span class="p">,</span> <span class="n">pct_link</span><span class="p">,</span> <span class="n">lw_min</span><span class="p">,</span> <span class="n">lw_max</span><span class="p">):</span>
+    <span class="n">log_flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()]))</span>
+    <span class="n">flow_max</span> <span class="o">=</span> <span class="n">log_flows</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">flow_min</span> <span class="o">=</span> <span class="n">log_flows</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">flow_thr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">log_flows</span><span class="p">,</span> <span class="n">pct_link</span><span class="p">)</span>
+
+    <span class="n">ir</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span> <span class="c1">#F.nonzero()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ir</span><span class="p">,</span> <span class="n">ic</span><span class="p">):</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="n">i2n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">i2n</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+        <span class="n">link</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nxdg</span><span class="p">[</span><span class="n">src</span><span class="p">][</span><span class="n">tgt</span><span class="p">][</span><span class="s1">&#39;VIS&#39;</span><span class="p">]</span>
+
+        <span class="n">header_old</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">header</span>
+        <span class="n">args_header</span> <span class="o">=</span> <span class="n">header_old</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">header_old</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">header_old</span><span class="o">.</span><span class="n">offset</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">PosHeader</span><span class="p">(</span><span class="o">*</span><span class="n">args_header</span><span class="p">)</span>
+            <span class="n">color_link</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">f</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">NegHeader</span><span class="p">(</span><span class="o">*</span><span class="n">args_header</span><span class="p">)</span>
+            <span class="n">color_link</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># When flow is zero, show the sign of the original link.</span>
+            <span class="k">if</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="n">PosHeader</span><span class="p">(</span><span class="o">*</span><span class="n">args_header</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="n">NegHeader</span><span class="p">(</span><span class="o">*</span><span class="n">args_header</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The logic is abnormal.&quot;</span><span class="p">)</span>
+
+            <span class="n">color_link</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="n">link</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="n">link</span><span class="p">[</span><span class="s1">&#39;FILL_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color_link</span>
+
+        <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">link</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">lw_min</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">flow_max</span> <span class="o">-</span> <span class="n">flow_min</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">link</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">lw_max</span> <span class="o">+</span> <span class="n">lw_min</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+            <span class="n">log_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">log_f</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="n">flow_min</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="n">flow_thr</span><span class="p">)</span>
+            <span class="n">lw</span> <span class="o">=</span> <span class="p">(</span><span class="n">log_f</span><span class="o">-</span><span class="n">flow_min</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">flow_max</span><span class="o">-</span><span class="n">flow_min</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">lw_max</span><span class="o">-</span><span class="n">lw_min</span><span class="p">)</span> <span class="o">+</span> <span class="n">lw_min</span>
+            <span class="n">link</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">lw</span>
+
+
+<span class="k">def</span> <span class="nf">_update_single_label_name</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+                              <span class="n">fix_node_size</span><span class="p">,</span> <span class="n">font</span><span class="p">):</span>
+    <span class="n">label_name</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="n">lightness</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;FILL_COLOR&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">lightness</span><span class="p">()</span>
+    <span class="n">label_name</span><span class="p">[</span><span class="s1">&#39;TEXT_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">black</span>
+
+    <span class="n">label_name</span><span class="p">[</span><span class="s1">&#39;FONT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">font</span>
+
+    <span class="k">if</span> <span class="n">lightness</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="n">label_name</span><span class="p">[</span><span class="s1">&#39;TEXT_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">white</span>
+        <span class="n">label_name</span><span class="p">[</span><span class="s1">&#39;FONT_BOLD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">label_name</span><span class="p">[</span><span class="s1">&#39;TEXT_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">black</span>
+        <span class="n">label_name</span><span class="p">[</span><span class="s1">&#39;FONT_BOLD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">rect</span> <span class="o">=</span> <span class="n">label_name</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+    <span class="n">label_name</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="o">-</span><span class="n">rect</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">rect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># center</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fix_node_size</span><span class="p">:</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span><span class="p">()</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_update_single_label_activity</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">fix_act_label</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">font</span><span class="p">):</span>
+    <span class="n">iden</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_act&#39;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">iden</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">str_x</span> <span class="o">=</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">iden</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
+        <span class="n">label_act</span> <span class="o">=</span> <span class="n">TextLabel</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">str_x</span><span class="p">)</span>
+        <span class="n">label_act</span><span class="o">.</span><span class="n">iden</span> <span class="o">=</span> <span class="n">iden</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">label_act</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">iden</span><span class="p">]</span>
+        <span class="n">label_act</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">str_x</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fix_act_label</span><span class="p">:</span>
+        <span class="n">label_act</span><span class="p">[</span><span class="s1">&#39;FONT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">font</span>
+        <span class="n">label_act</span><span class="p">[</span><span class="s1">&#39;TEXT_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">rect</span> <span class="o">=</span> <span class="n">label_act</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+        <span class="n">pos_x</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.5</span>
+        <span class="n">label_act</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="o">-</span><span class="n">rect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">iden</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="n">label_act</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

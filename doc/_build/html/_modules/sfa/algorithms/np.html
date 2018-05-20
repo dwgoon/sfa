@@ -1,0 +1,645 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.algorithms.np &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.algorithms.np</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.algorithms.np</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">super</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">sfa.base</span>
+<span class="kn">import</span> <span class="nn">sfa.utils</span>
+
+
+<div class="viewcode-block" id="NetworkPropagationParameterSet"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagationParameterSet">[docs]</a><span class="k">class</span> <span class="nc">NetworkPropagationParameterSet</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">ParameterSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object that deals with the parameters</span>
+<span class="sd">    of ``sfa.algorithms.np.NetworkPropagation`` base algorithm.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">    lim_iter : int</span>
+<span class="sd">    apply_weight_norm : bool</span>
+<span class="sd">    use_rel_change : bool</span>
+<span class="sd">    exsol_forbidden : bool</span>
+<span class="sd">    no_inputs : bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_freeze</span><span class="p">()</span>
+
+<div class="viewcode-block" id="NetworkPropagationParameterSet.initialize"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagationParameterSet.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the parameters with default values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># float value in (0, 1). The default value is 0.5.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lim_iter</span> <span class="o">=</span> <span class="mi">1000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_weight_norm</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_rel_change</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_forbidden</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_no_inputs</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hyperparameter, :math:`\alpha` ~ (0, 1).</span>
+<span class="sd">         It controls the portion of signal flow</span>
+<span class="sd">         in determining the activity.</span>
+<span class="sd">         The default value is 0.5.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span>
+
+    <span class="nd">@alpha</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;alpha should be a float type value in (0,1).&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">val</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">val</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;alpha should be within (0,1).&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lim_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Number of maximum iterations in the iterative method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lim_iter</span>
+
+    <span class="nd">@lim_iter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">lim_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;lim_iter is a integer type value.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;lim_iter should be greater than 0.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lim_iter</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">apply_weight_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply the link weight normalization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_weight_norm</span>
+
+    <span class="nd">@apply_weight_norm</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">apply_weight_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;apply_weight_norm should be a bool type value.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_weight_norm</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">use_rel_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use relative change for prediction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_rel_change</span>
+
+    <span class="nd">@use_rel_change</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">use_rel_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;use_rel_change should be a bool type value.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_rel_change</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">exsol_forbidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Forbid the propagation computation</span>
+<span class="sd">           based on the exact solution.</span>
+<span class="sd">           In other words, use the iterative method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_forbidden</span>
+
+    <span class="nd">@exsol_forbidden</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">exsol_forbidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;exsol_forbidden should be boolean type.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_forbidden</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">no_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Do not apply the effects of inputs in a given network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_inputs</span>
+
+    <span class="nd">@no_inputs</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">no_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;no_inputs is bool type.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_no_inputs</span> <span class="o">=</span> <span class="n">val</span></div>
+<span class="c1"># end of def class ParameterSet</span>
+
+
+<div class="viewcode-block" id="NetworkPropagation"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation">[docs]</a><span class="k">class</span> <span class="nc">NetworkPropagation</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A base class that defines the basic functionality of</span>
+<span class="sd">       network propagation algorithms.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abbr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor of NetworkPropagation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">abbr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;Abstract base class for network propagation algorithms&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="n">NetworkPropagationParameterSet</span><span class="p">()</span>
+
+        <span class="c1"># The following members are assigned the instances in initialize()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_W</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_avail</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># The exact solution is available.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_M</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># A matrix for getting the exact solution.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_matrix_invalidated</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Result</span><span class="p">()</span>
+
+    <span class="c1"># end of def __init__</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
+
+    <span class="nd">@b</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vec</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">vec</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">W</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W</span>
+
+    <span class="nd">@W</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">W</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mat</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_W</span> <span class="o">=</span> <span class="n">mat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_matrix_invalidated</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># end of _W.setter</span>
+
+<div class="viewcode-block" id="NetworkPropagation.initialize_network"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.initialize_network">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Matrix normalization for getting transition matrix</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">apply_weight_norm</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_dimension</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="s2">&quot;transition matrix&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">exsol_forbidden</span><span class="p">:</span>
+            <span class="c1"># Try to prepare the exact solution</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prepare_exact_solution</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_dimension</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="p">,</span> <span class="s2">&quot;exact solution matrix&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_avail</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_avail</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prepare_iterative_solution</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_avail</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="c1"># end of def _initialize_network</span>
+
+    <span class="k">def</span> <span class="nf">_check_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">mat_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check whether a given matrix is a square matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The </span><span class="si">%s</span><span class="s2"> should be square matrix.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mat_name</span><span class="p">))</span>
+    <span class="c1"># end of def _check_dimension</span>
+
+<div class="viewcode-block" id="NetworkPropagation.initialize_basal_activity"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.initialize_basal_activity">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_basal_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Number of state variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span></div>
+    <span class="c1"># end of def</span>
+
+<div class="viewcode-block" id="NetworkPropagation.apply_inputs"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.apply_inputs">[docs]</a>    <span class="k">def</span> <span class="nf">apply_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">no_inputs</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Input condition</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;inputs&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+            <span class="n">inds_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="n">inp</span><span class="p">]</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+            <span class="n">vals_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="n">inds</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inds_inputs</span><span class="p">)</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">vals_inputs</span><span class="p">)</span></div>
+            <span class="c1"># end of if</span>
+
+    <span class="c1"># end of def apply_inputs</span>
+
+<div class="viewcode-block" id="NetworkPropagation.apply_perturbations"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.apply_perturbations">[docs]</a>    <span class="k">def</span> <span class="nf">apply_perturbations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">W_ptb</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">has_link_perturb</span> <span class="ow">and</span> <span class="n">W_ptb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Weight matrix for perturbation is necessary for &quot;</span>
+                             <span class="s2">&quot;the data including link type perturbations.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df_ptb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">type_ptb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df_ptb</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span>
+                <span class="n">val_ptb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df_ptb</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">type_ptb</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span>
+                <span class="n">val_ptb</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">type_ptb</span> <span class="o">==</span> <span class="s1">&#39;node&#39;</span><span class="p">:</span>
+                <span class="n">inds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="n">target</span><span class="p">])</span>
+                <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_ptb</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">type_ptb</span> <span class="o">==</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+                <span class="n">W_ptb</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">*=</span> <span class="n">val_ptb</span>
+            <span class="k">elif</span> <span class="n">type_ptb</span> <span class="o">==</span> <span class="s1">&#39;isolation&#39;</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+                <span class="n">W_ptb</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">*=</span> <span class="n">val_ptb</span>
+                <span class="n">W_ptb</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*=</span> <span class="n">val_ptb</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Undefined perturbation type: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">type_ptb</span><span class="p">))</span></div>
+
+    <span class="c1"># end of def apply_perturbations</span>
+
+<div class="viewcode-block" id="NetworkPropagation.compute_batch"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.compute_batch">[docs]</a>    <span class="k">def</span> <span class="nf">compute_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">df_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df_exp</span>  <span class="c1"># Result of experiment</span>
+
+        <span class="c1"># Simulation result</span>
+        <span class="n">sim_result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">df_exp</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">use_rel_change</span><span class="p">:</span>
+            <span class="n">inds_ba</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Indices of nodes to be perturbed</span>
+            <span class="n">vals_ba</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Basal activity</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_inputs</span><span class="p">(</span><span class="n">inds_ba</span><span class="p">,</span> <span class="n">vals_ba</span><span class="p">)</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">inds_ba</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals_ba</span>
+            <span class="n">x_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="n">W_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span>
+
+        <span class="c1"># Main loop of the simulation</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">targets_ptb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">names_ptb</span><span class="p">):</span>
+            <span class="n">inds_ba</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Indices of nodes to be perturbed</span>
+            <span class="n">vals_ba</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Basal activity</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_inputs</span><span class="p">(</span><span class="n">inds_ba</span><span class="p">,</span> <span class="n">vals_ba</span><span class="p">)</span>  <span class="c1"># Apply the input condition</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">has_link_perturb</span><span class="p">:</span>
+                <span class="n">W_ptb</span> <span class="o">=</span> <span class="n">W_cnt</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">apply_perturbations</span><span class="p">(</span><span class="n">targets_ptb</span><span class="p">,</span> <span class="n">inds_ba</span><span class="p">,</span> <span class="n">vals_ba</span><span class="p">,</span> <span class="n">W_ptb</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W_ptb</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">apply_perturbations</span><span class="p">(</span><span class="n">targets_ptb</span><span class="p">,</span> <span class="n">inds_ba</span><span class="p">,</span> <span class="n">vals_ba</span><span class="p">)</span>
+
+            <span class="n">b_store</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">inds_ba</span><span class="p">]</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">inds_ba</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals_ba</span>
+            <span class="n">x_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+            <span class="c1"># Result of a single condition</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">use_rel_change</span><span class="p">:</span>  <span class="c1"># Use relative change</span>
+                <span class="n">x_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_exp</span> <span class="o">-</span> <span class="n">x_cnt</span><span class="p">)</span>
+                <span class="n">rel_change</span> <span class="o">=</span> <span class="n">x_diff</span>
+                <span class="n">res_single</span> <span class="o">=</span> <span class="n">rel_change</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iadj_to_idf</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res_single</span> <span class="o">=</span> <span class="n">x_exp</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iadj_to_idf</span><span class="p">]</span>
+
+            <span class="n">sim_result</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">res_single</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">inds_ba</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_store</span>
+        <span class="c1"># end of for</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W_cnt</span>
+
+        <span class="n">df_sim</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">sim_result</span><span class="p">,</span>
+                              <span class="n">index</span><span class="o">=</span><span class="n">df_exp</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                              <span class="n">columns</span><span class="o">=</span><span class="n">df_exp</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="c1"># Get the result of elements in the columns of df_exp.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">df_sim</span> <span class="o">=</span> <span class="n">df_sim</span><span class="p">[</span><span class="n">df_exp</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span></div>
+
+    <span class="c1"># end of def compute_batch</span>
+
+<div class="viewcode-block" id="NetworkPropagation.prepare_exact_solution"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.prepare_exact_solution">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_exact_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare to get the matrix for the exact solution.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+    <span class="c1"># end of def _prepare_exact_solution</span>
+
+<div class="viewcode-block" id="NetworkPropagation.prepare_iterative_solution"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.prepare_iterative_solution">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_iterative_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare to get the solution from the iterative method.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+    <span class="c1"># end of def _prepare_iterative_solution</span>
+
+<div class="viewcode-block" id="NetworkPropagation.compute"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.compute">[docs]</a>    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">exsol_forbidden</span> <span class="ow">is</span> <span class="kc">True</span> \
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exsol_avail</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">alpha</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span>
+            <span class="n">lim_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">lim_iter</span>
+            <span class="n">x_ss</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagate_iterative</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+                                               <span class="n">lim_iter</span><span class="o">=</span><span class="n">lim_iter</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">x_ss</span>  <span class="c1"># x at steady-state (i.e., stationary state)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagate_exact</span><span class="p">(</span><span class="n">b</span><span class="p">)</span></div>
+
+    <span class="c1"># end of def compute</span>
+
+<div class="viewcode-block" id="NetworkPropagation.propagate_exact"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.propagate_exact">[docs]</a>    <span class="k">def</span> <span class="nf">propagate_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Obtain the activity at steady-state</span>
+<span class="sd">        based on the exact solution of network propagation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        b : numpy.ndarray</span>
+<span class="sd">            1D array of basal activity.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x : numpy.ndarray</span>
+<span class="sd">            The exact solution of the activity at steady-state</span>
+<span class="sd">            in 1D array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;propagate_exact is not implemented&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NetworkPropagation.propagate_iterative"><a class="viewcode-back" href="../../../api/sfa.algorithms.np.html#sfa.algorithms.np.NetworkPropagation.propagate_iterative">[docs]</a>    <span class="k">def</span> <span class="nf">propagate_iterative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">W</span><span class="p">,</span>
+                            <span class="n">xi</span><span class="p">,</span>
+                            <span class="n">b</span><span class="p">,</span>
+                            <span class="n">a</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                            <span class="n">lim_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+                            <span class="n">get_trj</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute network propagation based on the iterative method.</span>
+<span class="sd">        This method should be used if we want to obtain the trajectory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        W: numpy.ndarray</span>
+<span class="sd">            2D array for weight matrix.</span>
+<span class="sd">        xi: numpy.ndarray</span>
+<span class="sd">            1D array for initial state.</span>
+<span class="sd">        b: numpy.ndarray</span>
+<span class="sd">            1D array for basal activity.</span>
+<span class="sd">        a: real number, optional</span>
+<span class="sd">            Hyperparameter, :math:`\alpha`, ~ (0, 1).</span>
+<span class="sd">            The default value is 0.5.</span>
+<span class="sd">        lim_iter: int, optional</span>
+<span class="sd">            Number of maximum iterations in the iterative method.</span>
+<span class="sd">            Computation terminates when the iteration reaches ``lim_iter``.</span>
+<span class="sd">            The default value is 1000.</span>
+<span class="sd">        tol: float, optional</span>
+<span class="sd">            Tolerance for terminating iteration.</span>
+<span class="sd">            Iteration continues, if Frobenius norm of</span>
+<span class="sd">            :math:`x(t+1)-x(t)` is greater than ``tol``.</span>
+<span class="sd">            The default value is 1e-5.</span>
+<span class="sd">        get_trj: bool, optional</span>
+<span class="sd">            Determine whether the trajectory of the state is returned.</span>
+<span class="sd">            If get_trj is true, the trajectory is returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x : numpy.ndarray</span>
+<span class="sd">            1D array of the activity after the computation.</span>
+<span class="sd">        trj : numpy.ndarray</span>
+<span class="sd">            2D array where the row represents a state of the activity.</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;propagate_iterative is not implemented&quot;</span><span class="p">)</span></div></div>
+    <span class="c1"># end of def propagate_iterative</span>
+
+<span class="c1"># end of def class NetworkPropagation</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

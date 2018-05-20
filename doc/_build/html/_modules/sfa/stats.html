@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.stats &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.stats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.stats</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;calc_accuracy&quot;</span><span class="p">,]</span>
+           <span class="c1"># &quot;calc_auroc&quot;,</span>
+           <span class="c1"># &quot;calc_auprc&quot;,</span>
+           <span class="c1"># &quot;calc_roc_curve&quot;,</span>
+           <span class="c1"># &quot;calc_pr_curve&quot;]</span>
+
+
+<div class="viewcode-block" id="calc_accuracy"><a class="viewcode-back" href="../../api/sfa.html#sfa.calc_accuracy">[docs]</a><span class="k">def</span> <span class="nf">calc_accuracy</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">,</span> <span class="n">get_cons</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Count the same sign of each element between df1 and df2</span>
+
+<span class="sd">    df1: pandas.DataFrame or numpy.ndarray to be compared</span>
+<span class="sd">    df2: pandas.DataFrame or numpy.ndarray to be compared</span>
+<span class="sd">    getcons: decide whether to return consensus array in DataFrame or not</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">df1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">df1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">num_total</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">df1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">num_total</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">df1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">diff_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">df1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">df2</span><span class="p">))</span>
+    <span class="n">consensus</span> <span class="o">=</span> <span class="p">(</span><span class="n">diff_abs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">consensus</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">num_cons</span> <span class="o">=</span> <span class="n">consensus</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">#num_cons = consensus.sum(axis=1).sum()  # Number of consensus</span>
+        <span class="n">num_cons</span> <span class="o">=</span> <span class="n">consensus</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        
+    <span class="n">acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_cons</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">num_total</span><span class="p">)</span>  <span class="c1"># Accuracy</span>
+    <span class="k">if</span> <span class="n">get_cons</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">acc</span><span class="p">,</span> <span class="n">consensus</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">acc</span>
+</div>
+
+<span class="c1"># end of def</span>
+
+<span class="c1">#</span>
+<span class="c1"># from sklearn.metrics import roc_curve, auc</span>
+<span class="c1"># from sklearn.metrics import roc_auc_score</span>
+<span class="c1"># from sklearn.metrics import precision_recall_curve</span>
+<span class="c1"># from sklearn.metrics import average_precision_score</span>
+<span class="c1">#</span>
+<span class="c1"># def _pre_process(class_type, arr_exp, arr_sim):</span>
+<span class="c1">#     if not isinstance(class_type, str):</span>
+<span class="c1">#         raise TypeError(&quot;class_type should be str.&quot;)</span>
+<span class="c1">#</span>
+<span class="c1">#     if class_type == &#39;UP&#39;:</span>
+<span class="c1">#         arr_exp[arr_exp &gt; 0] = 1</span>
+<span class="c1">#         arr_exp[arr_exp &lt;= 0] = 0</span>
+<span class="c1">#     elif class_type == &#39;DN&#39;:</span>
+<span class="c1">#         arr_exp *= -1  # Flip the sign</span>
+<span class="c1">#         arr_sim *= -1</span>
+<span class="c1">#         arr_exp[arr_exp &gt; 0] = 1</span>
+<span class="c1">#         arr_exp[arr_exp &lt;= 0] = 0</span>
+<span class="c1">#     elif class_type == &#39;-&#39;:</span>
+<span class="c1">#         arr_exp[arr_exp == 0] = 1</span>
+<span class="c1">#         arr_exp[arr_exp != 0] = 0</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># # end of def</span>
+<span class="c1">#</span>
+<span class="c1"># def calc_auroc(df_exp, df_sim, class_type=&#39;UP&#39;):</span>
+<span class="c1">#     auroc = dict()</span>
+<span class="c1">#</span>
+<span class="c1">#     arr_exp_ravel = np.array(df_exp.unstack())</span>
+<span class="c1">#     arr_sim_ravel = np.array(df_sim.unstack())</span>
+<span class="c1">#     _pre_process(class_type, arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#     auroc[&#39;mean&#39;] = roc_auc_score(arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#     return auroc</span>
+<span class="c1">#</span>
+<span class="c1">#     for idx_roc, (name_roc, col) in enumerate(df_exp.iteritems()):</span>
+<span class="c1">#</span>
+<span class="c1">#         arr_exp = np.array(col)</span>
+<span class="c1">#         arr_sim = np.array(df_sim[name_roc])</span>
+<span class="c1">#</span>
+<span class="c1">#         _pre_process(class_type, arr_exp, arr_sim)</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             auc = roc_auc_score(arr_exp, arr_sim)</span>
+<span class="c1">#             auroc[name_roc] = auc</span>
+<span class="c1">#         except ValueError as ve:</span>
+<span class="c1">#             print (&quot;Skip calculating AUROC of %s &quot;</span>
+<span class="c1">#                    &quot;due to the following.&quot; % name_roc)</span>
+<span class="c1">#             print (ve)</span>
+<span class="c1">#             continue</span>
+<span class="c1">#</span>
+<span class="c1">#     # end of for</span>
+<span class="c1">#     auroc[&quot;mean&quot;] = sum(auroc.values()) / len(auroc)</span>
+<span class="c1">#     return auroc</span>
+<span class="c1"># # end of def</span>
+<span class="c1">#</span>
+<span class="c1"># def calc_auprc(df_exp, df_sim, class_type=&#39;UP&#39;):</span>
+<span class="c1">#     auprc = dict()</span>
+<span class="c1">#</span>
+<span class="c1">#     arr_exp_ravel = np.array(df_exp.unstack())</span>
+<span class="c1">#     arr_sim_ravel = np.array(df_sim.unstack())</span>
+<span class="c1">#     _pre_process(class_type, arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#     auprc[&#39;mean&#39;] = average_precision_score(arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#     return auprc</span>
+<span class="c1">#</span>
+<span class="c1">#     for idx_roc, (name_roc, col) in enumerate(df_exp.iteritems()):</span>
+<span class="c1">#</span>
+<span class="c1">#         arr_exp = np.array(col)</span>
+<span class="c1">#         arr_sim = np.array(df_sim[name_roc])</span>
+<span class="c1">#</span>
+<span class="c1">#         _pre_process(class_type, arr_exp, arr_sim)</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             auc = average_precision_score(arr_exp, arr_sim)</span>
+<span class="c1">#             auprc[name_roc] = auc</span>
+<span class="c1">#         except ValueError as ve:</span>
+<span class="c1">#             print (&quot;Skip calculating AUPRC of %s &quot;</span>
+<span class="c1">#                    &quot;due to the following.&quot; % name_roc)</span>
+<span class="c1">#             print (ve)</span>
+<span class="c1">#             continue</span>
+<span class="c1">#         except FloatingPointError as fpe:</span>
+<span class="c1">#             print(&quot;Skip calculating AUPRC of %s &quot;</span>
+<span class="c1">#                   &quot;due to the following.&quot; % name_roc)</span>
+<span class="c1">#             print(fpe)</span>
+<span class="c1">#             continue</span>
+<span class="c1">#</span>
+<span class="c1">#     # end of for</span>
+<span class="c1">#     auprc[&quot;mean&quot;] = sum(auprc.values()) / len(auprc)</span>
+<span class="c1">#     return auprc</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># # end of def</span>
+<span class="c1">#</span>
+<span class="c1"># def calc_roc_curve(df_exp, df_sim, class_type=&#39;UP&#39;):</span>
+<span class="c1">#     dict_fpr = dict()</span>
+<span class="c1">#     dict_tpr = dict()</span>
+<span class="c1">#     dict_thr = dict()</span>
+<span class="c1">#     dict_auroc = dict()</span>
+<span class="c1">#</span>
+<span class="c1">#     # name: node name or ID</span>
+<span class="c1">#     for idx_roc, (name, col) in enumerate(df_exp.iteritems()):</span>
+<span class="c1">#         arr_exp = np.array(col)</span>
+<span class="c1">#         arr_sim = np.array(df_sim[name])</span>
+<span class="c1">#</span>
+<span class="c1">#         _pre_process(class_type, arr_exp, arr_sim)</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             fpr, tpr, thr = roc_curve(arr_exp, arr_sim)</span>
+<span class="c1">#             dict_auroc[name] = auc(fpr, tpr)</span>
+<span class="c1">#         except FloatingPointError as fpe:</span>
+<span class="c1">#             print(&quot;Skip calculating AUROC of %s &quot;</span>
+<span class="c1">#                   &quot;due to the following.&quot; % name)</span>
+<span class="c1">#             print(fpe)</span>
+<span class="c1">#             continue</span>
+<span class="c1">#</span>
+<span class="c1">#         dict_fpr[name] = fpr</span>
+<span class="c1">#         dict_tpr[name] = tpr</span>
+<span class="c1">#         dict_thr[name] = thr</span>
+<span class="c1">#     # end of for</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Use different thresholds for each entity (e.g., protein) to test with ROC</span>
+<span class="c1">#     # First aggregate all false positive rates</span>
+<span class="c1">#     fprs = []</span>
+<span class="c1">#     names_valid = []  # Names which has no nan values in false positive rates.</span>
+<span class="c1">#     for name in dict_fpr:</span>
+<span class="c1">#         if np.any(np.isnan(dict_fpr[name])) \</span>
+<span class="c1">#            or np.any(np.isnan(dict_tpr[name])):</span>
+<span class="c1">#             continue</span>
+<span class="c1">#         fprs.append(dict_fpr[name])</span>
+<span class="c1">#         names_valid.append(name)</span>
+<span class="c1">#     # end of for</span>
+<span class="c1">#     all_fpr = np.unique(np.concatenate(fprs))</span>
+<span class="c1">#     mean_tpr = np.zeros_like(all_fpr)</span>
+<span class="c1">#     for name in names_valid:</span>
+<span class="c1">#         mean_tpr += sp.interp(all_fpr, dict_fpr[name], dict_tpr[name])</span>
+<span class="c1">#</span>
+<span class="c1">#     mean_tpr /= len(names_valid)</span>
+<span class="c1">#</span>
+<span class="c1">#     dict_fpr[&quot;mean&quot;] = all_fpr</span>
+<span class="c1">#     dict_tpr[&quot;mean&quot;] = mean_tpr</span>
+<span class="c1">#     dict_auroc[&quot;mean&quot;] = auc(dict_fpr[&quot;mean&quot;], dict_tpr[&quot;mean&quot;])</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     arr_exp_ravel = np.array(df_exp.unstack())</span>
+<span class="c1">#     arr_sim_ravel = np.array(df_sim.unstack())</span>
+<span class="c1">#     _pre_process(class_type, arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#     fpr, tpr, thr = roc_curve(arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#</span>
+<span class="c1">#     dict_fpr[&quot;mean&quot;] = fpr</span>
+<span class="c1">#     dict_tpr[&quot;mean&quot;] = tpr</span>
+<span class="c1">#     dict_thr[&quot;mean&quot;] = thr</span>
+<span class="c1">#     dict_auroc[&quot;mean&quot;] = roc_auc_score(arr_exp_ravel, arr_sim_ravel) #auc(fpr, tpr)</span>
+<span class="c1">#</span>
+<span class="c1">#     return dict_fpr, dict_tpr, dict_thr, dict_auroc</span>
+<span class="c1"># # end of def</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def calc_pr_curve(df_exp, df_sim, class_type=&#39;UP&#39;):</span>
+<span class="c1">#     dict_precision = dict()</span>
+<span class="c1">#     dict_recall = dict()</span>
+<span class="c1">#     dict_thr = dict()</span>
+<span class="c1">#     dict_auprc = dict()</span>
+<span class="c1">#</span>
+<span class="c1">#     # name: node name or ID</span>
+<span class="c1">#     for idx_roc, (name, col) in enumerate(df_exp.iteritems()):</span>
+<span class="c1">#         arr_exp = np.array(col)</span>
+<span class="c1">#         arr_sim = np.array(df_sim[name])</span>
+<span class="c1">#</span>
+<span class="c1">#         _pre_process(class_type, arr_exp, arr_sim)</span>
+<span class="c1">#</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             precision, recall, thr = precision_recall_curve(arr_exp, arr_sim)</span>
+<span class="c1">#             dict_auprc[name] = average_precision_score(arr_exp, arr_sim)</span>
+<span class="c1">#         except FloatingPointError as fpe:</span>
+<span class="c1">#             print(&quot;Skip calculating AUPRC of %s &quot;</span>
+<span class="c1">#                   &quot;due to the following.&quot; % name)</span>
+<span class="c1">#             print(fpe)</span>
+<span class="c1">#             continue</span>
+<span class="c1">#</span>
+<span class="c1">#         dict_precision[name] = precision</span>
+<span class="c1">#         dict_recall[name] = recall</span>
+<span class="c1">#         dict_thr[name] = thr</span>
+<span class="c1">#     # end of for</span>
+<span class="c1">#</span>
+<span class="c1">#     # First aggregate all false positive rates</span>
+<span class="c1">#     # recalls = []</span>
+<span class="c1">#     # names_valid = []  # Names which has no nan values in false positive rates.</span>
+<span class="c1">#     # for name in dict_recall:</span>
+<span class="c1">#     #     if np.any(np.isnan(dict_recall[name])) \</span>
+<span class="c1">#     #        or np.any(np.isnan(dict_precision[name])):</span>
+<span class="c1">#     #         continue</span>
+<span class="c1">#     #     recalls.append(dict_recall[name])</span>
+<span class="c1">#     #     names_valid.append(name)</span>
+<span class="c1">#     # # end of for</span>
+<span class="c1">#     # all_recall = np.unique(np.concatenate(recalls))</span>
+<span class="c1">#     # #all_recall = np.array(sorted(all_recall, reverse=True))</span>
+<span class="c1">#     # mean_precision = np.zeros_like(all_recall)</span>
+<span class="c1">#     # for name in names_valid:</span>
+<span class="c1">#     #     mean_precision += sp.interp(all_recall,</span>
+<span class="c1">#     #                                 dict_recall[name],</span>
+<span class="c1">#     #                                 dict_precision[name])</span>
+<span class="c1">#     #</span>
+<span class="c1">#     # mean_precision /= len(names_valid)</span>
+<span class="c1">#</span>
+<span class="c1">#     arr_exp_ravel = np.array(df_exp.unstack())</span>
+<span class="c1">#     arr_sim_ravel = np.array(df_sim.unstack())</span>
+<span class="c1">#     _pre_process(class_type, arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#     precision, recall, thr = precision_recall_curve(arr_exp_ravel,</span>
+<span class="c1">#                                                     arr_sim_ravel)</span>
+<span class="c1">#</span>
+<span class="c1">#     dict_recall[&quot;mean&quot;] = recall #all_recall</span>
+<span class="c1">#     dict_precision[&quot;mean&quot;] = precision #mean_precision</span>
+<span class="c1">#     dict_thr[&quot;mean&quot;] = thr</span>
+<span class="c1">#     #dict_auprc[&quot;mean&quot;] = auc(dict_recall[&quot;mean&quot;], dict_precision[&quot;mean&quot;])</span>
+<span class="c1">#     dict_auprc[&quot;mean&quot;] = average_precision_score(arr_exp_ravel, arr_sim_ravel)</span>
+<span class="c1">#     return dict_recall, dict_precision, dict_thr, dict_auprc</span>
+<span class="c1"># # end of def</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

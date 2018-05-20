@@ -11,7 +11,7 @@ def calc_influence(W,
                    outputs=None,
                    n2i=None,
                    max_iter=1000,
-                   tol=1e-6,
+                   tol=1e-7,
                    get_iter=False,
                    device="cpu",
                    sparse=False):

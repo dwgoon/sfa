@@ -58,7 +58,7 @@ class SignalPropagation(NetworkPropagation):
 
     def propagate_exact(self, b):
         if self._weight_matrix_invalidated:
-            self._prepare_exact_solution()
+            self.prepare_exact_solution()
             
         return self._M.dot(b)
     # end of def propagate_exact

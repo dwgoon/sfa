@@ -191,14 +191,14 @@ class NetworkPropagation(sfa.base.Algorithm):
         if not self.params.exsol_forbidden:
             # Try to prepare the exact solution
             try:
-                self._prepare_exact_solution()
+                self.prepare_exact_solution()
                 self._check_dimension(self._M, "exact solution matrix")
                 self._exsol_avail = True
             except np.linalg.LinAlgError:
                 pass
 
         if not self._exsol_avail:
-            self._prepare_iterative_solution()
+            self.prepare_iterative_solution()
             self._exsol_avail = False
 
     # end of def _initialize_network

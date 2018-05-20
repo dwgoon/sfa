@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.utils &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">super</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FrozenClass&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;Singleton&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;normalize&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;rand_swap&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;rand_flip&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;rand_weights&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;get_akey&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;get_avalue&quot;</span><span class="p">,]</span>
+
+
+<div class="viewcode-block" id="FrozenClass"><a class="viewcode-back" href="../../api/sfa.html#sfa.FrozenClass">[docs]</a><span class="k">class</span> <span class="nc">FrozenClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="n">__isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__isfrozen</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span> <span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> is a frozen class&quot;</span> <span class="o">%</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_freeze</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__isfrozen</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_melt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__isfrozen</span> <span class="o">=</span> <span class="kc">False</span>
+</div>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&lt;Reference&gt;</span>
+<span class="sd">http://stackoverflow.com/questions/3603502/prevent-creating-new-attributes-outside-init</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># end of def FrozenClass</span>
+
+
+<div class="viewcode-block" id="Singleton"><a class="viewcode-back" href="../../api/sfa.html#sfa.Singleton">[docs]</a><span class="k">def</span> <span class="nf">Singleton</span><span class="p">(</span><span class="n">_class</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">__Singleton</span><span class="p">(</span><span class="n">_class</span><span class="p">):</span>
+        <span class="n">__instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">__instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="c1"># Creation and initialization of &#39;__initialized&#39;</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">__instance</span><span class="o">.</span><span class="n">__initialized</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># end of if</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__instance</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__initialized</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">{0}</span><span class="s1"> Singleton object at </span><span class="si">{1}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">_class</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+
+        <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+    <span class="c1"># end of def class</span>
+
+    <span class="n">__Singleton</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">_class</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">return</span> <span class="n">__Singleton</span>
+</div>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&lt;References&gt;</span>
+<span class="sd">http://m.egloos.zum.com/mataeoh/v/7081556</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># end of def Singleton</span>
+
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../api/sfa.html#sfa.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">norm_in</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">norm_out</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="c1"># Check whether A is a square matrix</span>
+    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The A (adjacency matrix) should be square matrix.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build propagation matrix (aka. transition matrix) _W from A</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Norm. out-degree</span>
+    <span class="k">if</span> <span class="n">norm_out</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">sum_col_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">sum_col_A</span><span class="p">[</span><span class="n">sum_col_A</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">norm_in</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">Dc</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sum_col_A</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Dc</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum_col_A</span><span class="p">)</span>
+        <span class="c1"># end of else</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">Dc</span> <span class="o">*</span> <span class="n">W</span>  <span class="c1"># This is not matrix multiplication</span>
+
+    <span class="c1"># Norm. in-degree</span>
+    <span class="k">if</span> <span class="n">norm_in</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">sum_row_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sum_row_A</span><span class="p">[</span><span class="n">sum_row_A</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">norm_out</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">Dr</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sum_row_A</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Dr</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum_row_A</span><span class="p">)</span>
+        <span class="c1"># end of row</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">Dr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="c1"># Converting np.mat to ndarray</span>
+        <span class="c1"># does not cost a lot.</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">A</span>
+    <span class="c1"># end of if</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The normalization above is the same as the follows:</span>
+<span class="sd">    &gt;&gt;&gt; np.diag(Dr).dot(A.dot(np.diag(Dc)))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">W</span>
+</div>
+
+<span class="c1"># end of def normalize</span>
+
+<div class="viewcode-block" id="rand_swap"><a class="viewcode-back" href="../../api/sfa.html#sfa.rand_swap">[docs]</a><span class="k">def</span> <span class="nf">rand_swap</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">nsamp</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">noself</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Randomly rewire the network connections by swapping.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : numpy.ndarray</span>
+<span class="sd">        Adjacency matrix (connection matrix).</span>
+<span class="sd">    nsamp : int, optional</span>
+<span class="sd">        Number of sampled connections to rewire</span>
+<span class="sd">    noself : bool, optional</span>
+<span class="sd">        Whether to allow self-loop link.</span>
+<span class="sd">    inplace : bool, optional</span>
+<span class="sd">        Modify the given adjacency matrix for rewiring.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    B : numpy.ndarray</span>
+<span class="sd">        The randomized matrix.</span>
+<span class="sd">        The reference of the given W is returned, when inplace is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="n">A_org</span> <span class="o">=</span> <span class="n">A</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">A_org</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">A</span>
+
+    <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">cnt</span> <span class="o">&lt;</span> <span class="n">nsamp</span><span class="p">:</span>
+        <span class="n">ir</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+        <span class="n">i1</span><span class="p">,</span> <span class="n">i2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ir</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">itgt1</span><span class="p">,</span> <span class="n">isrc1</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">i1</span><span class="p">],</span> <span class="n">ic</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span>
+        <span class="n">itgt2</span><span class="p">,</span> <span class="n">isrc2</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">i2</span><span class="p">],</span> <span class="n">ic</span><span class="p">[</span><span class="n">i2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">noself</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">itgt2</span> <span class="o">==</span> <span class="n">isrc1</span> <span class="ow">or</span> <span class="n">itgt1</span> <span class="o">==</span> <span class="n">isrc2</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="n">itgt2</span><span class="p">,</span> <span class="n">isrc1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="n">itgt1</span><span class="p">,</span> <span class="n">isrc2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">itgt1</span><span class="p">,</span> <span class="n">isrc1</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="n">itgt2</span><span class="p">,</span> <span class="n">isrc2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">A_org</span><span class="p">[</span><span class="n">itgt2</span><span class="p">,</span> <span class="n">isrc1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">A_org</span><span class="p">[</span><span class="n">itgt1</span><span class="p">,</span> <span class="n">isrc2</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">B</span><span class="p">[</span><span class="n">itgt2</span><span class="p">,</span> <span class="n">isrc1</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="n">itgt1</span><span class="p">,</span> <span class="n">isrc2</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+            <span class="n">B</span><span class="p">[</span><span class="n">itgt1</span><span class="p">,</span> <span class="n">isrc1</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="n">itgt2</span><span class="p">,</span> <span class="n">isrc2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">continue</span>
+    <span class="c1"># end of while</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">B</span>
+</div>
+
+<div class="viewcode-block" id="rand_flip"><a class="viewcode-back" href="../../api/sfa.html#sfa.rand_flip">[docs]</a><span class="k">def</span> <span class="nf">rand_flip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">nsamp</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Randomly flip the signs of connections.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : numpy.ndarray</span>
+<span class="sd">        Adjacency matrix (connection matrix).</span>
+<span class="sd">    nsamp : int, optional</span>
+<span class="sd">        Number of sampled connections to be flipped.</span>
+<span class="sd">    inplace : bool, optional</span>
+<span class="sd">        Modify the given adjacency matrix for rewiring.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    B : numpy.ndarray</span>
+<span class="sd">        The randomized matrix.</span>
+<span class="sd">        The reference of the given W is returned, when inplace is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">A</span>
+
+    <span class="n">ir</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+    <span class="n">iflip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ir</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">nsamp</span><span class="p">)</span>
+    <span class="n">B</span><span class="p">[</span><span class="n">ir</span><span class="p">[</span><span class="n">iflip</span><span class="p">],</span> <span class="n">ic</span><span class="p">[</span><span class="n">iflip</span><span class="p">]]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">B</span>
+</div>
+
+<div class="viewcode-block" id="rand_weights"><a class="viewcode-back" href="../../api/sfa.html#sfa.rand_weights">[docs]</a><span class="k">def</span> <span class="nf">rand_weights</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="n">ub</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Randomly sample the weights of connections in W from 10^(lb, ub).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : numpy.ndarray</span>
+<span class="sd">        Adjacency (connection) or weight matrix.</span>
+<span class="sd">    lb : float, optional</span>
+<span class="sd">        The 10&#39;s exponent for lower bound</span>
+<span class="sd">    inplace : bool, optional</span>
+<span class="sd">        Modify the given adjacency matrix for rewiring.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    B : numpy.ndarray</span>
+<span class="sd">        The randomly sampled weight matrix.</span>
+<span class="sd">        The reference of the given W is returned, when inplace is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;W.dtype given to rand_weights should be &quot;</span>
+                             <span class="s2">&quot;a float type, not </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="n">B</span> <span class="o">=</span> <span class="n">W</span>
+    <span class="c1"># end of if-else</span>
+
+    <span class="n">ir</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+    <span class="n">weights_rand</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span>
+                                           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">ir</span><span class="o">.</span><span class="n">size</span><span class="p">,))</span>
+
+    <span class="n">B</span><span class="p">[</span><span class="n">ir</span><span class="p">,</span> <span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">weights_rand</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">ir</span><span class="p">,</span> <span class="n">ic</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The above code is equal to the following:</span>
+<span class="sd">    </span>
+<span class="sd">    for i in range(ir.size):</span>
+<span class="sd">        p, q = ir[i], ic[i]</span>
+<span class="sd">        B[p, q] = weights_rand[i] * np.sign(B[p, q], dtype=np.float)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">B</span>
+</div>
+
+<div class="viewcode-block" id="get_akey"><a class="viewcode-back" href="../../api/sfa.html#sfa.get_akey">[docs]</a><span class="k">def</span> <span class="nf">get_akey</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a key from a given dictionary.</span>
+<span class="sd">    It returns the first key in d.keys().</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : dict</span>
+<span class="sd">        Dictionary of objects.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj : object</span>
+<span class="sd">        First item of iter(d.keys()).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</div>
+
+<div class="viewcode-block" id="get_avalue"><a class="viewcode-back" href="../../api/sfa.html#sfa.get_avalue">[docs]</a><span class="k">def</span> <span class="nf">get_avalue</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a value from a given dictionary.</span>
+<span class="sd">    It returns the value designated by sfa.get_akey().</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : dict</span>
+<span class="sd">        Dictionary of objects.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    obj : object</span>
+<span class="sd">        First item of d[iter(d.keys())].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">akey</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">akey</span><span class="p">]</span>
+</pre></div></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

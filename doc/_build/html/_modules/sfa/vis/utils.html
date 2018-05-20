@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.vis.utils &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.vis.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.vis.utils</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;compute_graphics&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_rgb_to_hex</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert RGBA to #AARRGGBB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tup</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;#</span><span class="si">%02x%02x%02x</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tup</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;#</span><span class="si">%02x%02x%02x%02x</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array or tuple for RGB or RGBA should be given.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="compute_graphics"><a class="viewcode-back" href="../../../api/sfa.vis.utils.html#sfa.vis.compute_graphics">[docs]</a><span class="k">def</span> <span class="nf">compute_graphics</span><span class="p">(</span>
+        <span class="n">F</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">,</span>
+        <span class="n">A</span><span class="p">,</span>
+        <span class="n">n2i</span><span class="p">,</span>
+        <span class="n">lw_min</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">lw_max</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">pct_link</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+        <span class="n">pct_act</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">dg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute graphics of signal flow.</span>
+
+<span class="sd">    This method performs a calculation for generating colors</span>
+<span class="sd">    of nodes and links for visualizing purpose.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    F : numpy.ndarray</span>
+<span class="sd">        A matrix of signal flows.</span>
+<span class="sd">        It is usually calculated as W2*x1 - W1*x1,</span>
+<span class="sd">        where W is weight matrix and</span>
+<span class="sd">        x is a vector of activities at steady-state.</span>
+
+<span class="sd">    act : numpy.ndarray</span>
+<span class="sd">        Change in the activities. It is usually calculated</span>
+<span class="sd">        as x2 - x1, where x is</span>
+<span class="sd">        the a vector of activities at steady-state.</span>
+
+<span class="sd">    A : numpy.ndarray</span>
+<span class="sd">        Adjacency matrix of the network.</span>
+
+<span class="sd">    n2i : dict</span>
+<span class="sd">        Name to index dictionary.</span>
+
+<span class="sd">    lw_min : float, optional</span>
+<span class="sd">        Minimum link width, which is also used for unchanged flow.</span>
+
+<span class="sd">    lw_max : float, optional</span>
+<span class="sd">        Maximum link width.</span>
+
+<span class="sd">    pct_link : int, optional</span>
+<span class="sd">        Percentile of link width, which is used to set</span>
+<span class="sd">        the maximum value for setting link widths.</span>
+<span class="sd">        Default value is 90.</span>
+
+<span class="sd">    pct_act : int, optional</span>
+<span class="sd">        Percentile of activity, which is used to set</span>
+<span class="sd">        the maximum value for coloring nodes.</span>
+<span class="sd">        Default value is 50.</span>
+
+<span class="sd">    dg : NetworkX.DiGraph, optional</span>
+<span class="sd">        Existing NetworkX object to contain graphics information</span>
+<span class="sd">        for visualizing nodes and links.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dg : NetworkX.DiGraph</span>
+<span class="sd">        NetworkX object containing graphics information</span>
+<span class="sd">        for visualizing nodes and links.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dg</span><span class="p">:</span>
+        <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="n">dg</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">n2i</span><span class="p">)</span>
+
+    <span class="n">_compute_graphics_nodes</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">n2i</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">pct_act</span><span class="p">)</span>
+    <span class="n">_compute_graphics_links</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">n2i</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">pct_link</span><span class="p">,</span> <span class="n">lw_min</span><span class="p">,</span> <span class="n">lw_max</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dg</span>
+</div>
+
+<span class="k">def</span> <span class="nf">_compute_graphics_nodes</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">n2i</span><span class="p">,</span> <span class="n">act</span><span class="p">,</span> <span class="n">pct_act</span><span class="p">):</span>
+    <span class="n">color_white</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>
+    <span class="n">color_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">color_dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>
+
+    <span class="n">abs_act</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+    <span class="n">thr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">abs_act</span><span class="p">,</span> <span class="n">pct_act</span><span class="p">)</span>
+    <span class="n">thr</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">thr</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">thr</span>
+
+    <span class="n">arr_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">act</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="o">/</span> <span class="n">thr</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">arr_t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+
+    <span class="k">for</span> <span class="n">iden</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">n2i</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">fold</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">fold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">color_white</span> <span class="o">+</span> <span class="n">arr_t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">color_up</span> <span class="o">-</span> <span class="n">color_white</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">fold</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">color_white</span> <span class="o">+</span> <span class="n">arr_t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">color_dn</span> <span class="o">-</span> <span class="n">color_white</span><span class="p">)</span>
+
+        <span class="n">color</span> <span class="o">=</span> <span class="n">_rgb_to_hex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">iden</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;FILL_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;BORDER_WIDTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;BORDER_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_rgb_to_hex</span><span class="p">((</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">))</span>
+    <span class="c1"># end of for</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_graphics_links</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">n2i</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">pct_link</span><span class="p">,</span> <span class="n">lw_min</span><span class="p">,</span> <span class="n">lw_max</span><span class="p">):</span>
+    <span class="n">i2n</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">n2i</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">log_flows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()]))</span>
+    <span class="n">flow_max</span> <span class="o">=</span> <span class="n">log_flows</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">flow_min</span> <span class="o">=</span> <span class="n">log_flows</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">flow_thr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">log_flows</span><span class="p">,</span> <span class="n">pct_link</span><span class="p">)</span>
+
+    <span class="n">ir</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>  <span class="c1"># F.nonzero()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ir</span><span class="p">,</span> <span class="n">ic</span><span class="p">):</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="n">i2n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">i2n</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+        <span class="c1">#link = net.nxdg[src][tgt][&#39;VIS&#39;]</span>
+        <span class="n">dg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">]</span>
+
+
+        <span class="c1">#header_old = link.header</span>
+        <span class="c1">#args_header = header_old.width, header_old.height, header_old.offset</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sign_link</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span> <span class="c1"># PosHeader(*args_header)</span>
+            <span class="n">color_link</span> <span class="o">=</span> <span class="n">_rgb_to_hex</span><span class="p">((</span><span class="mi">255</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">f</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sign_link</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># NegHeader(*args_header)</span>
+            <span class="n">color_link</span> <span class="o">=</span> <span class="n">_rgb_to_hex</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># When flow is zero, show the sign of the original link.</span>
+            <span class="k">if</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sign_link</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>  <span class="c1"># PosHeader(*args_header)</span>
+            <span class="k">elif</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sign_link</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># NegHeader(*args_header)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Abnormal state has been reached in &quot;</span>
+                                   <span class="s2">&quot;_compute_graphics_links.&quot;</span><span class="p">)</span>
+
+            <span class="n">color_link</span> <span class="o">=</span> <span class="n">_rgb_to_hex</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+
+
+        <span class="c1"># If header exists, it should be removed,</span>
+        <span class="c1"># because the sign of signal flow can be different</span>
+        <span class="c1"># from the original sign of header.</span>
+        <span class="k">if</span> <span class="s1">&#39;HEADER&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;HEADER&#39;</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;SIGN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sign_link</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;FILL_COLOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color_link</span>
+
+        <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;WIDTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lw_min</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">flow_max</span> <span class="o">-</span> <span class="n">flow_min</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;WIDTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">lw_max</span> <span class="o">+</span> <span class="n">lw_min</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+            <span class="n">log_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">log_f</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="n">flow_min</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="n">flow_thr</span><span class="p">)</span>
+            <span class="n">lw</span> <span class="o">=</span> <span class="p">(</span><span class="n">log_f</span> <span class="o">-</span> <span class="n">flow_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">flow_max</span> <span class="o">-</span> <span class="n">flow_min</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">lw_max</span> <span class="o">-</span> <span class="n">lw_min</span><span class="p">)</span> <span class="o">+</span> <span class="n">lw_min</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;WIDTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lw</span>
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

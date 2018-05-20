@@ -1,0 +1,574 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.base &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">super</span>
+
+<span class="c1"># from abc import ABC, abstractmethod</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">sfa.utils</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Algorithm&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;Result&#39;</span><span class="p">]</span>
+
+
+<span class="nd">@six</span><span class="o">.</span><span class="n">add_metaclass</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ContainerItem</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class that defines the item object of</span>
+<span class="sd">    ``sfa.containers.Container``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abbr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span> <span class="o">=</span> <span class="n">abbr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> object&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">abbr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Abbreviation or symbol representing this item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span>
+
+    <span class="nd">@abbr</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">abbr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span> <span class="o">=</span><span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Full name or description of this item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">val</span>
+
+
+<span class="k">class</span> <span class="nc">ParameterSet</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">FrozenClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The base class of ParameterSet objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abbr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">abbr</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Algorithm"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Algorithm">[docs]</a><span class="k">class</span> <span class="nc">Algorithm</span><span class="p">(</span><span class="n">ContainerItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The base class of Algorithm classes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    abbr : str</span>
+<span class="sd">    name : str</span>
+<span class="sd">    data : sfa.base.Data</span>
+<span class="sd">    params : sfa.base.ParameterSet</span>
+<span class="sd">    result : sfa.base.Result</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">        &gt;&gt;&gt; class AnAlgorithm(sfa.base.Algorithm):</span>
+<span class="sd">                # Definition of algorithm ...</span>
+<span class="sd">                ...</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; alg = AnAlgorithm()</span>
+<span class="sd">        &gt;&gt;&gt; alg.params = params_obj # Parameters of the algorithm</span>
+<span class="sd">        &gt;&gt;&gt; alg.data = data_obj # Data to be analyzed by the algorithm</span>
+<span class="sd">        &gt;&gt;&gt; alg.initialize()</span>
+<span class="sd">        &gt;&gt;&gt; res = alg.compute()</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abbr</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">abbr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Algorithm.copy"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Algorithm.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_deep</span><span class="p">:</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="c1"># Read-only properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The object of ``sfa.base.Result``.</span>
+<span class="sd">           The result of computing the batch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span>
+
+    <span class="c1"># Read &amp; write properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The object of ``sfa.base.ParameterSet``.</span>
+<span class="sd">           Parameters of the algorithm can accessed</span>
+<span class="sd">           through this member.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span>
+        
+    <span class="nd">@params</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="n">obj</span>    
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The object of ``sfa.base.Data``.</span>
+<span class="sd">            Data to be processed based on the algorithm</span>
+<span class="sd">            can accessed through this member.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        
+    <span class="nd">@data</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">obj</span>
+
+<div class="viewcode-block" id="Algorithm.initialize"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Algorithm.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ba</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">network</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_network</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">ba</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_basal_activity</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Algorithm.initialize_network"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Algorithm.initialize_network">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the data structures related to network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Algorithm.initialize_basal_activity"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Algorithm.initialize_basal_activity">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_basal_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the basal activity, :math:`b`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Algorithm.compute"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Algorithm.compute">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Process the assigned data</span>
+<span class="sd">            with the given basal activity, :math:`b`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        b : numpy.ndarray</span>
+<span class="sd">            1D array of basal activity.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x : numpy.ndarray</span>
+<span class="sd">            1D-array object of activity at steady-state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;compute() should be implemented&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Algorithm.compute_batch"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Algorithm.compute_batch">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compute_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process the assigned data that contains a batch data.</span>
+<span class="sd">           The result is stored in ``result`` member.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;compute_batch() should be implemented&quot;</span><span class="p">)</span></div></div>
+
+<span class="c1"># end of class Algorithm        </span>
+
+
+<div class="viewcode-block" id="Data"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Data">[docs]</a><span class="k">class</span> <span class="nc">Data</span><span class="p">(</span><span class="n">ContainerItem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_conds</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_exp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_ptb</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names_ptb</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iadj_to_idf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_link_perturb</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Data.initialize"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Data.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">fpath</span><span class="p">,</span>
+                   <span class="n">fname_network</span><span class="o">=</span><span class="s2">&quot;network.sif&quot;</span><span class="p">,</span>
+                   <span class="n">fname_ptb</span><span class="o">=</span><span class="s2">&quot;ptb.tsv&quot;</span><span class="p">,</span>
+                   <span class="n">fname_conds</span><span class="o">=</span><span class="s2">&quot;conds.tsv&quot;</span><span class="p">,</span>
+                   <span class="n">fname_exp</span><span class="o">=</span><span class="s2">&quot;exp.tsv&quot;</span><span class="p">,</span>
+                   <span class="n">inputs</span><span class="o">=</span><span class="p">{}):</span>
+
+        <span class="n">dpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+        <span class="n">fpath_network</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dpath</span><span class="p">,</span> <span class="n">fname_network</span><span class="p">)</span>
+        <span class="n">fpath_ptb</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dpath</span><span class="p">,</span> <span class="n">fname_ptb</span><span class="p">)</span>
+
+        <span class="n">A</span><span class="p">,</span> <span class="n">n2i</span><span class="p">,</span> <span class="n">dg</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">read_sif</span><span class="p">(</span><span class="n">fpath_network</span><span class="p">,</span> <span class="n">as_nx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">A</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span> <span class="o">=</span> <span class="n">n2i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span> <span class="o">=</span> <span class="n">dg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_conds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dpath</span><span class="p">,</span> <span class="n">fname_conds</span><span class="p">),</span>
+                                       <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_exp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dpath</span><span class="p">,</span> <span class="n">fname_exp</span><span class="p">),</span>
+                                     <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_ptb</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="n">fpath_ptb</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_ptb</span><span class="o">.</span><span class="n">Type</span> <span class="o">==</span> <span class="s1">&#39;link&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_has_link_perturb</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_has_link_perturb</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names_ptb</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_conds</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">list_name</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Target names</span>
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_conds</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()]:</span>
+                <span class="n">list_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="c1"># end of for</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_names_ptb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">list_name</span><span class="p">)</span>
+        <span class="c1"># end of for</span>
+
+        <span class="c1"># For mapping from the indices of adj. matrix to those of DataFrame</span>
+        <span class="c1"># (arrange the indices of adj. matrix according to df_exp.columns)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iadj_to_idf</span> <span class="o">=</span> <span class="p">[</span><span class="n">n2i</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_exp</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">n2i</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+    <span class="c1"># end of def</span>
+
+    <span class="c1"># Read-only members</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Adjacency matrix (numpy.ndarray)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n2i</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Name to index mapping (hashable)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">i2n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Index to name mapping (hashable)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Directed graph object of NetworkX</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span>
+
+    <span class="nd">@property</span>  <span class="c1"># List of perturbation targets</span>
+    <span class="k">def</span> <span class="nf">names_ptb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names_ptb</span>
+
+    <span class="nd">@property</span>  <span class="c1"># List of values for perturbation</span>
+    <span class="k">def</span> <span class="nf">vals_ptb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals_ptb</span>
+
+<span class="c1">#    @property  # List of perturbation types</span>
+<span class="c1">#    def types_ptb(self):</span>
+<span class="c1">#        return self._types_ptb</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iadj_to_idf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iadj_to_idf</span>
+
+    <span class="nd">@iadj_to_idf</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">iadj_to_idf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iadj_to_idf</span> <span class="o">=</span> <span class="n">arr</span>
+
+    <span class="c1"># Replaceable (assignable) members</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Input conditions</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span>
+
+    <span class="nd">@inputs</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="o">=</span> <span class="n">obj_dict</span>
+
+    <span class="nd">@property</span>  <span class="c1"># DataFrame of experimental conditions</span>
+    <span class="k">def</span> <span class="nf">df_conds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_conds</span>
+
+    <span class="nd">@df_conds</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">df_conds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_conds</span> <span class="o">=</span> <span class="n">df</span>
+
+    <span class="nd">@property</span>  <span class="c1"># DataFrame of experimental results</span>
+    <span class="k">def</span> <span class="nf">df_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_exp</span>
+
+    <span class="nd">@df_exp</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">df_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_exp</span> <span class="o">=</span> <span class="n">df</span>
+
+    <span class="nd">@property</span>  <span class="c1"># DataFrame of perturbation information</span>
+    <span class="k">def</span> <span class="nf">df_ptb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_ptb</span>
+
+    <span class="nd">@df_ptb</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">df_ptb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_ptb</span> <span class="o">=</span> <span class="n">df</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_link_perturb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_link_perturb</span>
+
+    <span class="nd">@has_link_perturb</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">has_link_perturb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;has_link_perturb should be boolean.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_link_perturb</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<span class="c1"># end of class Data</span>
+
+
+<div class="viewcode-block" id="Result"><a class="viewcode-back" href="../../api/sfa.base.html#sfa.Result">[docs]</a><span class="k">class</span> <span class="nc">Result</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">FrozenClass</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_sim</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_freeze</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">df_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_sim</span>
+
+    <span class="nd">@df_sim</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">df_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_sim</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<span class="c1"># end of def class Result</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

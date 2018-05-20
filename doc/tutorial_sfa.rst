@@ -257,7 +257,7 @@ we should first assign the data object to the algorithm object.
     >>> alg.initilize()  # Initialize the algorithm object.
 
 
-In the initization of the algorithm (calling ``sfa.Algorithm.initialze``),
+In the initization of the algorithm (calling ``sfa.Algorithm.initialize``),
 the algorithm prepares estimaing signal flow
 by performing some necessary tasks such as link weight normalization.
 

@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.data.schliemann_2011 &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.data.schliemann_2011</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.data.schliemann_2011</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">[Reference]</span>
+<span class="sd">Schliemann, M. et al.</span>
+<span class="sd">Heterogeneity reduces sensitivity of cell death for TNF-Stimuli.</span>
+<span class="sd">BMC Systems Biology 2011, 5:204</span>
+<span class="sd">http://www.biomedcentral.com/1752-0509/5/204</span>
+
+<span class="sd">[Information]</span>
+<span class="sd">- The experimental data was generated using ODE model of Schliemann et al.</span>
+<span class="sd">  (It is hypothesized that the ODE model is quite well constructed enough to be</span>
+<span class="sd">  a substitute for real experimental data).</span>
+<span class="sd">- The directed network was created by Junsoo Kang (reality312@kaist.ac.kr).</span>
+<span class="sd">- The unit of TNF stimulation is nM.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">super</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">sfa</span>
+<span class="kn">import</span> <span class="nn">sfa.base</span>
+
+
+<div class="viewcode-block" id="create_data"><a class="viewcode-back" href="../../../api/sfa.data.schliemann_2011.html#sfa.data.schliemann_2011.create_data">[docs]</a><span class="k">def</span> <span class="nf">create_data</span><span class="p">(</span><span class="n">abbr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">abbr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Create all data objects</span>
+        <span class="n">data_mult</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Multiple data</span>
+        <span class="n">dpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+        <span class="n">fstr_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dpath</span><span class="p">,</span> <span class="s1">&#39;exp_data&#39;</span><span class="p">,</span> <span class="s1">&#39;exp_*&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">abspath</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">fstr_file</span><span class="p">):</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">abspath</span><span class="p">)</span>
+            <span class="n">data_obj</span> <span class="o">=</span> <span class="n">_create_single_data</span><span class="p">(</span><span class="n">abbr</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">data_mult</span><span class="p">[</span><span class="n">data_obj</span><span class="o">.</span><span class="n">abbr</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_obj</span>
+
+        <span class="c1"># end of for</span>
+
+        <span class="k">return</span> <span class="n">data_mult</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Create a single data object</span>
+        <span class="k">return</span> <span class="n">_create_single_data</span><span class="p">(</span><span class="n">abbr</span><span class="p">)</span>
+</div>
+<span class="c1"># end of def</span>
+
+<span class="k">def</span> <span class="nf">_create_single_data</span><span class="p">(</span><span class="n">abbr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">dpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">fname</span><span class="p">:</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[._]&#39;</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+        <span class="n">sim_duration</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">data_type</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">stim_I</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># The concentration of insulin stimulation</span>
+
+        <span class="c1"># Fetch the concentration of I</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;TNF=((\d|d)+)&quot;</span><span class="p">,</span> <span class="n">stim_I</span><span class="p">)</span>
+        <span class="n">dconc_I</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">conc_I</span> <span class="o">=</span> <span class="n">dconc_I</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>  <span class="c1"># Use &#39;.&#39; instead of &#39;d&#39;</span>
+        <span class="n">abbr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_TNF=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">sim_duration</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">conc_I</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">abbr</span><span class="p">:</span>  <span class="c1"># Use abbr</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[_]&#39;</span><span class="p">,</span> <span class="n">abbr</span><span class="p">)</span>
+
+        <span class="n">sim_duration</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">data_type</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">stim_I</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># The concentration of insulin stimulation</span>
+
+        <span class="c1"># Fetch the concentration of I</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;TNF=((\w|\.)+)&quot;</span><span class="p">,</span> <span class="n">stim_I</span><span class="p">)</span>
+        <span class="n">dconc_I</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">conc_I</span> <span class="o">=</span> <span class="n">dconc_I</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>  <span class="c1"># Use &#39;.&#39; instead of &#39;d&#39;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="s2">&quot;exp_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_I=</span><span class="si">%s</span><span class="s2">.tsv&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sim_duration</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">conc_I</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;One of abbr or fname should be given&quot;</span>
+                         <span class="s2">&quot;in </span><span class="si">%s</span><span class="s2">._create_single_data()&quot;</span><span class="o">%</span><span class="p">(</span><span class="vm">__name__</span><span class="p">))</span>
+    <span class="c1"># end of if-else</span>
+
+    <span class="n">fname_exp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;exp_data&#39;</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="n">fname_conds</span> <span class="o">=</span> <span class="s2">&quot;conds.tsv&quot;</span>
+
+    <span class="k">return</span> <span class="n">SchliemannData</span><span class="p">(</span><span class="n">abbr</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span>
+                          <span class="n">conc_I</span><span class="p">,</span>
+                          <span class="n">fname_conds</span><span class="p">,</span> <span class="n">fname_exp</span><span class="p">)</span>
+
+
+<span class="c1"># end of def</span>
+
+
+<div class="viewcode-block" id="SchliemannData"><a class="viewcode-back" href="../../../api/sfa.data.schliemann_2011.html#sfa.data.schliemann_2011.SchliemannData">[docs]</a><span class="k">class</span> <span class="nc">SchliemannData</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">abbr</span><span class="p">,</span>
+                 <span class="n">data_type</span><span class="p">,</span>
+                 <span class="n">conc_I</span><span class="p">,</span>
+                 <span class="n">fname_conds</span><span class="p">,</span> <span class="n">fname_exp</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span> <span class="o">=</span> <span class="n">abbr</span>
+
+        <span class="n">fstr_name</span> <span class="o">=</span> <span class="s2">&quot;SCHLIEMANN_2011_</span><span class="si">%s</span><span class="s2">[I=</span><span class="si">%s</span><span class="s2">nM]&quot;</span>
+        <span class="n">str_name</span> <span class="o">=</span> <span class="n">fstr_name</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">conc_I</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">str_name</span>
+
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;TNF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">#float(conc_I)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span>
+                        <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+                        <span class="n">fname_conds</span><span class="o">=</span><span class="n">fname_conds</span><span class="p">,</span>
+                        <span class="n">fname_exp</span><span class="o">=</span><span class="n">fname_exp</span><span class="p">)</span>
+    <span class="c1"># end of def __init__</span></div>
+<span class="c1"># end of def class</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

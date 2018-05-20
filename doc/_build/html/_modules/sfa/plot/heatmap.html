@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sfa.plot.heatmap &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sfa.plot.heatmap</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sfa.plot.heatmap</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">BaseGridPlot</span>
+
+
+<div class="viewcode-block" id="Heatmap"><a class="viewcode-back" href="../../../api/sfa.plot.heatmap.html#sfa.plot.heatmap.Heatmap">[docs]</a><span class="k">class</span> <span class="nc">Heatmap</span><span class="p">(</span><span class="n">BaseGridPlot</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.3f&#39;</span><span class="p">,</span>
+                 <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Set references for data objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="n">df</span>  <span class="c1"># A dataFrame</span>
+        <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">,</span>
+                    <span class="n">ax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">],</span>
+                    <span class="n">annot</span><span class="o">=</span><span class="n">annot</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
+                    <span class="n">annot_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+                    <span class="n">linecolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;table_edge_color&#39;</span><span class="p">],</span>
+                    <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+                    <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+                    <span class="n">cbar_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;orientation&quot;</span><span class="p">:</span> <span class="s2">&quot;vertical&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;pad&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span> <span class="p">})</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_qm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">collections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1">#self._qm.set_edgecolor(self._colors[&#39;table_edge_color&#39;])</span>
+
+        <span class="c1"># Change the labelsize</span>
+        <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qm</span><span class="o">.</span><span class="n">colorbar</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">outline</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">outline</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="s1">&#39;table_edge_color&#39;</span><span class="p">])</span>
+        <span class="n">cb_ax_asp</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_aspect</span><span class="p">()</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="n">cb_ax_asp</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="c1"># Remove inner lines</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">LineCollection</span><span class="p">):</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">tick_top</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Hide axis labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Text element of the heatmap object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">ch</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+        <span class="c1"># Set default values using properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">row_tick_fontsize</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_tick_fontsize</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colorbar_label_fontsize</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+    <span class="c1"># end of __init__</span>
+
+    <span class="k">def</span> <span class="nf">_set_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Assign default color values for heatmap and colorbar</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_default_color</span><span class="p">(</span><span class="s1">&#39;table_edge_color&#39;</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_default_color</span><span class="p">(</span><span class="s1">&#39;colorbar_edge_color&#39;</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_create_axes</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="c1">#del self._axes[&#39;base&#39;]</span>
+
+    <span class="c1"># Properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">text_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_fontsize</span>
+
+    <span class="nd">@text_fontsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">text_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resize text fonts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_text_fontsize</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_texts</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">column_tick_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_tick_fontsize</span>
+
+    <span class="nd">@column_tick_fontsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">column_tick_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_column_tick_fontsize</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+                                <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
+                                <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span>
+                                <span class="n">labelsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_column_tick_fontsize</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">row_tick_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_tick_fontsize</span>
+
+    <span class="nd">@row_tick_fontsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">row_tick_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_tick_fontsize</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="s1">&#39;heatmap&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+                                 <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+                                 <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span>
+                                 <span class="n">labelsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_row_tick_fontsize</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colorbar_tick_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar_tick_fontsize</span>
+
+    <span class="nd">@colorbar_tick_fontsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colorbar_tick_fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colorbar_tick_fontsize</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_qm</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">linewidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linewidth</span>
+
+    <span class="nd">@linewidth</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">linewidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adjust the width of table lines</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linewidth</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_qm</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_linewidth</span><span class="p">)</span>
+
+    <span class="c1"># Read-only properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colorbar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qm</span><span class="o">.</span><span class="n">colorbar</span>
+</pre></div></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
