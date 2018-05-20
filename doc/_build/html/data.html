@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data &mdash; Singal Flow Analysis 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Algorithm" href="algorithm.html"/>
+        <link rel="prev" title="Discovery of control targets" href="tutorial_dc.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Singal Flow Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#defining-a-new-data-with-network-structure">Defining a new data with network structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#defining-a-new-data-for-validating-algorithm">Defining a new data for validating algorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="control.html">Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="develop.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">sfa</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Singal Flow Analysis</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data">
+<h1>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="defining-a-new-data-with-network-structure">
+<h2>Defining a new data with network structure<a class="headerlink" href="#defining-a-new-data-with-network-structure" title="Permalink to this headline">¶</a></h2>
+<p>To create a new data with a network structure,
+it is required to define a derived class of <code class="docutils literal notranslate"><span class="pre">sfa.base.Data</span></code> class.
+In <code class="docutils literal notranslate"><span class="pre">__init__</span></code> of the class, we need to create four objects.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="3%" />
+<col width="10%" />
+<col width="87%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">#</th>
+<th class="head">Member</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>_A</td>
+<td>2-dimensional <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> for adjacency matrix.</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>_dg</td>
+<td><code class="docutils literal notranslate"><span class="pre">NetworkX.DiGraph</span></code> object.</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>_n2i</td>
+<td><code class="docutils literal notranslate"><span class="pre">dict</span></code> for mapping name to index.</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>_i2n</td>
+<td><code class="docutils literal notranslate"><span class="pre">dict</span></code> for mapping index to name.</td>
+</tr>
+</tbody>
+</table>
+<p>The underscore <code class="docutils literal notranslate"><span class="pre">_</span></code> of member name means
+the member is a protected member,
+which is defined not to be directly accessed
+(refer to <a class="reference external" href="https://stackoverflow.com/a/797814">this stackoverflow answer</a>).
+Instead, the four members can be accessed through <a class="reference external" href="https://docs.python.org/3/library/functions.html?highlight=property#property">property</a>.
+The underscored members (protected members) should be used
+only in the methods of the class such as <code class="docutils literal notranslate"><span class="pre">__init__</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">_A</span>  <span class="c1"># We can access like this, but defined not to.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">A</span>  <span class="c1"># Instead, access the member like this.</span>
+</pre></div>
+</div>
+<p>Now, let’s define a child class of <code class="docutils literal notranslate"><span class="pre">sfa.base.Data</span></code>
+for a simple 3-node cascade as a toy example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+
+<span class="kn">import</span> <span class="nn">sfa</span>
+
+<span class="k">class</span> <span class="nc">ThreeNodeCascade</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span> <span class="o">=</span> <span class="s2">&quot;TNC&quot;</span>  <span class="c1"># Abbreviation for this data.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;A simple three node cascade&quot;</span>  <span class="c1"># Full name</span>
+
+        <span class="c1"># Create name to index mapper and index to name mapper.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>  <span class="c1"># Name to index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">name</span>  <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># Create Directed graph object of NetworkX.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">attr_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sign&quot;</span><span class="p">:</span> <span class="o">+</span><span class="mi">1</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">attr_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sign&quot;</span><span class="p">:</span> <span class="o">+</span><span class="mi">1</span><span class="p">})</span>
+
+        <span class="c1"># Create adjacency matrix with signs.</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+            <span class="n">isrc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+            <span class="n">itgt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span><span class="p">[</span><span class="n">tgt</span><span class="p">]</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;attr_dict&#39;</span><span class="p">][</span><span class="s1">&#39;sign&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">itgt</span><span class="p">,</span> <span class="n">isrc</span><span class="p">]</span> <span class="o">=</span> <span class="n">sign</span>
+
+    <span class="c1"># end of def __init__</span>
+<span class="c1"># end of def class</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ThreeNodeCascade</span><span class="p">()</span>
+
+    <span class="n">algs</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">AlgorithmSet</span><span class="p">()</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="n">algs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;SP&#39;</span><span class="p">)</span>
+    <span class="n">alg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">alg</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,))</span>  <span class="c1"># Basal activity</span>
+
+    <span class="c1"># Set node A to be activated</span>
+    <span class="c1"># by assigning 1 to its basal activity.</span>
+    <span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Compute the activity at steady-state.</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[Activity at steady-state]&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above code is very straightforward,
+if you are familiar with the functionalities of
+<code class="docutils literal notranslate"><span class="pre">numpy</span></code> and <code class="docutils literal notranslate"><span class="pre">networkx</span></code> packages.
+The following is the result of executing the code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SP</span> <span class="n">algorithm</span> <span class="n">has</span> <span class="n">been</span> <span class="n">created</span><span class="o">.</span>
+<span class="p">[</span><span class="n">Activity</span> <span class="n">at</span> <span class="n">steady</span><span class="o">-</span><span class="n">state</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">0.5</span>   <span class="mf">0.25</span>  <span class="mf">0.125</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If you want to see both the name and its activity,
+use <code class="docutils literal notranslate"><span class="pre">n2i</span></code> or <code class="docutils literal notranslate"><span class="pre">i2n</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">act</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">i2n</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">act</span><span class="p">)</span>
+<span class="go">A 0.5</span>
+<span class="go">B 0.25</span>
+<span class="go">C 0.125</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="go">0.25</span>
+</pre></div>
+</div>
+<p>Now, it’s a little bit better to read.</p>
+<p>For a large-scale network,
+it is almost impossible to write node names
+and their relationships one by one in the code.
+Thus, <code class="docutils literal notranslate"><span class="pre">sfa</span></code> provides some utility functions
+to create the data class.</p>
+<p>If network structure information is defined
+in a text file such as SIF file,
+we can utilize <code class="docutils literal notranslate"><span class="pre">sfa.read_sif</span></code> function.
+<code class="docutils literal notranslate"><span class="pre">sfa.read_sif</span></code> reads the text file and returns
+<code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">n2i</span></code> and <code class="docutils literal notranslate"><span class="pre">dg</span></code> objects
+that are required to define the data class.</p>
+<p>Let’s go back to the toy example.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">A</span>   <span class="o">+</span>   <span class="n">B</span>
+<span class="n">B</span>   <span class="o">+</span>   <span class="n">C</span>
+</pre></div>
+</div>
+<p>The network structure can be described in SIF format like the above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sfa</span>
+
+<span class="k">class</span> <span class="nc">ThreeNodeCascade</span><span class="p">(</span><span class="n">sfa</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abbr</span> <span class="o">=</span> <span class="s2">&quot;TNC&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;A simple three node cascade&quot;</span>
+
+        <span class="c1"># Specify the file path for network file in SIF.</span>
+        <span class="n">dpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dpath</span><span class="p">,</span> <span class="s1">&#39;network.sif&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Use read_sif function.</span>
+        <span class="n">A</span><span class="p">,</span> <span class="n">n2i</span><span class="p">,</span> <span class="n">dg</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">read_sif</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">as_nx</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">A</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n2i</span> <span class="o">=</span> <span class="n">n2i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dg</span> <span class="o">=</span> <span class="n">dg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2n</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">n2i</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="c1"># end of def __init__</span>
+<span class="c1"># end of def class</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ThreeNodeCascade</span><span class="p">()</span>
+
+    <span class="n">algs</span> <span class="o">=</span> <span class="n">sfa</span><span class="o">.</span><span class="n">AlgorithmSet</span><span class="p">()</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="n">algs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;SP&#39;</span><span class="p">)</span>
+    <span class="n">alg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">alg</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,))</span>
+
+    <span class="c1"># Activate node B at this time.</span>
+    <span class="n">b</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">n2i</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[Activity at steady-state]&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">act</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;[Node </span><span class="si">%s</span><span class="s2">] </span><span class="si">%f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">i2n</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">act</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In the above code, all you need to do is
+just putting the file path of network in <code class="docutils literal notranslate"><span class="pre">sfa.read_sif</span></code>.
+I recommend utilizing the above code snippet as a template
+for creating your own network structure data.
+The result of the above code is as follows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SP</span> <span class="n">algorithm</span> <span class="n">has</span> <span class="n">been</span> <span class="n">created</span><span class="o">.</span>
+<span class="p">[</span><span class="n">Activity</span> <span class="n">at</span> <span class="n">steady</span><span class="o">-</span><span class="n">state</span><span class="p">]</span>
+<span class="p">[</span><span class="n">Node</span> <span class="n">A</span><span class="p">]</span> <span class="mf">0.000000</span>
+<span class="p">[</span><span class="n">Node</span> <span class="n">B</span><span class="p">]</span> <span class="mf">0.500000</span>
+<span class="p">[</span><span class="n">Node</span> <span class="n">C</span><span class="p">]</span> <span class="mf">0.250000</span>
+</pre></div>
+</div>
+<p>In this example, positive and negative signs of links are
+defined as <code class="docutils literal notranslate"><span class="pre">+</span></code> and <code class="docutils literal notranslate"><span class="pre">-</span></code>, respectively, in the file.
+However, if the sign or interaction information is defined differently,
+you can specify it with <code class="docutils literal notranslate"><span class="pre">signs</span></code> keyword argument
+of <code class="docutils literal notranslate"><span class="pre">sfa.read_sif</span></code>.
+For example, if a network file have <code class="docutils literal notranslate"><span class="pre">activates</span></code> and <code class="docutils literal notranslate"><span class="pre">inhibits</span></code>
+as the signs for positive and negative links, respectively,
+we can call <code class="docutils literal notranslate"><span class="pre">sfa.read_sif</span></code> function as follows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;activates&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;inhibits&#39;</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sfa</span><span class="o">.</span><span class="n">read_sif</span><span class="p">(</span><span class="s2">&quot;network.sif&quot;</span><span class="p">,</span> <span class="n">signs</span><span class="o">=</span><span class="n">signs</span><span class="p">,</span> <span class="n">as_nx</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="go">(array([[ 0,  0,  0],</span>
+<span class="go">        [ 1,  0,  0],</span>
+<span class="go">        [ 0, -1,  0]]),</span>
+<span class="go"> {&#39;A&#39;: 0, &#39;B&#39;: 1, &#39;C&#39;: 2},</span>
+<span class="go"> &lt;networkx.classes.digraph.DiGraph at 0x2ce1503c7b8&gt;)</span>
+</pre></div>
+</div>
+<p>If your network structure is defined
+in a different file format (not SIF),
+you should write some code lines
+for parsing the network strcuture data.</p>
+</div>
+<div class="section" id="defining-a-new-data-for-validating-algorithm">
+<h2>Defining a new data for validating algorithm<a class="headerlink" href="#defining-a-new-data-for-validating-algorithm" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Describe how to define own datasets only with experimental data.</li>
+<li>Explanation for the members of Data class for validation.</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="algorithm.html" class="btn btn-neutral float-right" title="Algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorial_dc.html" class="btn btn-neutral" title="Discovery of control targets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2018, Daewon Lee.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
