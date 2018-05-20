@@ -26,7 +26,7 @@ Documentation
 
    install
    tutorials
-   dataset
+   data
    algorithm
    control
    visualization
