@@ -2,6 +2,7 @@
 
 Signal Flow Analysis (SFA)
 ==========================
+|docs|
 
 A simulation framework to analyze signal flows in complex networks.
 
