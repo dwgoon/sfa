@@ -215,7 +215,7 @@ we can call ``sfa.read_sif`` function as follows.
 
 .. code-block:: python
 
-    >>> {'activates':1, 'inhibits':-1}
+    >>> signs = {'activates':1, 'inhibits':-1}
     >>> sfa.read_sif("network.sif", signs=signs, as_nx=True)
     (array([[ 0,  0,  0],
             [ 1,  0,  0],
