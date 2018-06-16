@@ -2,7 +2,7 @@
 
 Signal Flow Analysis (SFA)
 ==========================
-|docs|
+[![Documentation Status](https://readthedocs.org/projects/sfa/badge/?version=latest)](https://sfa.readthedocs.io/en/latest/?badge=latest)
 
 A simulation framework to analyze signal flows in complex networks.
 
