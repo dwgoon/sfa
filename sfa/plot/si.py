@@ -77,7 +77,7 @@ def siplot(df_splo,
         idx_row = int(i / ncol)
         idx_col = int(i % ncol)
         ax = fig.add_subplot(gs[idx_row, idx_col])
-        df_sub = df_si[df_si['SPLO' ] == splo]
+        df_sub = df_si[df_si['SPLO'] == splo]
         df_sub = df_sub.sort_values(by=output)
         num_items = df_sub[output].count()
 

@@ -1,3 +1,5 @@
+from collections import Counter
+
 import numpy as np
 import scipy as sp
 import pandas as pd
@@ -217,3 +219,84 @@ def _calc_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
         return S_fin, cnt
     else:
         return S_fin
+
+
+
+def arrange_si(
+        df_splo,
+        df_inf,
+        output,
+        min_splo=None,
+        max_splo=None,
+        thr_inf=1e-10,
+        ascending=True):
+
+    # SPLO-Influence Data
+    if not min_splo:
+        min_splo = df_splo.min()
+
+    if not max_splo:
+        max_splo = df_splo.max()
+
+    mask_splo = (min_splo <= df_splo) & (df_splo <= max_splo)
+    df_splo = df_splo[mask_splo]
+
+    df_splo = pd.DataFrame(df_splo)
+    df_splo.columns = ['SPLO']
+
+    if output in df_splo.index:
+        df_splo.drop(output, inplace=True)
+
+    index_common = df_splo.index.intersection(df_inf.index)
+    df_inf = pd.DataFrame(df_inf.loc[index_common])
+
+    mark_drop = df_inf[output].abs() <= thr_inf
+    df_inf.drop(df_inf.loc[mark_drop, output].index,
+                inplace=True)
+
+
+    df_si = df_inf.join(df_splo.loc[index_common])
+    df_si.index.name = 'Source'
+    df_si.reset_index(inplace=True)
+
+    cnt_splo = Counter(df_si['SPLO'])
+    splos = sorted(cnt_splo.keys())
+
+    si = {}
+    for i, splo in enumerate(splos):
+        df_sub = df_si[df_si['SPLO'] == splo]
+        df_sub = df_sub.sort_values(by=output,
+                                    ascending=ascending)
+        #num_items = df_sub[output].count()
+        #influence = np.zeros((cnt_max,))  # Influence
+        #num_empty = cnt_max - num_items
+        #influence[num_empty:] = df_sub[output]
+        #names = df_sub['Source'].tolist()
+        si[splo] = df_sub  #[output]
+
+    return si
+
+
+def prioritize(df_splo,
+               df_inf,
+               output,
+               dac,
+               rank_thr=3,
+               min_group_size=0):
+
+    ascending = True if dac < 0 else False
+
+    df_inf_dac = df_inf[np.sign(df_inf[output]) == dac]
+    si = arrange_si(df_splo, df_inf_dac,
+                    output=output,
+                    ascending=ascending)
+    targets = []
+    for splo in si:
+        df_sub = si[splo]
+        df_sub = df_sub[np.sign(df_sub[output]) == dac]
+        df_top = df_sub.iloc[:rank_thr, :]
+        if df_top.shape[0] < min_group_size:
+           continue
+        targets.extend(df_top['Source'].tolist())
+    # end of for
+    return targets
