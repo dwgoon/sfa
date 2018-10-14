@@ -5,19 +5,19 @@ import scipy as sp
 import pandas as pd
 
 
-def calc_influence(W,
-                   alpha=0.9,
-                   beta=0.1,
-                   S=None,
-                   rtype='df',
-                   outputs=None,
-                   n2i=None,
-                   max_iter=1000,
-                   tol=1e-7,
-                   get_iter=False,
-                   device="cpu",
-                   sparse=False):
-    r"""Calculate the influence matrix.
+def compute_influence(W,
+                      alpha=0.9,
+                      beta=0.1,
+                      S=None,
+                      rtype='df',
+                      outputs=None,
+                      n2i=None,
+                      max_iter=1000,
+                      tol=1e-7,
+                      get_iter=False,
+                      device="cpu",
+                      sparse=False):
+    r"""Compute the influence.
        It estimates the effects of a node to the other nodes,
        by calculating partial derivative with respect to source nodes,
        based on a simple iterative method.
@@ -26,7 +26,7 @@ def calc_influence(W,
 
        x(t+1) = alpha*W.dot(x(t)) + (1-alpha)*b
 
-       The influence matrix, S, is calculated using chain rule of
+       The influence matrix, S, is computed using chain rule of
        partial derivative as follows.
 
        \begin{align}
@@ -92,14 +92,14 @@ def calc_influence(W,
 
     if 'cpu' in device:
         if sparse:
-            ret = _calc_influence_cpu_sparse(W, alpha, beta, S,
+            ret = _compute_influence_cpu_sparse(W, alpha, beta, S,
                                                max_iter, tol, get_iter)
         else:
-            ret = _calc_influence_cpu(W, alpha, beta, S,
+            ret = _compute_influence_cpu(W, alpha, beta, S,
                                         max_iter, tol, get_iter)
     elif 'gpu'in device:
         _, id_device = device.split(':')
-        ret = _calc_influence_gpu(W, alpha, beta, S,
+        ret = _compute_influence_gpu(W, alpha, beta, S,
                                   max_iter, tol, get_iter, id_device)
 
     if get_iter:
@@ -133,8 +133,8 @@ def calc_influence(W,
         raise ValueError("Unknown return type: %s"%(rtype))
 
 
-def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
-                        max_iter=1000, tol=1e-6, get_iter=False):
+def _compute_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
+                           max_iter=1000, tol=1e-6, get_iter=False):
     N = W.shape[0]
     if S is not None:
         S1 = S
@@ -160,8 +160,8 @@ def _calc_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
         return S_fin
 
 
-def _calc_influence_cpu_sparse(W, alpha, beta, S,
-                               max_iter, tol, get_iter):
+def _compute_influence_cpu_sparse(W, alpha, beta, S,
+                                  max_iter, tol, get_iter):
     N = W.shape[0]
     if S is not None:
         S1 = S
@@ -188,9 +188,9 @@ def _calc_influence_cpu_sparse(W, alpha, beta, S,
         return S_fin
 
 
-def _calc_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
-                        max_iter=1000, tol=1e-6, get_iter=False,
-                        id_device=0):    
+def _compute_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
+                           max_iter=1000, tol=1e-6, get_iter=False,
+                           id_device=0):    
     import cupy as cp
     cp.cuda.Device(id_device).use()    
     N = W.shape[0]

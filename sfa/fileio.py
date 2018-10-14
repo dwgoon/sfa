@@ -74,7 +74,7 @@ def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
         for name_tgt, int_sign in dict_links[name_src]:
             itgt = name_to_idx[name_tgt]
             adj[itgt, isrc] = int_sign
-            # end of for
+        # end of for
     # end of for
 
     if not as_nx:
