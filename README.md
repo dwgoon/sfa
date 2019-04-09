@@ -24,3 +24,7 @@ http://sfa.readthedocs.io
 Daewon Lee & Kwang-Hyun Cho </br>
 "Topological estimation of signal flow in complex signaling networks" </br>
 [*Scientific Reports* (2018) **8**:5262](https://www.nature.com/articles/s41598-018-23643-5) </br>
+
+
+## Any question or comment ##
+If you have any question or comment, please use `Issues` tab in this repository.
