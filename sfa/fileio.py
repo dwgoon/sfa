@@ -32,7 +32,7 @@ def read_inputs(fpath):
 def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
     dict_links = defaultdict(list)
     set_nodes = set()
-    name_to_idx = {}
+    n2i = {}
     with codecs.open(fpath, "r", encoding="utf-8-sig") as fin:
         for line in fin:
             if line.isspace():
@@ -40,21 +40,13 @@ def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
 
             items = line.strip().split()
             src = items[0]
-            tgt = items[2]
+            trg = items[2]
             sign = items[1]
 
             set_nodes.add(src)
-            set_nodes.add(tgt)
+            set_nodes.add(trg)
             int_sign = signs[sign]
-            dict_links[src].append((tgt, int_sign))
-
-            # if sign == str_act:
-            #     dict_links[src].append((tgt, 1))
-            # elif sign == str_inh:
-            #     dict_links[src].append((tgt, -1))
-            # else:
-            #     raise ValueError("Undefined link type: %s"%(sign))
-
+            dict_links[src].append((trg, int_sign))
         # end of for
     # end of with
 
@@ -67,18 +59,18 @@ def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
     adj = np.zeros((N, N), dtype=np.int)
 
     for isrc, name in enumerate(list_nodes):
-        name_to_idx[name] = isrc  # index of source
+        n2i[name] = isrc  # index of source
     # end of for
-    for name_src in name_to_idx:
-        isrc = name_to_idx[name_src]
-        for name_tgt, int_sign in dict_links[name_src]:
-            itgt = name_to_idx[name_tgt]
-            adj[itgt, isrc] = int_sign
+    for name_src in n2i:
+        isrc = n2i[name_src]
+        for name_trg, int_sign in dict_links[name_src]:
+            itrg = n2i[name_trg]
+            adj[itrg, isrc] = int_sign
         # end of for
     # end of for
 
     if not as_nx:
-        return adj, name_to_idx
+        return adj, n2i
     else:  # NetworkX DiGraph
         dg = nx.DiGraph()
         # Add nodes
@@ -87,12 +79,12 @@ def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
 
         # Add edges (links)
         for name_src in list_nodes:
-            for name_tgt, sign in dict_links[name_src]:
-                dg.add_edge(name_src, name_tgt)
-                dg.edges[name_src, name_tgt]['SIGN'] = sign
+            for name_trg, sign in dict_links[name_src]:
+                dg.add_edge(name_src, name_trg)
+                dg.edges[name_src, name_trg]['SIGN'] = sign
                 # end of for
         # end of for
-        return adj, name_to_idx, dg
+        return adj, n2i, dg
         # end of else
 
 

@@ -231,7 +231,7 @@ def arrange_si(
         thr_inf=1e-10,
         ascending=True):
 
-    # SPLO-Influence Data
+    # SPLO-Influence data
     if not min_splo:
         min_splo = df_splo.min()
 
@@ -283,7 +283,26 @@ def prioritize(df_splo,
                dac,
                rank_thr=3,
                min_group_size=0):
+    """Prioritize target candiates.
+    
+    Parameters
+    ----------
+    df_splo : pandas.DataFrame
+        Dataframe for SPLO information.
+    df_inf : pandas.DataFrame
+        Dataframe for influence information.
+    output : str
+        Names of output node, which is necessary for 'df_inf'.
+    dac : int
+        Direction of activity change (DAC) of the output.
+    rank_thr : int
+        Rank to filter out the entities.
+        The entities whose ranks are greater than rank_thr survive.
+    min_group_size : int
+        Minimum group size to be satisfied.
+        If the filtered group
 
+    """
     ascending = True if dac < 0 else False
 
     df_inf_dac = df_inf[np.sign(df_inf[output]) == dac]
@@ -292,9 +311,15 @@ def prioritize(df_splo,
                     ascending=ascending)
     targets = []
     for splo in si:
-        df_sub = si[splo]
+        # Get the group of this SPLO.
+        df_sub = si[splo]  
+        
+        # Get the entities that have the designated dac.
         df_sub = df_sub[np.sign(df_sub[output]) == dac]
+        
+        # Get the enetities whose rank exceeds the threshods.
         df_top = df_sub.iloc[:rank_thr, :]
+        
         if df_top.shape[0] < min_group_size:
            continue
         targets.extend(df_top['Source'].tolist())

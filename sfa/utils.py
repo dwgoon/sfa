@@ -15,10 +15,12 @@ import networkx as nx
 
 __all__ = ["FrozenClass",
            "Singleton",
+           "to_networkx_digraph",
            "normalize",
            "rand_swap",
            "rand_flip",
            "rand_weights",
+           "rand_structure",
            "get_akey",
            "get_avalue",]
 
@@ -124,6 +126,24 @@ def normalize(A, norm_in=True, norm_out=True):
 
 
 # end of def normalize
+    
+def to_networkx_digraph(A, n2i=None):
+    if not n2i:
+        return nx.from_numpy_array(A, create_using=nx.Digraph)        
+    
+    i2n = {ix:name for name, ix in n2i.items()}        
+    dg = nx.DiGraph()
+    ind_row, ind_col = A.nonzero()
+    for ix_trg, ix_src in zip(ind_row, ind_col):
+        name_src = i2n[ix_src]
+        name_trg = i2n[ix_trg]
+        sign = np.sign(A[ix_trg, ix_src])
+        dg.add_edge(name_src, name_trg)
+        dg.edges[name_src, name_trg]['SIGN'] = sign
+    # end of for
+    return dg
+    # end of for
+# end of def to_networkx_digraph
 
 def rand_swap(A, nsamp=10, noself=True, inplace=False):
     """Randomly rewire the network connections by swapping.
@@ -150,30 +170,33 @@ def rand_swap(A, nsamp=10, noself=True, inplace=False):
 
     if not inplace:
         A_org = A
-        B = np.array(A, dtype=np.float64)
+        B = A.copy() #np.array(A, dtype=np.float64)
     else:
-        A_org = np.array(A, dtype=np.float64)
+        A_org = A.copy() #np.array(A, dtype=np.float64)
         B = A
 
     cnt = 0
     while cnt < nsamp:
         ir, ic = B.nonzero()
+        
         i1, i2 = np.random.randint(0, ir.size, 2)
+        while i1 == i2:
+            i1, i2 = np.random.randint(0, ir.size, 2)
 
-        itgt1, isrc1 = ir[i1], ic[i1]
-        itgt2, isrc2 = ir[i2], ic[i2]
+        itrg1, isrc1 = ir[i1], ic[i1]
+        itrg2, isrc2 = ir[i2], ic[i2]
 
         if noself:
-            if itgt2 == isrc1 or itgt1 == isrc2:
+            if itrg2 == isrc1 or itrg1 == isrc2:
                 continue
 
-        if B[itgt2, isrc1] == 0 and B[itgt1, isrc2] == 0:
-            a, b = B[itgt1, isrc1], B[itgt2, isrc2]
-            if A_org[itgt2, isrc1] == a and A_org[itgt1, isrc2] == b:
+        if B[itrg2, isrc1] == 0 and B[itrg1, isrc2] == 0:
+            a, b = B[itrg1, isrc1], B[itrg2, isrc2]
+            if A_org[itrg2, isrc1] == a and A_org[itrg1, isrc2] == b:
                 continue
 
-            B[itgt2, isrc1], B[itgt1, isrc2] = a, b
-            B[itgt1, isrc1], B[itgt2, isrc2] = 0, 0
+            B[itrg2, isrc1], B[itrg1, isrc2] = a, b
+            B[itrg1, isrc1], B[itrg2, isrc2] = 0, 0
             cnt += 1
         else:
             continue
@@ -202,7 +225,7 @@ def rand_flip(A, nsamp=10, inplace=False):
         The reference of the given W is returned, when inplace is True.
     """
     if not inplace:
-        B = np.array(A, dtype=np.float64)
+        B = A.copy() #np.array(A, dtype=np.float64)
     else:
         B = A
 
@@ -252,6 +275,18 @@ def rand_weights(W, lb=-3, ub=3, inplace=False):
         p, q = ir[i], ic[i]
         B[p, q] = weights_rand[i] * np.sign(B[p, q], dtype=np.float)
     """
+    return B
+
+
+def rand_structure(A, nswap=10, nflip=10, noself=True, inplace=False):
+    if not inplace:
+        B = A.copy()
+    else:
+        B = A
+    if nflip > 0:
+        B = rand_flip(B, nflip, inplace)
+    if nswap > 0:
+        B = rand_swap(B, nswap, noself, inplace)
     return B
 
 
