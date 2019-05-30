@@ -101,6 +101,11 @@ def compute_influence(W,
         _, id_device = device.split(':')
         ret = _compute_influence_gpu(W, alpha, beta, S,
                                   max_iter, tol, get_iter, id_device)
+        
+        if rtype == 'df':
+            import cupy as cp
+            if isinstance(ret, cp.core.core.ndarray):
+                ret = cp.asnumpy(ret)
 
     if get_iter:
         S_ret, num_iter = ret
@@ -109,7 +114,7 @@ def compute_influence(W,
 
     if rtype == 'array':
         return ret
-    elif rtype == 'df':
+    elif rtype == 'df':             
         if not outputs:
             err_msg = "outputs should be designated for 'df' return type."
             raise ValueError(err_msg)
