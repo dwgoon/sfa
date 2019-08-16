@@ -17,40 +17,37 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../index.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="sfa.data.korkut_2015a package" href="sfa.data.korkut_2015a.html" />
+    <link rel="prev" title="sfa.data.flobak_2015 package" href="sfa.data.flobak_2015.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -88,15 +85,33 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../algorithm.html">Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../control.html">Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simulation.html">Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../develop.html">Development</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">sfa</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sfa.html">sfa package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="sfa.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sfa.algorithms.html">sfa.algorithms package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.analysis.html">sfa.analysis package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.control.html">sfa.control package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="sfa.data.html">sfa.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.plot.html">sfa.plot package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.vis.html">sfa.vis package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#module-sfa">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -108,7 +123,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Singal Flow Analysis</a>
@@ -116,9 +131,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -140,6 +156,12 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">sfa</a> &raquo;</li>
+        
+          <li><a href="sfa.html">sfa package</a> &raquo;</li>
+        
+          <li><a href="sfa.data.html">sfa.data package</a> &raquo;</li>
         
       <li>sfa.data.fumia_2013 package</li>
     
@@ -173,53 +195,37 @@ PLoS ONE, (2013) 8(7), e69008</p>
 <dt id="sfa.data.fumia_2013.FumiaData">
 <em class="property">class </em><code class="descclassname">sfa.data.fumia_2013.</code><code class="descname">FumiaData</code><a class="reference internal" href="../_modules/sfa/data/fumia_2013.html#FumiaData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.data.fumia_2013.FumiaData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="sfa.base.html#sfa.base.Data" title="sfa.base.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">sfa.base.Data</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A</strong></dt>
-<dd></dd>
-<dt><strong>abbr</strong></dt>
-<dd></dd>
-<dt><strong>df_conds</strong></dt>
-<dd></dd>
-<dt><strong>df_exp</strong></dt>
-<dd></dd>
-<dt><strong>df_ptb</strong></dt>
-<dd></dd>
-<dt><strong>dg</strong></dt>
-<dd></dd>
-<dt><strong>has_link_perturb</strong></dt>
-<dd></dd>
-<dt><strong>i2n</strong></dt>
-<dd></dd>
-<dt><strong>iadj_to_idf</strong></dt>
-<dd></dd>
-<dt><strong>inputs</strong></dt>
-<dd></dd>
-<dt><strong>n2i</strong></dt>
-<dd></dd>
-<dt><strong>name</strong></dt>
-<dd></dd>
-<dt><strong>names_ptb</strong></dt>
-<dd></dd>
-<dt><strong>vals_ptb</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>A</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">abbr</span></code></dt><dd><p>Abbreviation or symbol representing this item.</p>
+</dd>
+<dt><strong>df_conds</strong></dt><dd></dd>
+<dt><strong>df_exp</strong></dt><dd></dd>
+<dt><strong>df_ptb</strong></dt><dd></dd>
+<dt><strong>dg</strong></dt><dd></dd>
+<dt><strong>has_link_perturb</strong></dt><dd></dd>
+<dt><strong>i2n</strong></dt><dd></dd>
+<dt><strong>iadj_to_idf</strong></dt><dd></dd>
+<dt><strong>inputs</strong></dt><dd></dd>
+<dt><strong>n2i</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></dt><dd><p>Full name or description of this item.</p>
+</dd>
+<dt><strong>names_ptb</strong></dt><dd></dd>
+<dt><strong>vals_ptb</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="58%" />
-<col width="42%" />
+<col style="width: 58%" />
+<col style="width: 42%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>initialize</strong></td>
-<td>&#160;</td>
+<tbody>
+<tr class="row-odd"><td><p><strong>initialize</strong></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -235,22 +241,29 @@ PLoS ONE, (2013) 8(7), e69008</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sfa.data.korkut_2015a.html" class="btn btn-neutral float-right" title="sfa.data.korkut_2015a package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sfa.data.flobak_2015.html" class="btn btn-neutral float-left" title="sfa.data.flobak_2015 package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -263,37 +276,15 @@ PLoS ONE, (2013) 8(7), e69008</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

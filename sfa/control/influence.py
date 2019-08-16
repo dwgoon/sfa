@@ -286,8 +286,12 @@ def prioritize(df_splo,
                df_inf,
                output,
                dac,
-               rank_thr=3,
-               min_group_size=0):
+               thr_rank=3,
+               min_group_size=0,
+               min_splo=None,
+               max_splo=None,
+               thr_inf=1e-10,
+):
     """Prioritize target candiates.
     
     Parameters
@@ -300,33 +304,44 @@ def prioritize(df_splo,
         Names of output node, which is necessary for 'df_inf'.
     dac : int
         Direction of activity change (DAC) of the output.
-    rank_thr : int
+    thr_rank : int or float
         Rank to filter out the entities.
-        The entities whose ranks are greater than rank_thr survive.
+        The entities whose ranks are greater than thr_rank survive.
     min_group_size : int
         Minimum group size to be satisfied.
-        If the filtered group
-
     """
     ascending = True if dac < 0 else False
 
     df_inf_dac = df_inf[np.sign(df_inf[output]) == dac]
-    si = arrange_si(df_splo, df_inf_dac,
-                    output=output,
-                    ascending=ascending)
+    si = arrange_si(df_splo,
+                    df_inf_dac,
+                    output,
+                    min_splo, 
+                    max_splo,
+                    thr_inf,
+                    ascending)
     targets = []
     for splo in si:
         # Get the group of this SPLO.
         df_sub = si[splo]  
-        
+       
+        if df_sub.shape[0] < min_group_size:
+           continue       
+       
         # Get the entities that have the designated dac.
         df_sub = df_sub[np.sign(df_sub[output]) == dac]
         
         # Get the enetities whose rank exceeds the threshods.
-        df_top = df_sub.iloc[:rank_thr, :]
+        if 0 < thr_rank < 1:
+            ix_max_rank = int(thr_rank * df_sub.shape[0])
+            if ix_max_rank == 0:
+                ix_max_rank = df_sub.shape[0] 
+        else:
+            ix_max_rank = thr_rank
         
-        if df_top.shape[0] < min_group_size:
-           continue
+        #print(ix_max_rank)
+        df_top = df_sub.iloc[:ix_max_rank, :]
+
         targets.extend(df_top['Source'].tolist())
     # end of for
     return targets

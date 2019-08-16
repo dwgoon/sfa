@@ -253,7 +253,7 @@ we should first assign the data object to the algorithm object.
     >>> alg.params.alpha = 0.5
     >>> alg.params.apply_weight_norm = True
     >>> alg.data = data  # Assign the data object to the algorithm.
-    >>> alg.initilize()  # Initialize the algorithm object.
+    >>> alg.initialize()  # Initialize the algorithm object.
 
 
 In the initization of the algorithm (calling ``sfa.Algorithm.initialize``),

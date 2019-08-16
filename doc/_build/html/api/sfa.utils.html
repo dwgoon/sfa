@@ -17,40 +17,36 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../index.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="sfa.topology module" href="sfa.topology.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -88,15 +84,34 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../algorithm.html">Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../control.html">Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simulation.html">Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../develop.html">Development</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">sfa</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sfa.html">sfa package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sfa.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sfa.base.html">sfa.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.containers.html">sfa.containers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.fileio.html">sfa.fileio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.manager.html">sfa.manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.stats.html">sfa.stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sfa.topology.html">sfa.topology module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">sfa.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sfa.html#module-sfa">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -108,7 +123,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Singal Flow Analysis</a>
@@ -116,9 +131,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -140,6 +156,10 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">sfa</a> &raquo;</li>
+        
+          <li><a href="sfa.html">sfa package</a> &raquo;</li>
         
       <li>sfa.utils module</li>
     
@@ -165,12 +185,17 @@
 <dl class="class">
 <dt id="sfa.utils.FrozenClass">
 <em class="property">class </em><code class="descclassname">sfa.utils.</code><code class="descname">FrozenClass</code><a class="reference internal" href="../_modules/sfa/utils.html#FrozenClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.FrozenClass" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="sfa.utils.Singleton">
 <code class="descclassname">sfa.utils.</code><code class="descname">Singleton</code><span class="sig-paren">(</span><em>_class</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#Singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.Singleton" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sfa.utils.to_networkx_digraph">
+<code class="descclassname">sfa.utils.</code><code class="descname">to_networkx_digraph</code><span class="sig-paren">(</span><em>A</em>, <em>n2i=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#to_networkx_digraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.to_networkx_digraph" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -180,131 +205,109 @@
 
 <dl class="function">
 <dt id="sfa.utils.rand_swap">
-<code class="descclassname">sfa.utils.</code><code class="descname">rand_swap</code><span class="sig-paren">(</span><em>A</em>, <em>nsamp=10</em>, <em>noself=True</em>, <em>inplace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#rand_swap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.rand_swap" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">sfa.utils.</code><code class="descname">rand_swap</code><span class="sig-paren">(</span><em>A</em>, <em>nsamp=10</em>, <em>noself=True</em>, <em>pivots=None</em>, <em>inplace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#rand_swap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.rand_swap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly rewire the network connections by swapping.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>A</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">Adjacency matrix (connection matrix).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>A</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Adjacency matrix (connection matrix).</p>
 </dd>
-<dt><strong>nsamp</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Number of sampled connections to rewire</p>
+<dt><strong>nsamp</strong><span class="classifier">int, optional</span></dt><dd><p>Number of sampled connections to rewire</p>
 </dd>
-<dt><strong>noself</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Whether to allow self-loop link.</p>
+<dt><strong>noself</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to allow self-loop link.</p>
 </dd>
-<dt><strong>inplace</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Modify the given adjacency matrix for rewiring.</p>
+<dt><strong>pivots</strong><span class="classifier">list, optional</span></dt><dd><p>Indices of pivot nodes</p>
+</dd>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>Modify the given adjacency matrix for rewiring.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>B</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">The randomized matrix.
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>B</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>The randomized matrix.
 The reference of the given W is returned, when inplace is True.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="sfa.utils.rand_flip">
-<code class="descclassname">sfa.utils.</code><code class="descname">rand_flip</code><span class="sig-paren">(</span><em>A</em>, <em>nsamp=10</em>, <em>inplace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#rand_flip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.rand_flip" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">sfa.utils.</code><code class="descname">rand_flip</code><span class="sig-paren">(</span><em>A</em>, <em>nsamp=10</em>, <em>pivots=None</em>, <em>inplace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#rand_flip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.rand_flip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly flip the signs of connections.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>A</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">Adjacency matrix (connection matrix).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>A</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Adjacency matrix (connection matrix).</p>
 </dd>
-<dt><strong>nsamp</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">Number of sampled connections to be flipped.</p>
+<dt><strong>nsamp</strong><span class="classifier">int, optional</span></dt><dd><p>Number of sampled connections to be flipped.</p>
 </dd>
-<dt><strong>inplace</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Modify the given adjacency matrix for rewiring.</p>
+<dt><strong>pivots</strong><span class="classifier">list, optional</span></dt><dd><p>Indices of pivot nodes</p>
+</dd>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>Modify the given adjacency matrix for rewiring.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>B</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">The randomized matrix.
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>B</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>The randomized matrix.
 The reference of the given W is returned, when inplace is True.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="sfa.utils.rand_weights">
 <code class="descclassname">sfa.utils.</code><code class="descname">rand_weights</code><span class="sig-paren">(</span><em>W</em>, <em>lb=-3</em>, <em>ub=3</em>, <em>inplace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#rand_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.rand_weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly sample the weights of connections in W from 10^(lb, ub).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>W</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">Adjacency (connection) or weight matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>W</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Adjacency (connection) or weight matrix.</p>
 </dd>
-<dt><strong>lb</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">The 10’s exponent for lower bound</p>
+<dt><strong>lb</strong><span class="classifier">float, optional</span></dt><dd><p>The 10’s exponent for lower bound</p>
 </dd>
-<dt><strong>inplace</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Modify the given adjacency matrix for rewiring.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>Modify the given adjacency matrix for rewiring.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>B</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">The randomly sampled weight matrix.
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>B</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>The randomly sampled weight matrix.
 The reference of the given W is returned, when inplace is True.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="function">
+<dt id="sfa.utils.rand_structure">
+<code class="descclassname">sfa.utils.</code><code class="descname">rand_structure</code><span class="sig-paren">(</span><em>A</em>, <em>nswap=10</em>, <em>nflip=10</em>, <em>noself=True</em>, <em>pivots=None</em>, <em>inplace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#rand_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.rand_structure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="sfa.utils.get_akey">
 <code class="descclassname">sfa.utils.</code><code class="descname">get_akey</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#get_akey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.get_akey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a key from a given dictionary.
 It returns the first key in d.keys().</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
-<dd><p class="first last">Dictionary of objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>d</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of objects.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>obj</strong> <span class="classifier-delimiter">:</span> <span class="classifier">object</span></dt>
-<dd><p class="first last">First item of iter(d.keys()).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>obj</strong><span class="classifier">object</span></dt><dd><p>First item of iter(d.keys()).</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -312,48 +315,47 @@ It returns the first key in d.keys().</p>
 <code class="descclassname">sfa.utils.</code><code class="descname">get_avalue</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/utils.html#get_avalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.utils.get_avalue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a value from a given dictionary.
 It returns the value designated by sfa.get_akey().</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>d</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
-<dd><p class="first last">Dictionary of objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>d</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of objects.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>obj</strong> <span class="classifier-delimiter">:</span> <span class="classifier">object</span></dt>
-<dd><p class="first last">First item of d[iter(d.keys())].</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>obj</strong><span class="classifier">object</span></dt><dd><p>First item of d[iter(d.keys())].</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="sfa.topology.html" class="btn btn-neutral float-left" title="sfa.topology module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -366,37 +368,15 @@ It returns the value designated by sfa.get_akey().</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

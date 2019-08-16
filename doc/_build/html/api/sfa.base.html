@@ -17,42 +17,36 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../index.html"/>
-        <link rel="up" title="sfa package" href="sfa.html"/>
-        <link rel="prev" title="sfa.vis.utils module" href="sfa.vis.utils.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="sfa.vis.utils module" href="sfa.vis.utils.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -93,7 +87,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../algorithm.html">Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../control.html">Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
@@ -129,7 +123,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Singal Flow Analysis</a>
@@ -137,9 +131,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -205,105 +200,90 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">abbr</span></code> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Abbreviation or symbol representing this item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">abbr</span></code><span class="classifier">str</span></dt><dd><p>Abbreviation or symbol representing this item.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Full name or description of this item.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code><span class="classifier">str</span></dt><dd><p>Full name or description of this item.</p>
 </dd>
-<dt><a class="reference internal" href="#sfa.base.Algorithm.data" title="sfa.base.Algorithm.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">sfa.base.Data</span></dt>
-<dd><p class="first last">The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.Data</span></code>.</p>
+<dt><a class="reference internal" href="#sfa.base.Algorithm.data" title="sfa.base.Algorithm.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a><span class="classifier">sfa.base.Data</span></dt><dd><p>The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.Data</span></code>.</p>
 </dd>
-<dt><a class="reference internal" href="#sfa.base.Algorithm.params" title="sfa.base.Algorithm.params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">sfa.base.ParameterSet</span></dt>
-<dd><p class="first last">The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.ParameterSet</span></code>.</p>
+<dt><a class="reference internal" href="#sfa.base.Algorithm.params" title="sfa.base.Algorithm.params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></a><span class="classifier">sfa.base.ParameterSet</span></dt><dd><p>The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.ParameterSet</span></code>.</p>
 </dd>
-<dt><a class="reference internal" href="#sfa.base.Algorithm.result" title="sfa.base.Algorithm.result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">sfa.base.Result</span></dt>
-<dd><p class="first last">The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.Result</span></code>.</p>
+<dt><a class="reference internal" href="#sfa.base.Algorithm.result" title="sfa.base.Algorithm.result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result</span></code></a><span class="classifier">sfa.base.Result</span></dt><dd><p>The object of <code class="docutils literal notranslate"><span class="pre">sfa.base.Result</span></code>.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-center">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#sfa.base.Algorithm.compute" title="sfa.base.Algorithm.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(b)</td>
-<td>Process the assigned data     with the given basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sfa.base.Algorithm.compute" title="sfa.base.Algorithm.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(self, b)</p></td>
+<td><p>Process the assigned data</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sfa.base.Algorithm.compute_batch" title="sfa.base.Algorithm.compute_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_batch</span></code></a>()</td>
-<td>Process the assigned data that contains a batch data.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#sfa.base.Algorithm.compute_batch" title="sfa.base.Algorithm.compute_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_batch</span></code></a>(self)</p></td>
+<td><p>Process the assigned data that contains a batch data.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sfa.base.Algorithm.initialize_basal_activity" title="sfa.base.Algorithm.initialize_basal_activity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_basal_activity</span></code></a>()</td>
-<td>Initialize the basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#sfa.base.Algorithm.initialize_basal_activity" title="sfa.base.Algorithm.initialize_basal_activity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_basal_activity</span></code></a>(self)</p></td>
+<td><p>Initialize the basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sfa.base.Algorithm.initialize_network" title="sfa.base.Algorithm.initialize_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_network</span></code></a>()</td>
-<td>Initialize the data structures related to network.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#sfa.base.Algorithm.initialize_network" title="sfa.base.Algorithm.initialize_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_network</span></code></a>(self)</p></td>
+<td><p>Initialize the data structures related to network.</p></td>
 </tr>
 </tbody>
 </table>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="58%" />
-<col width="42%" />
+<col style="width: 58%" />
+<col style="width: 42%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>copy</strong></td>
-<td>&#160;</td>
+<tbody>
+<tr class="row-odd"><td><p><strong>copy</strong></p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>initialize</strong></td>
-<td>&#160;</td>
+<tr class="row-even"><td><p><strong>initialize</strong></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="sfa.base.Algorithm.compute">
-<code class="descname">compute</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.compute" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Process the assigned data</dt>
-<dd>with the given basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>b</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">1D array of basal activity.</p>
+<code class="descname">compute</code><span class="sig-paren">(</span><em>self</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.compute" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Process the assigned data</dt><dd><p>with the given basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">1D-array object of activity at steady-state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>1D array of basal activity.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>1D-array object of activity at steady-state.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="sfa.base.Algorithm.compute_batch">
-<code class="descname">compute_batch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.compute_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.compute_batch" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_batch</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.compute_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.compute_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the assigned data that contains a batch data.
 The result is stored in <code class="docutils literal notranslate"><span class="pre">result</span></code> member.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="sfa.base.Algorithm.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><em>is_deep=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.copy" title="Permalink to this definition">¶</a></dt>
+<code class="descname">copy</code><span class="sig-paren">(</span><em>self</em>, <em>is_deep=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -316,18 +296,18 @@ can accessed through this member.</p>
 
 <dl class="method">
 <dt id="sfa.base.Algorithm.initialize">
-<code class="descname">initialize</code><span class="sig-paren">(</span><em>network=True</em>, <em>ba=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.initialize" title="Permalink to this definition">¶</a></dt>
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>self</em>, <em>network=True</em>, <em>ba=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.initialize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="sfa.base.Algorithm.initialize_basal_activity">
-<code class="descname">initialize_basal_activity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.initialize_basal_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.initialize_basal_activity" title="Permalink to this definition">¶</a></dt>
+<code class="descname">initialize_basal_activity</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.initialize_basal_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.initialize_basal_activity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the basal activity, <span class="math notranslate nohighlight">\(b\)</span>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="sfa.base.Algorithm.initialize_network">
-<code class="descname">initialize_network</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.initialize_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.initialize_network" title="Permalink to this definition">¶</a></dt>
+<code class="descname">initialize_network</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Algorithm.initialize_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Algorithm.initialize_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the data structures related to network.</p>
 </dd></dl>
 
@@ -352,55 +332,37 @@ The result of computing the batch.</p>
 <dt id="sfa.base.Data">
 <em class="property">class </em><code class="descclassname">sfa.base.</code><code class="descname">Data</code><a class="reference internal" href="../_modules/sfa/base.html#Data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sfa.base.ContainerItem</span></code></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">abbr</span></code></dt>
-<dd><p class="first last">Abbreviation or symbol representing this item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>A</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">abbr</span></code></dt><dd><p>Abbreviation or symbol representing this item.</p>
 </dd>
-<dt><strong>df_conds</strong></dt>
-<dd></dd>
-<dt><strong>df_exp</strong></dt>
-<dd></dd>
-<dt><strong>df_ptb</strong></dt>
-<dd></dd>
-<dt><strong>dg</strong></dt>
-<dd></dd>
-<dt><strong>has_link_perturb</strong></dt>
-<dd></dd>
-<dt><strong>i2n</strong></dt>
-<dd></dd>
-<dt><strong>iadj_to_idf</strong></dt>
-<dd></dd>
-<dt><strong>inputs</strong></dt>
-<dd></dd>
-<dt><strong>n2i</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></dt>
-<dd><p class="first last">Full name or description of this item.</p>
+<dt><strong>df_conds</strong></dt><dd></dd>
+<dt><strong>df_exp</strong></dt><dd></dd>
+<dt><strong>df_ptb</strong></dt><dd></dd>
+<dt><strong>dg</strong></dt><dd></dd>
+<dt><strong>has_link_perturb</strong></dt><dd></dd>
+<dt><strong>i2n</strong></dt><dd></dd>
+<dt><strong>iadj_to_idf</strong></dt><dd></dd>
+<dt><strong>inputs</strong></dt><dd></dd>
+<dt><strong>n2i</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></dt><dd><p>Full name or description of this item.</p>
 </dd>
-<dt><strong>names_ptb</strong></dt>
-<dd></dd>
-<dt><strong>vals_ptb</strong></dt>
-<dd></dd>
+<dt><strong>names_ptb</strong></dt><dd></dd>
+<dt><strong>vals_ptb</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="58%" />
-<col width="42%" />
+<col style="width: 58%" />
+<col style="width: 42%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>initialize</strong></td>
-<td>&#160;</td>
+<tbody>
+<tr class="row-odd"><td><p><strong>initialize</strong></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -446,7 +408,7 @@ The result of computing the batch.</p>
 
 <dl class="method">
 <dt id="sfa.base.Data.initialize">
-<code class="descname">initialize</code><span class="sig-paren">(</span><em>fpath</em>, <em>fname_network='network.sif'</em>, <em>fname_ptb='ptb.tsv'</em>, <em>fname_conds='conds.tsv'</em>, <em>fname_exp='exp.tsv'</em>, <em>inputs={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Data.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Data.initialize" title="Permalink to this definition">¶</a></dt>
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>self</em>, <em>fpath</em>, <em>fname_network='network.sif'</em>, <em>fname_ptb='ptb.tsv'</em>, <em>fname_conds='conds.tsv'</em>, <em>fname_exp='exp.tsv'</em>, <em>inputs={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/base.html#Data.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Data.initialize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -475,18 +437,13 @@ The result of computing the batch.</p>
 <dt id="sfa.base.Result">
 <em class="property">class </em><code class="descclassname">sfa.base.</code><code class="descname">Result</code><a class="reference internal" href="../_modules/sfa/base.html#Result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.base.Result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="sfa.utils.html#sfa.utils.FrozenClass" title="sfa.utils.FrozenClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">sfa.utils.FrozenClass</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>df_sim</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df_sim</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="attribute">
 <dt id="sfa.base.Result.df_sim">
 <code class="descname">df_sim</code><a class="headerlink" href="#sfa.base.Result.df_sim" title="Permalink to this definition">¶</a></dt>
@@ -498,16 +455,14 @@ The result of computing the batch.</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="sfa.vis.utils.html" class="btn btn-neutral" title="sfa.vis.utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sfa.vis.utils.html" class="btn btn-neutral float-left" title="sfa.vis.utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -516,11 +471,11 @@ The result of computing the batch.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -533,37 +488,15 @@ The result of computing the batch.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

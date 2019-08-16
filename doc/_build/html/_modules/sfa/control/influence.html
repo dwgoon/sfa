@@ -17,41 +17,35 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../../genindex.html"/>
-        <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../../../index.html"/>
-        <link rel="up" title="Module code" href="../../index.html"/> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,7 +104,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">Singal Flow Analysis</a>
@@ -118,9 +112,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -150,8 +145,6 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
-        
       </li>
     
   </ul>
@@ -163,24 +156,26 @@
            <div itemprop="articleBody">
             
   <h1>Source code for sfa.control.influence</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
-<div class="viewcode-block" id="calc_influence"><a class="viewcode-back" href="../../../api/sfa.control.influence.html#sfa.control.influence.calc_influence">[docs]</a><span class="k">def</span> <span class="nf">calc_influence</span><span class="p">(</span><span class="n">W</span><span class="p">,</span>
-                   <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-                   <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                   <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">rtype</span><span class="o">=</span><span class="s1">&#39;df&#39;</span><span class="p">,</span>
-                   <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">n2i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-                   <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span>
-                   <span class="n">get_iter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
-                   <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the influence matrix.</span>
+<div class="viewcode-block" id="compute_influence"><a class="viewcode-back" href="../../../api/sfa.control.influence.html#sfa.control.influence.compute_influence">[docs]</a><span class="k">def</span> <span class="nf">compute_influence</span><span class="p">(</span><span class="n">W</span><span class="p">,</span>
+                      <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                      <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                      <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">rtype</span><span class="o">=</span><span class="s1">&#39;df&#39;</span><span class="p">,</span>
+                      <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">n2i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                      <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span>
+                      <span class="n">get_iter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+                      <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the influence.</span>
 <span class="sd">       It estimates the effects of a node to the other nodes,</span>
 <span class="sd">       by calculating partial derivative with respect to source nodes,</span>
 <span class="sd">       based on a simple iterative method.</span>
@@ -189,7 +184,7 @@
 
 <span class="sd">       x(t+1) = alpha*W.dot(x(t)) + (1-alpha)*b</span>
 
-<span class="sd">       The influence matrix, S, is calculated using chain rule of</span>
+<span class="sd">       The influence matrix, S, is computed using chain rule of</span>
 <span class="sd">       partial derivative as follows.</span>
 
 <span class="sd">       \begin{align}</span>
@@ -255,15 +250,20 @@
 
     <span class="k">if</span> <span class="s1">&#39;cpu&#39;</span> <span class="ow">in</span> <span class="n">device</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="n">_calc_influence_cpu_sparse</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">_compute_influence_cpu_sparse</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
                                                <span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">get_iter</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="n">_calc_influence_cpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">_compute_influence_cpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
                                         <span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">get_iter</span><span class="p">)</span>
     <span class="k">elif</span> <span class="s1">&#39;gpu&#39;</span><span class="ow">in</span> <span class="n">device</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">id_device</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">_calc_influence_gpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">_compute_influence_gpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
                                   <span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">get_iter</span><span class="p">,</span> <span class="n">id_device</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">rtype</span> <span class="o">==</span> <span class="s1">&#39;df&#39;</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">cp</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">get_iter</span><span class="p">:</span>
         <span class="n">S_ret</span><span class="p">,</span> <span class="n">num_iter</span> <span class="o">=</span> <span class="n">ret</span>
@@ -272,7 +272,7 @@
 
     <span class="k">if</span> <span class="n">rtype</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ret</span>
-    <span class="k">elif</span> <span class="n">rtype</span> <span class="o">==</span> <span class="s1">&#39;df&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">rtype</span> <span class="o">==</span> <span class="s1">&#39;df&#39;</span><span class="p">:</span>             
         <span class="k">if</span> <span class="ow">not</span> <span class="n">outputs</span><span class="p">:</span>
             <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;outputs should be designated for &#39;df&#39; return type.&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
@@ -296,8 +296,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown return type: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">rtype</span><span class="p">))</span></div>
 
 
-<span class="k">def</span> <span class="nf">_calc_influence_cpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">get_iter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_compute_influence_cpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">get_iter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">S</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">S1</span> <span class="o">=</span> <span class="n">S</span>
@@ -323,8 +323,8 @@
         <span class="k">return</span> <span class="n">S_fin</span>
 
 
-<span class="k">def</span> <span class="nf">_calc_influence_cpu_sparse</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
-                               <span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">get_iter</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_compute_influence_cpu_sparse</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span>
+                                  <span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">get_iter</span><span class="p">):</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">S</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">S1</span> <span class="o">=</span> <span class="n">S</span>
@@ -351,9 +351,9 @@
         <span class="k">return</span> <span class="n">S_fin</span>
 
 
-<span class="k">def</span> <span class="nf">_calc_influence_gpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">get_iter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">id_device</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>    
+<span class="k">def</span> <span class="nf">_compute_influence_gpu</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">get_iter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                           <span class="n">id_device</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>    
     <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
     <span class="n">cp</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Device</span><span class="p">(</span><span class="n">id_device</span><span class="p">)</span><span class="o">.</span><span class="n">use</span><span class="p">()</span>    
     <span class="n">N</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -382,12 +382,131 @@
         <span class="k">return</span> <span class="n">S_fin</span><span class="p">,</span> <span class="n">cnt</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">S_fin</span>
+
+
+
+<div class="viewcode-block" id="arrange_si"><a class="viewcode-back" href="../../../api/sfa.control.influence.html#sfa.control.influence.arrange_si">[docs]</a><span class="k">def</span> <span class="nf">arrange_si</span><span class="p">(</span>
+        <span class="n">df_splo</span><span class="p">,</span>
+        <span class="n">df_inf</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">,</span>
+        <span class="n">min_splo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_splo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">thr_inf</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
+        <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="c1"># SPLO-Influence data</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">min_splo</span><span class="p">:</span>
+        <span class="n">min_splo</span> <span class="o">=</span> <span class="n">df_splo</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">max_splo</span><span class="p">:</span>
+        <span class="n">max_splo</span> <span class="o">=</span> <span class="n">df_splo</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="n">mask_splo</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_splo</span> <span class="o">&lt;=</span> <span class="n">df_splo</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_splo</span> <span class="o">&lt;=</span> <span class="n">max_splo</span><span class="p">)</span>
+    <span class="n">df_splo</span> <span class="o">=</span> <span class="n">df_splo</span><span class="p">[</span><span class="n">mask_splo</span><span class="p">]</span>
+
+    <span class="n">df_splo</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df_splo</span><span class="p">)</span>
+    <span class="n">df_splo</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SPLO&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">df_splo</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="n">df_splo</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">index_common</span> <span class="o">=</span> <span class="n">df_splo</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">df_inf</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">df_inf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df_inf</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index_common</span><span class="p">])</span>
+
+    <span class="n">mark_drop</span> <span class="o">=</span> <span class="n">df_inf</span><span class="p">[</span><span class="n">output</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">thr_inf</span>
+    <span class="n">df_inf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">df_inf</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mark_drop</span><span class="p">,</span> <span class="n">output</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+    <span class="n">df_si</span> <span class="o">=</span> <span class="n">df_inf</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_splo</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index_common</span><span class="p">])</span>
+    <span class="n">df_si</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Source&#39;</span>
+    <span class="n">df_si</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">cnt_splo</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">df_si</span><span class="p">[</span><span class="s1">&#39;SPLO&#39;</span><span class="p">])</span>
+    <span class="n">splos</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cnt_splo</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="n">si</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">splo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">splos</span><span class="p">):</span>
+        <span class="n">df_sub</span> <span class="o">=</span> <span class="n">df_si</span><span class="p">[</span><span class="n">df_si</span><span class="p">[</span><span class="s1">&#39;SPLO&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">splo</span><span class="p">]</span>
+        <span class="n">df_sub</span> <span class="o">=</span> <span class="n">df_sub</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+                                    <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
+        <span class="c1">#num_items = df_sub[output].count()</span>
+        <span class="c1">#influence = np.zeros((cnt_max,))  # Influence</span>
+        <span class="c1">#num_empty = cnt_max - num_items</span>
+        <span class="c1">#influence[num_empty:] = df_sub[output]</span>
+        <span class="c1">#names = df_sub[&#39;Source&#39;].tolist()</span>
+        <span class="n">si</span><span class="p">[</span><span class="n">splo</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sub</span>  <span class="c1">#[output]</span>
+
+    <span class="k">return</span> <span class="n">si</span></div>
+
+
+<div class="viewcode-block" id="prioritize"><a class="viewcode-back" href="../../../api/sfa.control.influence.html#sfa.control.influence.prioritize">[docs]</a><span class="k">def</span> <span class="nf">prioritize</span><span class="p">(</span><span class="n">df_splo</span><span class="p">,</span>
+               <span class="n">df_inf</span><span class="p">,</span>
+               <span class="n">output</span><span class="p">,</span>
+               <span class="n">dac</span><span class="p">,</span>
+               <span class="n">thr_rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+               <span class="n">min_group_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">min_splo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">max_splo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">thr_inf</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prioritize target candiates.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_splo : pandas.DataFrame</span>
+<span class="sd">        Dataframe for SPLO information.</span>
+<span class="sd">    df_inf : pandas.DataFrame</span>
+<span class="sd">        Dataframe for influence information.</span>
+<span class="sd">    output : str</span>
+<span class="sd">        Names of output node, which is necessary for &#39;df_inf&#39;.</span>
+<span class="sd">    dac : int</span>
+<span class="sd">        Direction of activity change (DAC) of the output.</span>
+<span class="sd">    thr_rank : int or float</span>
+<span class="sd">        Rank to filter out the entities.</span>
+<span class="sd">        The entities whose ranks are greater than thr_rank survive.</span>
+<span class="sd">    min_group_size : int</span>
+<span class="sd">        Minimum group size to be satisfied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ascending</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">dac</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">False</span>
+
+    <span class="n">df_inf_dac</span> <span class="o">=</span> <span class="n">df_inf</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">df_inf</span><span class="p">[</span><span class="n">output</span><span class="p">])</span> <span class="o">==</span> <span class="n">dac</span><span class="p">]</span>
+    <span class="n">si</span> <span class="o">=</span> <span class="n">arrange_si</span><span class="p">(</span><span class="n">df_splo</span><span class="p">,</span>
+                    <span class="n">df_inf_dac</span><span class="p">,</span>
+                    <span class="n">output</span><span class="p">,</span>
+                    <span class="n">min_splo</span><span class="p">,</span> 
+                    <span class="n">max_splo</span><span class="p">,</span>
+                    <span class="n">thr_inf</span><span class="p">,</span>
+                    <span class="n">ascending</span><span class="p">)</span>
+    <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">splo</span> <span class="ow">in</span> <span class="n">si</span><span class="p">:</span>
+        <span class="c1"># Get the group of this SPLO.</span>
+        <span class="n">df_sub</span> <span class="o">=</span> <span class="n">si</span><span class="p">[</span><span class="n">splo</span><span class="p">]</span>  
+       
+        <span class="k">if</span> <span class="n">df_sub</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_group_size</span><span class="p">:</span>
+           <span class="k">continue</span>       
+       
+        <span class="c1"># Get the entities that have the designated dac.</span>
+        <span class="n">df_sub</span> <span class="o">=</span> <span class="n">df_sub</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">df_sub</span><span class="p">[</span><span class="n">output</span><span class="p">])</span> <span class="o">==</span> <span class="n">dac</span><span class="p">]</span>
+        
+        <span class="c1"># Get the enetities whose rank exceeds the threshods.</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">thr_rank</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ix_max_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">thr_rank</span> <span class="o">*</span> <span class="n">df_sub</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">ix_max_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ix_max_rank</span> <span class="o">=</span> <span class="n">df_sub</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ix_max_rank</span> <span class="o">=</span> <span class="n">thr_rank</span>
+        
+        <span class="c1">#print(ix_max_rank)</span>
+        <span class="n">df_top</span> <span class="o">=</span> <span class="n">df_sub</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">ix_max_rank</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">targets</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">df_top</span><span class="p">[</span><span class="s1">&#39;Source&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="c1"># end of for</span>
+    <span class="k">return</span> <span class="n">targets</span></div>
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -396,11 +515,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -413,37 +532,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

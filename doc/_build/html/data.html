@@ -17,42 +17,37 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Algorithm" href="algorithm.html"/>
-        <link rel="prev" title="Discovery of control targets" href="tutorial_dc.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Algorithm" href="algorithm.html" />
+    <link rel="prev" title="Discovery of control targets" href="tutorial_dc.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -115,7 +110,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Singal Flow Analysis</a>
@@ -123,9 +118,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -174,34 +170,34 @@
 <p>To create a new data with a network structure,
 it is required to define a derived class of <code class="docutils literal notranslate"><span class="pre">sfa.base.Data</span></code> class.
 In <code class="docutils literal notranslate"><span class="pre">__init__</span></code> of the class, we need to create four objects.</p>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="3%" />
-<col width="10%" />
-<col width="87%" />
+<col style="width: 3%" />
+<col style="width: 10%" />
+<col style="width: 87%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">#</th>
-<th class="head">Member</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Member</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>1</td>
-<td>_A</td>
-<td>2-dimensional <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> for adjacency matrix.</td>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>_A</p></td>
+<td><p>2-dimensional <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> for adjacency matrix.</p></td>
 </tr>
-<tr class="row-odd"><td>2</td>
-<td>_dg</td>
-<td><code class="docutils literal notranslate"><span class="pre">NetworkX.DiGraph</span></code> object.</td>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>_dg</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NetworkX.DiGraph</span></code> object.</p></td>
 </tr>
-<tr class="row-even"><td>3</td>
-<td>_n2i</td>
-<td><code class="docutils literal notranslate"><span class="pre">dict</span></code> for mapping name to index.</td>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>_n2i</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> for mapping name to index.</p></td>
 </tr>
-<tr class="row-odd"><td>4</td>
-<td>_i2n</td>
-<td><code class="docutils literal notranslate"><span class="pre">dict</span></code> for mapping index to name.</td>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>_i2n</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> for mapping index to name.</p></td>
 </tr>
 </tbody>
 </table>
@@ -393,17 +389,15 @@ for parsing the network strcuture data.</p>
 <div class="section" id="defining-a-new-data-for-validating-algorithm">
 <h2>Defining a new data for validating algorithm<a class="headerlink" href="#defining-a-new-data-for-validating-algorithm" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Describe how to define own datasets only with experimental data.</li>
-<li>Explanation for the members of Data class for validation.</li>
+<li><p>Describe how to define own datasets only with experimental data.</p></li>
+<li><p>Explanation for the members of Data class for validation.</p></li>
 </ul>
 </div>
 </div>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -412,7 +406,7 @@ for parsing the network strcuture data.</p>
         <a href="algorithm.html" class="btn btn-neutral float-right" title="Algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="tutorial_dc.html" class="btn btn-neutral" title="Discovery of control targets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tutorial_dc.html" class="btn btn-neutral float-left" title="Discovery of control targets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -421,11 +415,11 @@ for parsing the network strcuture data.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -438,37 +432,15 @@ for parsing the network strcuture data.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

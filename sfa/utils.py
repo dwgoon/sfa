@@ -145,7 +145,7 @@ def to_networkx_digraph(A, n2i=None):
     # end of for
 # end of def to_networkx_digraph
 
-def rand_swap(A, nsamp=10, noself=True, inplace=False):
+def rand_swap(A, nsamp=10, noself=True, pivots=None, inplace=False):
     """Randomly rewire the network connections by swapping.
 
     Parameters
@@ -156,6 +156,8 @@ def rand_swap(A, nsamp=10, noself=True, inplace=False):
         Number of sampled connections to rewire
     noself : bool, optional
         Whether to allow self-loop link.
+    pivots : list, optional
+        Indices of pivot nodes
     inplace : bool, optional
         Modify the given adjacency matrix for rewiring.
 
@@ -178,20 +180,42 @@ def rand_swap(A, nsamp=10, noself=True, inplace=False):
     cnt = 0
     while cnt < nsamp:
         ir, ic = B.nonzero()
-        
-        i1, i2 = np.random.randint(0, ir.size, 2)
-        while i1 == i2:
-            i1, i2 = np.random.randint(0, ir.size, 2)
+        if pivots:
+            if np.random.uniform() < 0.5:
+                isrc1 = np.random.choice(pivots)
+                nz = B[:, isrc1].nonzero()[0]
+                if len(nz) == 0:
+                    continue
+                itrg1 = np.random.choice(nz)
+            else:
+                itrg1 = np.random.choice(pivots)
+                nz = B[itrg1, :].nonzero()[0]
+                if len(nz) == 0:
+                    continue
+                isrc1 = np.random.choice(nz)
+            # if-else
 
-        itrg1, isrc1 = ir[i1], ic[i1]
-        itrg2, isrc2 = ir[i2], ic[i2]
+            itrg2, isrc2 = itrg1, isrc1
+            while isrc1 == isrc2 and itrg1 == itrg2:
+                i2 = np.random.randint(0, ir.size)
+                itrg2, isrc2 = ir[i2], ic[i2]
+        else:
+            i1, i2 = 0, 0
+            while i1 == i2:
+                i1, i2 = np.random.randint(0, ir.size, 2)
+
+            itrg1, isrc1 = ir[i1], ic[i1]
+            itrg2, isrc2 = ir[i2], ic[i2]
 
         if noself:
             if itrg2 == isrc1 or itrg1 == isrc2:
                 continue
 
+        # Are the swapped links new?
         if B[itrg2, isrc1] == 0 and B[itrg1, isrc2] == 0:
             a, b = B[itrg1, isrc1], B[itrg2, isrc2]
+
+            # Are the swapped links in the original network?
             if A_org[itrg2, isrc1] == a and A_org[itrg1, isrc2] == b:
                 continue
 
@@ -206,7 +230,7 @@ def rand_swap(A, nsamp=10, noself=True, inplace=False):
         return B
 
 
-def rand_flip(A, nsamp=10, inplace=False):
+def rand_flip(A, nsamp=10, pivots=None, inplace=False):
     """Randomly flip the signs of connections.
 
     Parameters
@@ -215,6 +239,8 @@ def rand_flip(A, nsamp=10, inplace=False):
         Adjacency matrix (connection matrix).
     nsamp : int, optional
         Number of sampled connections to be flipped.
+    pivots : list, optional
+        Indices of pivot nodes
     inplace : bool, optional
         Modify the given adjacency matrix for rewiring.
 
@@ -230,9 +256,12 @@ def rand_flip(A, nsamp=10, inplace=False):
         B = A
 
     ir, ic = B.nonzero()
-    iflip = np.random.randint(0, ir.size, nsamp)
-    B[ir[iflip], ic[iflip]] *= -1
+    if pivots:
+        iflip = np.random.choice(pivots, nsamp)
+    else:
+        iflip = np.random.randint(0, ir.size, nsamp)
 
+    B[ir[iflip], ic[iflip]] *= -1
     return B
 
 
@@ -278,15 +307,15 @@ def rand_weights(W, lb=-3, ub=3, inplace=False):
     return B
 
 
-def rand_structure(A, nswap=10, nflip=10, noself=True, inplace=False):
+def rand_structure(A, nswap=10, nflip=10, noself=True, pivots=None, inplace=False):
     if not inplace:
         B = A.copy()
     else:
         B = A
     if nflip > 0:
-        B = rand_flip(B, nflip, inplace)
+        B = rand_flip(B, nflip, pivots, inplace)
     if nswap > 0:
-        B = rand_swap(B, nswap, noself, inplace)
+        B = rand_swap(B, nswap, noself, pivots, inplace)
     return B
 
 

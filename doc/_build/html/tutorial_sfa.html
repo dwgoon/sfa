@@ -17,43 +17,37 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="index.html"/>
-        <link rel="up" title="Tutorials" href="tutorials.html"/>
-        <link rel="next" title="Discovery of control targets" href="tutorial_dc.html"/>
-        <link rel="prev" title="Tutorials" href="tutorials.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Discovery of control targets" href="tutorial_dc.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -126,7 +120,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Singal Flow Analysis</a>
@@ -134,9 +128,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -390,7 +385,7 @@ we should first assign the data object to the algorithm object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">apply_weight_norm</span> <span class="o">=</span> <span class="bp">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># Assign the data object to the algorithm.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">initilize</span><span class="p">()</span>  <span class="c1"># Initialize the algorithm object.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>  <span class="c1"># Initialize the algorithm object.</span>
 </pre></div>
 </div>
 <p>In the initization of the algorithm (calling <code class="docutils literal notranslate"><span class="pre">sfa.Algorithm.initialize</span></code>),
@@ -607,17 +602,15 @@ the signal flow from MEK to ERK (i.e., positive value).</p>
 <div class="section" id="creating-a-dataset-with-network-structure">
 <h2>Creating a dataset with network structure<a class="headerlink" href="#creating-a-dataset-with-network-structure" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Describe how to define own datasets only with network topology.</li>
-<li>Explanation for the members of Data class.</li>
+<li><p>Describe how to define own datasets only with network topology.</p></li>
+<li><p>Explanation for the members of Data class.</p></li>
 </ul>
 </div>
 </div>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -626,7 +619,7 @@ the signal flow from MEK to ERK (i.e., positive value).</p>
         <a href="tutorial_dc.html" class="btn btn-neutral float-right" title="Discovery of control targets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="tutorials.html" class="btn btn-neutral" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -635,11 +628,11 @@ the signal flow from MEK to ERK (i.e., positive value).</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -652,37 +645,15 @@ the signal flow from MEK to ERK (i.e., positive value).</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

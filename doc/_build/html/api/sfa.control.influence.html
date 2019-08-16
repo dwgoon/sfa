@@ -17,43 +17,37 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Singal Flow Analysis 0.1.0 documentation" href="../index.html"/>
-        <link rel="up" title="sfa.control package" href="sfa.control.html"/>
-        <link rel="next" title="sfa.data package" href="sfa.data.html"/>
-        <link rel="prev" title="sfa.control package" href="sfa.control.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="sfa.data package" href="sfa.data.html" />
+    <link rel="prev" title="sfa.control package" href="sfa.control.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -94,7 +88,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../algorithm.html">Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../control.html">Control</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
@@ -129,7 +123,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Singal Flow Analysis</a>
@@ -137,9 +131,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -190,23 +185,26 @@
   <div class="section" id="module-sfa.control.influence">
 <span id="sfa-control-influence-module"></span><h1>sfa.control.influence module<a class="headerlink" href="#module-sfa.control.influence" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="sfa.control.influence.calc_influence">
-<code class="descclassname">sfa.control.influence.</code><code class="descname">calc_influence</code><span class="sig-paren">(</span><em>W</em>, <em>alpha=0.9</em>, <em>beta=0.1</em>, <em>S=None</em>, <em>rtype='df'</em>, <em>outputs=None</em>, <em>n2i=None</em>, <em>max_iter=1000</em>, <em>tol=1e-07</em>, <em>get_iter=False</em>, <em>device='cpu'</em>, <em>sparse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/control/influence.html#calc_influence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.control.influence.calc_influence" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Calculate the influence matrix.</dt>
-<dd><p class="first">It estimates the effects of a node to the other nodes,
+<dt id="sfa.control.influence.arrange_si">
+<code class="descclassname">sfa.control.influence.</code><code class="descname">arrange_si</code><span class="sig-paren">(</span><em>df_splo</em>, <em>df_inf</em>, <em>output</em>, <em>min_splo=None</em>, <em>max_splo=None</em>, <em>thr_inf=1e-10</em>, <em>ascending=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/control/influence.html#arrange_si"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.control.influence.arrange_si" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sfa.control.influence.compute_influence">
+<code class="descclassname">sfa.control.influence.</code><code class="descname">compute_influence</code><span class="sig-paren">(</span><em>W</em>, <em>alpha=0.9</em>, <em>beta=0.1</em>, <em>S=None</em>, <em>rtype='df'</em>, <em>outputs=None</em>, <em>n2i=None</em>, <em>max_iter=1000</em>, <em>tol=1e-07</em>, <em>get_iter=False</em>, <em>device='cpu'</em>, <em>sparse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/control/influence.html#compute_influence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.control.influence.compute_influence" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Compute the influence.</dt><dd><p>It estimates the effects of a node to the other nodes,
 by calculating partial derivative with respect to source nodes,
 based on a simple iterative method.</p>
 <p>Based on the below difference equation,</p>
 <p>x(t+1) = alpha*W.dot(x(t)) + (1-alpha)*b</p>
-<p>The influence matrix, S, is calculated using chain rule of
+<p>The influence matrix, S, is computed using chain rule of
 partial derivative as follows.</p>
-<dl class="docutils">
-<dt>begin{align}</dt>
-<dd><dl class="first last docutils">
-<dt>S_{ij} &amp;= frac{partial{x_i}}{partial{x_j}} \</dt>
-<dd>&amp;= (I + alpha W + alpha^2 W^2 +  … + alpha^{infty}W^{infty})_{ij} \
-&amp;approx (I + alpha W + alpha^2 W^2 +  … + alpha^{l}W^{l})_{ij} \</dd>
+<dl class="simple">
+<dt>begin{align}</dt><dd><dl class="simple">
+<dt>S_{ij} &amp;= frac{partial{x_i}}{partial{x_j}} \</dt><dd><p>&amp;= (I + alpha W + alpha^2 W^2 +  … + alpha^{infty}W^{infty})_{ij} \
+&amp;approx (I + alpha W + alpha^2 W^2 +  … + alpha^{l}W^{l})_{ij} \</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -215,79 +213,84 @@ partial derivative as follows.</p>
 including cycles. $S_{ij}$ denotes the influence of node (j) on node (i).</p>
 <p>An iterative method for an approximated solution is as follows.</p>
 <blockquote>
-<div>S(t+1) = alpha WS(t) + I,</div></blockquote>
+<div><p>S(t+1) = alpha WS(t) + I,</p>
+</div></blockquote>
 <p>where $S(0) = beta I$ and $S(1) = beta(I + alpha W)$ $(t&gt;1)$.</p>
-<p class="last">The iteration continues until $||S(t+1) - S(t)|| leq tol$.</p>
+<p>The iteration continues until $||S(t+1) - S(t)|| leq tol$.</p>
 </dd>
 </dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>W</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
-<dd><p class="first last">Weight matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>W</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>Weight matrix.</p>
 </dd>
-<dt><strong>alpha</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Hyperparameter for adjusting the effect of signal flow.</p>
+<dt><strong>alpha</strong><span class="classifier">float, optional</span></dt><dd><p>Hyperparameter for adjusting the effect of signal flow.</p>
 </dd>
-<dt><strong>beta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Hyperparameter for adjusting the effect of basal activity.</p>
+<dt><strong>beta</strong><span class="classifier">float, optional</span></dt><dd><p>Hyperparameter for adjusting the effect of basal activity.</p>
 </dd>
-<dt><strong>S</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray, optional</span></dt>
-<dd><p class="first last">Initial influence matrix.</p>
+<dt><strong>S</strong><span class="classifier">numpy.ndarray, optional</span></dt><dd><p>Initial influence matrix.</p>
 </dd>
-<dt><strong>rtype: str (optional)</strong></dt>
-<dd><p class="first last">Return object type: ‘df’ or ‘array’.</p>
+<dt><strong>rtype: str (optional)</strong></dt><dd><p>Return object type: ‘df’ or ‘array’.</p>
 </dd>
-<dt><strong>outputs: list (or iterable) of str, optional</strong></dt>
-<dd><p class="first last">Names of output nodes, which is necessary for ‘df’ rtype.</p>
+<dt><strong>outputs: list (or iterable) of str, optional</strong></dt><dd><p>Names of output nodes, which is necessary for ‘df’ rtype.</p>
 </dd>
-<dt><strong>n2i: dict, optional</strong></dt>
-<dd><p class="first last">Name to index dict, which is necessary for ‘df’ rtype.</p>
+<dt><strong>n2i: dict, optional</strong></dt><dd><p>Name to index dict, which is necessary for ‘df’ rtype.</p>
 </dd>
-<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">The maximum iteration number for the estimation.</p>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum iteration number for the estimation.</p>
 </dd>
-<dt><strong>tol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd><p class="first last">Tolerance for terminating the iteration.</p>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Tolerance for terminating the iteration.</p>
 </dd>
-<dt><strong>get_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Determine whether the actual iteration number is returned.</p>
+<dt><strong>get_iter</strong><span class="classifier">bool, optional</span></dt><dd><p>Determine whether the actual iteration number is returned.</p>
 </dd>
-<dt><strong>device</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional, {‘CPU’, ‘GPU:0’, ‘GPU:1’, …}</span></dt>
-<dd><p class="first last">Select which device to use. ‘CPU’ is default.</p>
+<dt><strong>device</strong><span class="classifier">str, optional, {‘CPU’, ‘GPU:0’, ‘GPU:1’, …}</span></dt><dd><p>Select which device to use. ‘CPU’ is default.</p>
 </dd>
-<dt><strong>sparse</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">Use sparse matrices for the computation.</p>
+<dt><strong>sparse</strong><span class="classifier">bool, optional</span></dt><dd><p>Use sparse matrices for the computation.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>S</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray, optional</span></dt>
-<dd><p class="first last">2D array of influence.</p>
 </dd>
-<dt><strong>df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.DataFrame, optional</span></dt>
-<dd><p class="first last">Influences for each output in DataFrame.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>S</strong><span class="classifier">numpy.ndarray, optional</span></dt><dd><p>2D array of influence.</p>
 </dd>
-<dt><strong>num_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
-<dd><p class="first last">The actual number of iteration.</p>
+<dt><strong>df</strong><span class="classifier">pd.DataFrame, optional</span></dt><dd><p>Influences for each output in DataFrame.</p>
+</dd>
+<dt><strong>num_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The actual number of iteration.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfa.control.influence.prioritize">
+<code class="descclassname">sfa.control.influence.</code><code class="descname">prioritize</code><span class="sig-paren">(</span><em>df_splo</em>, <em>df_inf</em>, <em>output</em>, <em>dac</em>, <em>thr_rank=3</em>, <em>min_group_size=0</em>, <em>min_splo=None</em>, <em>max_splo=None</em>, <em>thr_inf=1e-10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sfa/control/influence.html#prioritize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfa.control.influence.prioritize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prioritize target candiates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df_splo</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>Dataframe for SPLO information.</p>
+</dd>
+<dt><strong>df_inf</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>Dataframe for influence information.</p>
+</dd>
+<dt><strong>output</strong><span class="classifier">str</span></dt><dd><p>Names of output node, which is necessary for ‘df_inf’.</p>
+</dd>
+<dt><strong>dac</strong><span class="classifier">int</span></dt><dd><p>Direction of activity change (DAC) of the output.</p>
+</dd>
+<dt><strong>thr_rank</strong><span class="classifier">int or float</span></dt><dd><p>Rank to filter out the entities.
+The entities whose ranks are greater than thr_rank survive.</p>
+</dd>
+<dt><strong>min_group_size</strong><span class="classifier">int</span></dt><dd><p>Minimum group size to be satisfied.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -296,7 +299,7 @@ including cycles. $S_{ij}$ denotes the influence of node (j) on node (i).</p>
         <a href="sfa.data.html" class="btn btn-neutral float-right" title="sfa.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="sfa.control.html" class="btn btn-neutral" title="sfa.control package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sfa.control.html" class="btn btn-neutral float-left" title="sfa.control package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -305,11 +308,11 @@ including cycles. $S_{ij}$ denotes the influence of node (j) on node (i).</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2018, Daewon Lee.
+        &copy; Copyright 2014-2018, Daewon Lee
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -322,37 +325,15 @@ including cycles. $S_{ij}$ denotes the influence of node (j) on node (i).</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>
