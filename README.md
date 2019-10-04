@@ -9,6 +9,7 @@ A simulation framework to analyze signal flows in complex networks.
 ## Features ##
 * Estimate the signal flow using only the network topology.
 * Calculate the influence using only the network topology.
+* Suggest the control target candidates using only the network topology.
 * Apply multiple algorithms to multiple datasets.
 * Perform large-scale simulations with parallel processing.
 * Support user-defined algorithms and datasets.
