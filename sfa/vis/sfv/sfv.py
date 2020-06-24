@@ -51,7 +51,7 @@ def create_from_graphics(net, abbr=None, inputs=None, outputs=None):
             self._i2n = {idx: name for name, idx in self._n2i.items()}
 
             self._A = nx.to_numpy_array(self._dg, nodes).T
-            ir, ic = self._A.nonzero()
+            ir, ic = self._A.to_numpy().nonzero()
             for i in range(ir.size):
                 r, c = ir[i], ic[i]
 
@@ -249,12 +249,12 @@ def visualize_signal_flow(net, F, act,
 
 
 def _update_links(net, A, F, i2n, pct_link, lw_min, lw_max):
-    log_flows = np.log10(np.abs(F[F.nonzero()]))
+    log_flows = np.log10(np.abs(F[F.to_numpy().nonzero()]))
     flow_max = log_flows.max()
     flow_min = log_flows.min()
     flow_thr = np.percentile(log_flows, pct_link)
 
-    ir, ic = A.nonzero() #F.nonzero()
+    ir, ic = A.to_numpy().nonzero() #F.to_numpy().nonzero()
     for i, j in zip(ir, ic):
         tgt = i2n[i]
         src = i2n[j]
