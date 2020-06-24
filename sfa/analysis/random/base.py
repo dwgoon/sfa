@@ -16,7 +16,7 @@ class BaseRandomSimulator(object):
 
     def _initialize(self, alg):
         self._S = np.sign(alg.data.A)  # Sign matrix
-        self._ir, self._ic = alg.data.A.nonzero()
+        self._ir, self._ic = alg.data.A.to_numpy().nonzero()
         self._num_links = self._ir.size
         self._A = np.array(alg.data.A)
         self._W = np.zeros_like(self._A, dtype=np.float)

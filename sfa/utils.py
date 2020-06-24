@@ -133,7 +133,7 @@ def to_networkx_digraph(A, n2i=None):
     
     i2n = {ix:name for name, ix in n2i.items()}        
     dg = nx.DiGraph()
-    ind_row, ind_col = A.nonzero()
+    ind_row, ind_col = A.to_numpy().nonzero()
     for ix_trg, ix_src in zip(ind_row, ind_col):
         name_src = i2n[ix_src]
         name_trg = i2n[ix_trg]
@@ -179,17 +179,17 @@ def rand_swap(A, nsamp=10, noself=True, pivots=None, inplace=False):
 
     cnt = 0
     while cnt < nsamp:
-        ir, ic = B.nonzero()
+        ir, ic = B.to_numpy().nonzero()
         if pivots:
             if np.random.uniform() < 0.5:
                 isrc1 = np.random.choice(pivots)
-                nz = B[:, isrc1].nonzero()[0]
+                nz = B[:, isrc1].to_numpy().nonzero()[0]
                 if len(nz) == 0:
                     continue
                 itrg1 = np.random.choice(nz)
             else:
                 itrg1 = np.random.choice(pivots)
-                nz = B[itrg1, :].nonzero()[0]
+                nz = B[itrg1, :].to_numpy().nonzero()[0]
                 if len(nz) == 0:
                     continue
                 isrc1 = np.random.choice(nz)
@@ -255,7 +255,7 @@ def rand_flip(A, nsamp=10, pivots=None, inplace=False):
     else:
         B = A
 
-    ir, ic = B.nonzero()
+    ir, ic = B.to_numpy().nonzero()
     if pivots:
         iflip = np.random.choice(pivots, nsamp)
     else:
@@ -293,7 +293,7 @@ def rand_weights(W, lb=-3, ub=3, inplace=False):
         B = W
     # end of if-else
 
-    ir, ic = B.nonzero()
+    ir, ic = B.to_numpy().nonzero()
     weights_rand = 10 ** np.random.uniform(lb, ub,
                                            size=(ir.size,))
 
