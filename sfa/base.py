@@ -98,7 +98,7 @@ class Algorithm(ContainerItem):
 
         """
         if is_deep:
-            copy.deepcopy(self)
+            return copy.deepcopy(self)
         else:
             return copy.copy(self)
 
