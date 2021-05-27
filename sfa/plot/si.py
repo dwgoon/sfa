@@ -158,6 +158,8 @@ def siplot(df_splo,
             else:
                 labels.append(text)
         # end of for
+        
+        ax.set_xticks(ax.get_xticks())
         ax.set_xticklabels(labels)
         # end of for
     # end of for
