@@ -113,20 +113,20 @@ def siplot(df_splo,
 
         # Set limitations
         ax.set_ylim(0, cnt_max +1)
-
+        
+        # Filter bar graphics.
+        bars = []
+        cnt_bars = 0
+        for obj in ax.get_children():
+            if cnt_bars == cnt_max:
+                break
+            if isinstance(obj, Rectangle):
+                bars.append(obj)
+                obj.set_color(color)
+                cnt_bars += 1
+        # end of for
+        
         if designated:
-            # Filter bar graphics.
-            bars = []
-            cnt_bars = 0
-            for obj in ax.get_children():
-                if cnt_bars == cnt_max:
-                    break
-                if isinstance(obj, Rectangle):
-                    bars.append(obj)
-                    obj.set_color(color)
-                    cnt_bars += 1
-            # end of for
-
             # Change the bars of the designated names.
             for i, name in enumerate(names):
                 if name in designated:
