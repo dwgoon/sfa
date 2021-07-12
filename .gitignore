@@ -4,7 +4,7 @@ __pycache__/**
 /.idea/
 /.idea/**
 **.png
-!sfa.png
+!logo*.png
 sfa.egg-info
 sfa.egg-info/
 /doc/_build/html/_static/**
