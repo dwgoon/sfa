@@ -6,7 +6,7 @@ if sys.version_info <= (2, 8):
 import numpy as np
 import pandas as pd
 import networkx as nx
-from networkx import shortest_paths as nxsp
+from networkx import shortest_path as nxsp
 
 __all__ = ["max_spl",
            "splo"]

@@ -14,6 +14,6 @@ class RandomStructureBatchSimulator(BaseRandomBatchSimulator):
     def _randomize(self):
         B = sfa.rand_flip(self._A, self._nflip)
         B = sfa.rand_swap(B, self._nswap, self._noself)
-        ir, ic = B.to_numpy().nonzero()
+        ir, ic = B.nonzero() #B.to_numpy().nonzero()
         self._W[ir, ic] = B[ir, ic]
 # end of class

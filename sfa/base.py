@@ -230,6 +230,7 @@ class Data(ContainerItem):
             row = row[1]
             list_name = []  # Target names
             for target in self._df_conds.columns[row.to_numpy().nonzero()]:
+            #for target in self._df_conds.columns[row.nonzero()]:
                 list_name.append(target)
             # end of for
             self._names_ptb.append(list_name)

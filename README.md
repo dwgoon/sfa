@@ -14,10 +14,6 @@ A simulation framework to analyze signal flows in complex networks.
 * Perform large-scale simulations with parallel processing.
 * Support user-defined algorithms and datasets.
 
-## Python version ##
-* Both Python 2 and 3 are supported.
-* Some features such as parallel processing are supported only in the specific versions of Python.
-
 ## Documentation ##
 http://sfa.readthedocs.io
 

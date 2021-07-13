@@ -20,8 +20,8 @@ from sfa.utils import Singleton
 
 __all__ = ["AlgorithmSet", "DataSet"]
 
-@six.add_metaclass(abc.ABCMeta)
-class Container(collections.MutableMapping):
+# @six.add_metaclass(abc.ABCMeta)
+class Container(collections.MutableMapping, metaclass=abc.ABCMeta):
     """
     A simple container class, which handles multiple objects with
     its hashable functionality (using dictionary).
@@ -124,23 +124,21 @@ class AlgorithmSet(Container):
         containing sfa.algorithms's init module (__init__.py).
         """
         self._dpath = os.path.dirname(sfa.algorithms.__file__)
+        self._all_keys = []
 
     # end of def __init__
 
     def get_all_keys(self):
-        if not self._all_keys:
-            self._all_keys = []
+        if len(self._all_keys) == 0:
             for entity in os.listdir(self._dpath):
                 if re.match(r"[^_]\w+\.py$", entity) \
                    and entity not in excluded:
                     mod_name = entity.split('.')[0]  # Module name
-                    print(mod_name, entity)
+                    # print(mod_name, entity)
                     key = mod_name.upper()
                     self._all_keys.append(key)
-                    yield key
             # end of for
-        else:
-            return iter(self._all_keys)
+        return iter(self._all_keys)
 
     def _create_single(self, key):
         if key in self._map:
@@ -209,9 +207,8 @@ class DataSet(Container):
                 if not entity.startswith('_') and os.path.isdir(dpath):
                     key = entity.upper()
                     self._all_keys.append(key)
-                    yield key
-        else:
-            return iter(self._all_keys)
+
+        return iter(self._all_keys)
 
     def _create_single(self, key):
         if key in self._map:
