@@ -1,4 +1,4 @@
-<img src="assets/logo02.png" alt="Drawing" width="395px"/>
+<img src="assets/logo02.png" alt="Drawing" width="200px"/>
 
 Signal Flow Analysis (SFA)
 ==========================
