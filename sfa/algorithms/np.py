@@ -242,8 +242,8 @@ class NetworkPropagation(sfa.base.Algorithm):
 
         for target in targets:
             if self.data.df_ptb is not None:
-                type_ptb = self.data.df_ptb.ix[target, "Type"]
-                val_ptb = self.data.df_ptb.ix[target, "Value"]
+                type_ptb = self.data.df_ptb.loc[target, "Type"]
+                val_ptb = self.data.df_ptb.loc[target, "Value"]
             else:
                 type_ptb = 'node'
                 val_ptb = -1
