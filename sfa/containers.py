@@ -8,9 +8,15 @@ import os
 import re
 import importlib
 import collections
-
 import abc
 import six
+
+import sys
+
+if sys.version_info[:2] >= (3, 8):
+    from collections.abc import MutableMapping
+else:
+    from collections import MutableMapping
 
 import sfa.base
 import sfa.algorithms
@@ -20,8 +26,9 @@ from sfa.utils import Singleton
 
 __all__ = ["AlgorithmSet", "DataSet"]
 
+
 @six.add_metaclass(abc.ABCMeta)
-class Container(collections.MutableMapping):
+class Container(MutableMapping):
     """
     A simple container class, which handles multiple objects with
     its hashable functionality (using dictionary).
