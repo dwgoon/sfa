@@ -1,21 +1,14 @@
 import os
-import sys
-if sys.version_info <= (2, 8):
-    from builtins import super
-
-# from abc import ABC, abstractmethod
 import abc
 import copy
 
 import pandas as pd
-import six
 import sfa.utils
 
 __all__ = ['Algorithm', 'Data', 'Result']
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ContainerItem():
+class ContainerItem(metaclass=abc.ABCMeta):
     """
     The base class that defines the item object of
     ``sfa.containers.Container``.
@@ -213,13 +206,13 @@ class Data(ContainerItem):
         self._A = A
         self._n2i = n2i
         self._dg = dg
-        self._df_conds = pd.read_table(os.path.join(dpath, fname_conds),
-                                       header=0, index_col=0)
-        self._df_exp = pd.read_table(os.path.join(dpath, fname_exp),
-                                     header=0, index_col=0)
+        self._df_conds = pd.read_csv(os.path.join(dpath, fname_conds),
+                                     sep='\t', header=0, index_col=0)
+        self._df_exp = pd.read_csv(os.path.join(dpath, fname_exp),
+                                   sep='\t', header=0, index_col=0)
 
         self._inputs = inputs
-        self._df_ptb = pd.read_table(fpath_ptb, index_col=0)
+        self._df_ptb = pd.read_csv(fpath_ptb, sep='\t', index_col=0)
         if any(self._df_ptb.Type == 'link'):
             self._has_link_perturb = True
         else:

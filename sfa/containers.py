@@ -1,22 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import sys
-if sys.version_info <= (2, 8):
-    from builtins import super
-
 import os
 import re
 import importlib
-import collections
 import abc
-import six
-
-import sys
-
-if sys.version_info[:2] >= (3, 8):
-    from collections.abc import MutableMapping
-else:
-    from collections import MutableMapping
+from collections.abc import MutableMapping
 
 import sfa.base
 import sfa.algorithms
@@ -27,8 +15,7 @@ from sfa.utils import Singleton
 __all__ = ["AlgorithmSet", "DataSet"]
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Container(MutableMapping):
+class Container(MutableMapping, metaclass=abc.ABCMeta):
     """
     A simple container class, which handles multiple objects with
     its hashable functionality (using dictionary).
@@ -141,7 +128,6 @@ class AlgorithmSet(Container):
                 if re.match(r"[^_]\w+\.py$", entity) \
                    and entity not in excluded:
                     mod_name = entity.split('.')[0]  # Module name
-                    print(mod_name, entity)
                     key = mod_name.upper()
                     self._all_keys.append(key)
                     yield key
@@ -169,9 +155,6 @@ class AlgorithmSet(Container):
 
         alg = mod.create_algorithm(_key)
         self._map[_key] = alg
-
-        # For testing purpose
-        print("%s algorithm has been created." % (_key))
         return alg
 
     def _create_all(self):
@@ -255,8 +238,6 @@ class DataSet(Container):
             raise TypeError(err_msg)
         # end of if
 
-        # For testing purpose
-        print("%s data has been created." % (_key))
         return self._map[_key]
     # end of def _create_single
 

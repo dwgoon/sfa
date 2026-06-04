@@ -1,4 +1,6 @@
 numpy
-numpydoc
+scipy
+pandas
 networkx
+numpydoc
 pygments

@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
-
-if sys.version_info <= (2, 8):
-    from builtins import super
-
-
 import numpy as np
 import pandas as pd
 
@@ -184,7 +178,7 @@ class NetworkPropagation(sfa.base.Algorithm):
         if self._params.apply_weight_norm:
             self.W = sfa.utils.normalize(self.data.A)
         else:
-            self.W = np.array(self.data.A, dtype=np.float)
+            self.W = np.array(self.data.A, dtype=np.float64)
 
         self._check_dimension(self.W, "transition matrix")
 
@@ -268,7 +262,7 @@ class NetworkPropagation(sfa.base.Algorithm):
         df_exp = self.data.df_exp  # Result of experiment
 
         # Simulation result
-        sim_result = np.zeros(df_exp.shape, dtype=np.float)
+        sim_result = np.zeros(df_exp.shape, dtype=np.float64)
 
         b = self._b
 

@@ -16,10 +16,10 @@ class BaseRandomSimulator(object):
 
     def _initialize(self, alg):
         self._S = np.sign(alg.data.A)  # Sign matrix
-        self._ir, self._ic = alg.data.A.to_numpy().nonzero()
+        self._ir, self._ic = alg.data.A.nonzero()
         self._num_links = self._ir.size
         self._A = np.array(alg.data.A)
-        self._W = np.zeros_like(self._A, dtype=np.float)
+        self._W = np.zeros_like(self._A, dtype=np.float64)
 
     def _randomize(self):
         raise NotImplementedError()
@@ -56,7 +56,7 @@ class BaseRandomSimulator(object):
         alg.data = data
         alg.initialize(network=False)
 
-        results = np.zeros((num_samp,), dtype=np.float)
+        results = np.zeros((num_samp,), dtype=np.float64)
         cnt = 0
 
         if self._need_to_print(use_print, freq_print, cnt):
@@ -168,7 +168,7 @@ class BaseRandomBatchSimulator(BaseRandomSimulator):
         alg.data = data
         alg.initialize(network=False)
 
-        results = np.zeros((num_samp,), dtype=np.float)
+        results = np.zeros((num_samp,), dtype=np.float64)
         cnt = 0
 
         if self._need_to_print(use_print, freq_print, cnt):

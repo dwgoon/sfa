@@ -35,13 +35,13 @@ class KorkutData(sfa.base.Data):
         self._A = A
         self._n2i = n2i
         self._dg = dg
-        self._df_conds = pd.read_table(os.path.join(dpath, "conds.tsv"),
-                                       header=0, index_col=0)
-        self._df_exp = pd.read_table(os.path.join(dpath, "exp.tsv"),
-                                     header=0, index_col=0)
+        self._df_conds = pd.read_csv(os.path.join(dpath, "conds.tsv"),
+                                     sep='\t', header=0, index_col=0)
+        self._df_exp = pd.read_csv(os.path.join(dpath, "exp.tsv"),
+                                   sep='\t', header=0, index_col=0)
 
         self._inputs = {}
-        self._df_ptb = pd.read_table(fpath_ptb, index_col=0)
+        self._df_ptb = pd.read_csv(fpath_ptb, sep='\t', index_col=0)
         if any(self._df_ptb.Type == 'link'):
             self._has_link_perturb = True
         else:

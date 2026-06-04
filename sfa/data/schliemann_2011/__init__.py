@@ -15,10 +15,6 @@ http://www.biomedcentral.com/1752-0509/5/204
 - The unit of TNF stimulation is nM.
 """
 
-import sys
-if sys.version_info <= (2, 8):
-    from builtins import super
-
 import os
 import re
 import glob

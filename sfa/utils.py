@@ -1,15 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
-if sys.version_info <= (2, 8):
-    from builtins import super
-
-import os
-import codecs
-from collections import defaultdict
-
 import numpy as np
-import scipy as sp
-import pandas as pd
 import networkx as nx
 
 
@@ -22,7 +12,7 @@ __all__ = ["FrozenClass",
            "rand_weights",
            "rand_structure",
            "get_akey",
-           "get_avalue",]
+           "get_avalue", ]
 
 
 class FrozenClass(object):
@@ -31,7 +21,7 @@ class FrozenClass(object):
 
     def __setattr__(self, key, value):
         if self.__isfrozen and not hasattr(self, key):
-            raise TypeError( "%r is a frozen class" % self )
+            raise TypeError("%r is a frozen class" % self)
         object.__setattr__(self, key, value)
 
     def _freeze(self):
@@ -113,10 +103,7 @@ def normalize(A, norm_in=True, norm_out=True):
         else:
             Dr = 1 / np.sqrt(sum_row_A)
         # end of row
-        W = np.multiply(W, np.mat(Dr).T)
-        # Converting np.mat to ndarray
-        # does not cost a lot.
-        W = W.A
+        W = np.multiply(W, Dr.reshape(-1, 1))
     # end of if
     """
     The normalization above is the same as the follows:
@@ -126,14 +113,14 @@ def normalize(A, norm_in=True, norm_out=True):
 
 
 # end of def normalize
-    
+
 def to_networkx_digraph(A, n2i=None):
     if not n2i:
-        return nx.from_numpy_array(A, create_using=nx.Digraph)        
-    
-    i2n = {ix:name for name, ix in n2i.items()}        
+        return nx.from_numpy_array(A, create_using=nx.DiGraph)
+
+    i2n = {ix: name for name, ix in n2i.items()}
     dg = nx.DiGraph()
-    ind_row, ind_col = A.to_numpy().nonzero()
+    ind_row, ind_col = A.nonzero()
     for ix_trg, ix_src in zip(ind_row, ind_col):
         name_src = i2n[ix_src]
         name_trg = i2n[ix_trg]
@@ -142,7 +129,6 @@ def to_networkx_digraph(A, n2i=None):
         dg.edges[name_src, name_trg]['SIGN'] = sign
     # end of for
     return dg
-    # end of for
 # end of def to_networkx_digraph
 
 def rand_swap(A, nsamp=10, noself=True, pivots=None, inplace=False):
@@ -172,24 +158,24 @@ def rand_swap(A, nsamp=10, noself=True, pivots=None, inplace=False):
 
     if not inplace:
         A_org = A
-        B = A.copy() #np.array(A, dtype=np.float64)
+        B = A.copy()
     else:
-        A_org = A.copy() #np.array(A, dtype=np.float64)
+        A_org = A.copy()
         B = A
 
     cnt = 0
     while cnt < nsamp:
-        ir, ic = B.to_numpy().nonzero()
+        ir, ic = B.nonzero()
         if pivots:
             if np.random.uniform() < 0.5:
                 isrc1 = np.random.choice(pivots)
-                nz = B[:, isrc1].to_numpy().nonzero()[0]
+                nz = B[:, isrc1].nonzero()[0]
                 if len(nz) == 0:
                     continue
                 itrg1 = np.random.choice(nz)
             else:
                 itrg1 = np.random.choice(pivots)
-                nz = B[itrg1, :].to_numpy().nonzero()[0]
+                nz = B[itrg1, :].nonzero()[0]
                 if len(nz) == 0:
                     continue
                 isrc1 = np.random.choice(nz)
@@ -251,11 +237,11 @@ def rand_flip(A, nsamp=10, pivots=None, inplace=False):
         The reference of the given W is returned, when inplace is True.
     """
     if not inplace:
-        B = A.copy() #np.array(A, dtype=np.float64)
+        B = A.copy()
     else:
         B = A
 
-    ir, ic = B.to_numpy().nonzero()
+    ir, ic = B.nonzero()
     if pivots:
         iflip = np.random.choice(pivots, nsamp)
     else:
@@ -288,22 +274,16 @@ def rand_weights(W, lb=-3, ub=3, inplace=False):
     else:
         if not np.issubdtype(W.dtype, np.floating):
             raise ValueError("W.dtype given to rand_weights should be "
-                             "a float type, not %s"%(W.dtype))
+                             "a float type, not %s" % (W.dtype))
 
         B = W
     # end of if-else
 
-    ir, ic = B.to_numpy().nonzero()
+    ir, ic = B.nonzero()
     weights_rand = 10 ** np.random.uniform(lb, ub,
                                            size=(ir.size,))
 
-    B[ir, ic] = weights_rand*np.sign(B[ir, ic], dtype=np.float)
-    """The above code is equal to the following:
-    
-    for i in range(ir.size):
-        p, q = ir[i], ic[i]
-        B[p, q] = weights_rand[i] * np.sign(B[p, q], dtype=np.float)
-    """
+    B[ir, ic] = weights_rand * np.sign(B[ir, ic])
     return B
 
 

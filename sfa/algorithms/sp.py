@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
-if sys.version_info <= (2, 8):
-    from builtins import super
-
 import numpy as np
 
 from .np import NetworkPropagation
@@ -75,9 +71,6 @@ class SignalPropagation(NetworkPropagation):
 
         n = W.shape[0]
         # Initial values
-
-        #x0 = np.zeros((n,), dtype=np.float)
-        #x0[:] = xi
         x0 = np.array(xi, dtype=np.float64)
 
         x_t1 = x0.copy()

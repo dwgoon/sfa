@@ -43,7 +43,7 @@ def analyze_perturb(alg, data, targets, b=None, get_trj=False):
     N = data.A.shape[0]
 
     if b is None:
-        b = np.zeros((N,), dtype=np.float)
+        b = np.zeros((N,), dtype=np.float64)
     elif b.size != N:
         raise TypeError("The size of b should be equal to %d"%(N))
 

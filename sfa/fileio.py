@@ -56,7 +56,7 @@ def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
         list_nodes = list(set_nodes)
 
     N = len(set_nodes)
-    adj = np.zeros((N, N), dtype=np.int)
+    adj = np.zeros((N, N), dtype=int)
 
     for isrc, name in enumerate(list_nodes):
         n2i[name] = isrc  # index of source

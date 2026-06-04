@@ -5,13 +5,12 @@ Created on Tue Jul  5 15:05:25 2016
 @author: dwlee
 """
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 from .base import Algorithm
 from .base import Data
 
-class JobManager(object):
-    __metaclass__ = ABCMeta
+class JobManager(ABC):
 
     def add_algorithm(self, alg):
         
