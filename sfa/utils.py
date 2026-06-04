@@ -212,8 +212,7 @@ def rand_swap(A, nsamp=10, noself=True, pivots=None, inplace=False):
             continue
     # end of while
 
-    if not inplace:
-        return B
+    return B
 
 
 def rand_flip(A, nsamp=10, pivots=None, inplace=False):
@@ -242,8 +241,18 @@ def rand_flip(A, nsamp=10, pivots=None, inplace=False):
         B = A
 
     ir, ic = B.nonzero()
-    if pivots:
-        iflip = np.random.choice(pivots, nsamp)
+    if pivots is not None and len(pivots) > 0:
+        # pivots are node indices; collect edges incident to any pivot
+        # node and sample from those edge indices.
+        pivot_set = set(int(p) for p in pivots)
+        cand = np.array(
+            [i for i in range(ir.size)
+             if int(ir[i]) in pivot_set or int(ic[i]) in pivot_set],
+            dtype=int,
+        )
+        if cand.size == 0:
+            return B
+        iflip = np.random.choice(cand, nsamp)
     else:
         iflip = np.random.randint(0, ir.size, nsamp)
 

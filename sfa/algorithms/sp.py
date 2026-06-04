@@ -50,6 +50,7 @@ class SignalPropagation(NetworkPropagation):
         a = self._params.alpha
         M0 = np.eye(W.shape[0]) - a*W
         self._M = (1-a)*np.linalg.inv(M0)
+        self._weight_matrix_invalidated = False
     # end of def _prepare_exact_solution
 
     def prepare_iterative_solution(self):

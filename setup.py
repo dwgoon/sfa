@@ -19,4 +19,10 @@ setup(name='sfa',
           'pandas',
           'networkx',
       ],
+      extras_require={
+          # The sfa.plot module pulls in matplotlib and seaborn; install
+          # with ``pip install .[plot]`` (or ``pip install -e .[plot]``)
+          # if you want the matplotlib-based plot helpers.
+          'plot': ['matplotlib', 'seaborn'],
+      },
       zip_safe=False, )

@@ -126,10 +126,15 @@ def _compute_graphics_nodes(dg, n2i, act, pct_act):
 def _compute_graphics_links(dg, n2i, A, F, pct_link, lw_min, lw_max):
     i2n = {val: key for key, val in n2i.items()}
 
-    log_flows = np.log10(np.abs(F[F.nonzero()]))
-    flow_max = log_flows.max()
-    flow_min = log_flows.min()
-    flow_thr = np.percentile(log_flows, pct_link)
+    nonzero_F = F[F.nonzero()]
+    if nonzero_F.size == 0:
+        # No signal flow to scale: every edge falls back to lw_min.
+        flow_max = flow_min = flow_thr = 0.0
+    else:
+        log_flows = np.log10(np.abs(nonzero_F))
+        flow_max = log_flows.max()
+        flow_min = log_flows.min()
+        flow_thr = np.percentile(log_flows, pct_link)
 
     ir, ic = A.nonzero()  # F.nonzero()
     for i, j in zip(ir, ic):

@@ -14,6 +14,13 @@ $ cd sfa
 $ pip install .
 ```
 
+To also use the `sfa.plot` matplotlib-based helpers, include the `plot`
+extra so that `matplotlib` and `seaborn` are installed alongside:
+
+```bash
+$ pip install .[plot]
+```
+
 If you want to easily update the most recent stable version of the package
 from the repository, install in editable mode.
 

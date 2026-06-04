@@ -87,8 +87,8 @@ def compute_influence(W,
     """
     # TODO: Test rendering the above mathematical expressions in LaTeX form.
 
-    if max_iter < 2:
-        raise ValueError("max_iter should be greater than 2.")
+    if max_iter < 1:
+        raise ValueError("max_iter should be a positive integer.")
 
     device = device.lower()
 
@@ -175,14 +175,14 @@ def _compute_influence_cpu_sparse(W, alpha, beta, S,
                                   max_iter, tol, get_iter):
     N = W.shape[0]
     if S is not None:
-        S1 = S
+        S1 = sp.sparse.lil_matrix(S, dtype=np.float64)
     else:
         S1 = sp.sparse.lil_matrix(sp.sparse.eye(N, dtype=np.float64))
 
 
     I = sp.sparse.eye(N, dtype=np.float64)
-    S2 = sp.sparse.lil_matrix((N,N), dtype=np.float64)
-    aW = sp.sparse.csc_matrix(alpha * W)
+    S2 = sp.sparse.lil_matrix((N, N), dtype=np.float64)
+    aW = sp.sparse.csc_matrix(alpha * np.asarray(W, dtype=np.float64))
     cnt = 0
     for cnt in range(1, max_iter + 1):
         S2[:, :] = S1.dot(aW) + I

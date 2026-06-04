@@ -178,28 +178,28 @@ def visualize_signal_flow(net, F, act,
     i2n = {val:key for key, val in n2i.items()}
     color_white = np.array([255, 255, 255])
 
-    if not color_up:
+    if color_up is None:
         color_up = np.array([255, 0, 0])
     elif isinstance(color_up, QColor):
         color_up = np.array([color_up.red(),
                              color_up.green(),
                              color_up.blue()])
-    else:
-        raise ValueError("color_up should be 3-dimensional np.ndarray "
+    elif not isinstance(color_up, np.ndarray):
+        raise ValueError("color_up should be a 3-dimensional np.ndarray "
                          "or QtGui.QColor")
 
-    if not color_dn:
+    if color_dn is None:
         color_dn = np.array([0, 0, 255])
     elif isinstance(color_dn, QColor):
         color_dn = np.array([color_dn.red(),
                              color_dn.green(),
                              color_dn.blue()])
-    else:
-        raise ValueError("color_dn should be 3-dimensional np.ndarray "
+    elif not isinstance(color_dn, np.ndarray):
+        raise ValueError("color_dn should be a 3-dimensional np.ndarray "
                          "or QtGui.QColor")
 
     # Set the default font
-    if not font:
+    if font is None:
         font = QFont('Arial', 10)
 
     abs_act = np.abs(act)
@@ -249,10 +249,14 @@ def visualize_signal_flow(net, F, act,
 
 
 def _update_links(net, A, F, i2n, pct_link, lw_min, lw_max):
-    log_flows = np.log10(np.abs(F[F.nonzero()]))
-    flow_max = log_flows.max()
-    flow_min = log_flows.min()
-    flow_thr = np.percentile(log_flows, pct_link)
+    nonzero_F = F[F.nonzero()]
+    if nonzero_F.size == 0:
+        flow_max = flow_min = flow_thr = 0.0
+    else:
+        log_flows = np.log10(np.abs(nonzero_F))
+        flow_max = log_flows.max()
+        flow_min = log_flows.min()
+        flow_thr = np.percentile(log_flows, pct_link)
 
     ir, ic = A.nonzero()  # F.nonzero()
     for i, j in zip(ir, ic):
