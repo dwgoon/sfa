@@ -1,5 +1,4 @@
-
-
+__version__ = "0.1.0"
 
 from .base import *
 from .containers import AlgorithmSet
@@ -10,7 +9,7 @@ from .utils import *
 from .topology import *
 from .fileio import *
 
-__all__ = []
+__all__ = ["__version__"]
 __all__ += base.__all__
 __all__ += containers.__all__
 __all__ += stats.__all__

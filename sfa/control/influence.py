@@ -104,7 +104,7 @@ def compute_influence(W,
         
         if rtype == 'df':
             import cupy as cp
-            if isinstance(ret, cp.core.core.ndarray):
+            if isinstance(ret, cp.ndarray):
                 ret = cp.asnumpy(ret)
 
     if get_iter:
@@ -144,9 +144,9 @@ def _compute_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
     if S is not None:
         S1 = S
     else:
-        S1 = np.eye(N, dtype=np.float)
+        S1 = np.eye(N, dtype=np.float64)
 
-    I = np.eye(N, dtype=np.float)
+    I = np.eye(N, dtype=np.float64)
     S2 = np.zeros_like(W)
     aW = alpha * W
     for cnt in range(max_iter):
@@ -171,11 +171,11 @@ def _compute_influence_cpu_sparse(W, alpha, beta, S,
     if S is not None:
         S1 = S
     else:
-        S1 = sp.sparse.lil_matrix(sp.sparse.eye(N, dtype=np.float))
+        S1 = sp.sparse.lil_matrix(sp.sparse.eye(N, dtype=np.float64))
 
 
-    I = sp.sparse.eye(N, dtype=np.float)
-    S2 = sp.sparse.lil_matrix((N,N), dtype=np.float)
+    I = sp.sparse.eye(N, dtype=np.float64)
+    S2 = sp.sparse.lil_matrix((N,N), dtype=np.float64)
     aW = sp.sparse.csc_matrix(alpha * W)
     for cnt in range(max_iter):
         S2[:, :] = S1.dot(aW) + I
@@ -199,7 +199,7 @@ def _compute_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
     import cupy as cp
     cp.cuda.Device(id_device).use()    
     N = W.shape[0]
-    I = cp.eye(N, dtype=cp.float32) #np.eye(N, N, dtype=np.float)
+    I = cp.eye(N, dtype=cp.float32) #np.eye(N, N, dtype=np.float64)
     if S is not None:
         S1 = cp.array(S, dtype=cp.float32)
     else:

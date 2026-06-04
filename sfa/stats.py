@@ -22,7 +22,6 @@ def calc_accuracy(df1, df2, get_cons=False):
     getcons: decide whether to return consensus array in DataFrame or not
     """
 
-    np.sign(df1) + np.sign(df2)
     if df1.ndim == 1:
         num_total = df1.shape[0]
     elif df1.ndim == 2:
@@ -33,10 +32,9 @@ def calc_accuracy(df1, df2, get_cons=False):
     if isinstance(consensus, pd.DataFrame):
         num_cons = consensus.values.sum()
     else:
-        #num_cons = consensus.sum(axis=1).sum()  # Number of consensus
         num_cons = consensus.sum()
-        
-    acc = (num_cons) / np.float(num_total)  # Accuracy
+
+    acc = num_cons / float(num_total)  # Accuracy
     if get_cons:
         return acc, consensus
     else:

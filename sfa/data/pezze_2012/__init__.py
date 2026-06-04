@@ -16,10 +16,6 @@ http://doi:10.1126/scisignal.2002469
 - The unit of insulin (I) stimulation is nM.
 """
 
-import sys
-if sys.version_info <= (2, 8):
-    from builtins import super
-
 import os
 import re
 import glob

@@ -16,10 +16,6 @@ http://doi.org/10.1038/msb.2009.19
 - The units of EGF and insulin (I) stimulation are nM.
 """
 
-import sys
-if sys.version_info <= (2, 8):
-    from builtins import super
-
 import os
 import re
 import glob
