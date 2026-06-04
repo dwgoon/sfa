@@ -1,0 +1,49 @@
+name: tests
+
+# Fast feedback CI: runs on every push to a dev branch and on PRs.
+# CPU-only (GitHub-hosted runners have no NVIDIA GPU). Any CUDA tests
+# auto-skip via the gate in tests/_skip_helpers.py.
+
+on:
+  push:
+    branches: [main, '0.2.*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: cpu-${{ matrix.os }}-py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Trimmed matrix: cover all three OS families + Python version range
+        # endpoints, without paying for the full 4x4 grid on every push.
+        include:
+          - { os: ubuntu-latest,  python-version: '3.10' }
+          - { os: ubuntu-latest,  python-version: '3.13' }
+          - { os: windows-latest, python-version: '3.12' }
+          - { os: macos-13,       python-version: '3.12' }
+          - { os: macos-14,       python-version: '3.12' }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install sfa (CPU-only) + test deps
+        env:
+          # Explicitly skip the CUDA extension; the runner has no nvcc.
+          SFA_BUILD_CUDA: '0'
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[test]"
+
+      - name: Portable smoke
+        run: python tests/smoke.py
+
+      - name: pytest
+        run: python -m pytest tests/ -v --tb=short

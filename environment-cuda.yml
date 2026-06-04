@@ -1,0 +1,25 @@
+name: sfa-cu132
+channels:
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.12
+  # CUDA 13.2 toolchain (build + runtime).
+  # `cuda-toolkit` pulls nvcc, cudart, nvrtc, cccl, cupti, profiler-api, etc.
+  - nvidia::cuda-version=13.2
+  - nvidia::cuda-toolkit=13.2
+  # cuBLAS dev (headers + import lib) - separate package family on the
+  # nvidia channel since CUDA 12.x.
+  - nvidia::libcublas-dev
+  # Python build deps
+  - conda-forge::pybind11>=2.13
+  - conda-forge::setuptools>=68
+  - conda-forge::wheel
+  - conda-forge::ninja
+  # Runtime deps
+  - conda-forge::numpy>=2.0
+  - conda-forge::scipy
+  - conda-forge::pandas
+  - conda-forge::networkx
+  # Test / bench
+  - conda-forge::pytest

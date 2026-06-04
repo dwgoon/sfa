@@ -1,0 +1,169 @@
+name: build-wheels
+
+# Triggers:
+#   - Push of a tag starting with `v` (release flow).
+#   - Manual `workflow_dispatch` for testing the full matrix on demand.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+# ---------------------------------------------------------------------------
+# Coverage matrix (what gets produced on a tag push)
+# ---------------------------------------------------------------------------
+#   CPU wheels  (package name: sfa)
+#     - Linux   manylinux2014 x86_64
+#     - Windows AMD64
+#     - macOS   x86_64        (Intel)
+#     - macOS   arm64         (Apple Silicon)
+#   CUDA wheels (package name: sfa-cu130)
+#     - Linux   manylinux2014 x86_64
+#     - Windows AMD64
+#   sdist
+#     - one source distribution
+#
+# Not covered (and why):
+#   - Linux aarch64   : achievable via QEMU; add an `aarch64` include line
+#                       below to opt in. Slow on x86_64 runners.
+#   - Linux musllinux : skipped via cibuildwheel `skip`. Alpine users will
+#                       fall back to the sdist build-from-source path.
+#   - Windows ARM64   : no first-party runner yet; pip will fall back to
+#                       the sdist.
+#   - macOS + CUDA    : Apple dropped NVIDIA support in 2019. Impossible.
+# ---------------------------------------------------------------------------
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # CPU wheels (cross-platform). Package name: `sfa`.
+  # ---------------------------------------------------------------------------
+  build_cpu_wheels:
+    name: cpu-${{ matrix.os }}-${{ matrix.cibw_archs }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,  cibw_archs: x86_64 }
+          - { os: windows-latest, cibw_archs: AMD64 }
+          # macOS Intel and Apple Silicon are explicitly separated so we
+          # do NOT cross-compile from each runner (which would double up).
+          - { os: macos-13,       cibw_archs: x86_64 }
+          - { os: macos-14,       cibw_archs: arm64 }
+          # Opt-in: Linux aarch64 via QEMU. Uncomment to publish for
+          # Raspberry Pi / AWS Graviton / etc. Slow (~20 min per Python).
+          # - { os: ubuntu-latest, cibw_archs: aarch64 }
+    steps:
+      - uses: actions/checkout@v4
+
+      # QEMU is only needed when cibw_archs is a non-native arch (aarch64).
+      - name: Set up QEMU for aarch64 builds
+        if: matrix.cibw_archs == 'aarch64'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.21
+        env:
+          CIBW_ARCHS: ${{ matrix.cibw_archs }}
+          # Force CPU-only build on every cibuildwheel target.
+          CIBW_ENVIRONMENT: "SFA_BUILD_CUDA=0 SFA_PACKAGE_NAME=sfa"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpu-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
+          path: ./wheelhouse/*.whl
+
+  # ---------------------------------------------------------------------------
+  # Source distribution. One artifact across the whole matrix.
+  # ---------------------------------------------------------------------------
+  build_sdist:
+    name: sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build sdist
+        env:
+          SFA_BUILD_CUDA: "0"
+          SFA_PACKAGE_NAME: "sfa"
+        run: |
+          pip install build
+          python -m build --sdist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  # ---------------------------------------------------------------------------
+  # CUDA wheels (Linux + Windows). Package name: `sfa-cu130`.
+  # AOT fat binary: sm_70..sm_90 SASS + PTX fallback for newer GPUs.
+  # macOS is intentionally excluded - Apple dropped NVIDIA CUDA support in
+  # 2019 so there is no CUDA build target.
+  # ---------------------------------------------------------------------------
+  build_cuda_wheels:
+    name: cuda-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install CUDA toolkit
+        # Jimver/cuda-toolkit installs nvcc + cudart-dev + libcublas-dev on
+        # the runner (Linux + Windows). Pin to a recent CUDA so the SASS
+        # we emit covers sm_70..sm_90.
+        uses: Jimver/cuda-toolkit@v0.2.18
+        with:
+          cuda: '13.0.0'
+          method: 'network'
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev"]'
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.21
+        env:
+          CIBW_ARCHS: ${{ runner.os == 'Windows' && 'AMD64' || 'x86_64' }}
+          # CUDA build + distinct PyPI name so it doesn't collide with `sfa`.
+          # The arch list drives the AOT -gencode matrix in setup.py.
+          CIBW_ENVIRONMENT: >-
+            SFA_BUILD_CUDA=1
+            SFA_PACKAGE_NAME=sfa-cu130
+            SFA_CUDA_ARCH=sm_70;sm_75;sm_80;sm_86;sm_89;sm_90
+          # GitHub runners have no NVIDIA GPU, so the CUDA tests skip
+          # via tests/_skip_helpers.py (device_count() == 0 path). What
+          # we actually want to confirm: the native extension loads
+          # (proves cuBLAS/cudart symbols resolve), CPU code still works,
+          # and the smoke script reports ALL OK.
+          CIBW_TEST_REQUIRES: "pytest"
+          CIBW_TEST_COMMAND: >-
+            python {package}/tests/smoke.py
+            && pytest {package}/tests/ -v --tb=short
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cuda-wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+
+  # ---------------------------------------------------------------------------
+  # Optional: publish to PyPI on tag pushes. Requires the OIDC trusted-
+  # publisher relationship to be configured at https://pypi.org for both
+  # the `sfa` and `sfa-cu130` projects. Disabled by default; change the
+  # `if:` guard to enable.
+  # ---------------------------------------------------------------------------
+  publish:
+    name: publish-to-pypi
+    needs: [build_cpu_wheels, build_sdist, build_cuda_wheels]
+    runs-on: ubuntu-latest
+    if: false  # set to `startsWith(github.ref, 'refs/tags/v')` to enable
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@release/v1
