@@ -1,0 +1,80 @@
+site_name: Signal Flow Analysis (SFA)
+site_description: A simulation framework to analyze signal flows in complex networks.
+site_url: https://sfa.readthedocs.io/
+repo_url: https://github.com/dwgoon/sfa
+repo_name: dwgoon/sfa
+
+docs_dir: doc
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.expand
+    - content.code.copy
+    - search.highlight
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            heading_level: 2
+
+nav:
+  - Home: index.md
+  - Install: install.md
+  - Tutorials:
+      - Overview: tutorials.md
+      - Signal flow analysis: tutorial_sfa.md
+      - Discovery of control targets: tutorial_dc.md
+  - Data: data.md
+  - Algorithm: algorithm.md
+  - Control: control.md
+  - Visualization: visualization.md
+  - Simulation: simulation.md
+  - Development: develop.md
+  - API Reference: api.md
