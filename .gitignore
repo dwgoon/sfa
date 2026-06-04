@@ -12,3 +12,10 @@ sfa.egg-info/
 /dist/**
 /build
 /build/**
+
+# MkDocs local build output
+/site
+/site/**
+
+# Local virtual environments
+/.venv*
