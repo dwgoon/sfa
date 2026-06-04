@@ -38,14 +38,12 @@ SignalPropagation object
 
 Algorithms in SFA have hyperparameters that adjust and constrain
 the behavior of the algorithms.
-`ParameterSet`, a nested object defined in `sfa.Algorithm`,
-has member variables that contain the information
-about the various hyperparameters.
-The below shows examples of the parameters.
+The `params` attribute on each `sfa.Algorithm` exposes a
+`ParameterSet` instance whose attributes are the hyperparameters.
+For `SP`, this is a `SignalPropagationParameterSet` (a subclass of
+`NetworkPropagationParameterSet`).
 
 ```python
->>> alg.params
-<sfa.algorithms.sp.SignalPropagation.ParameterSet at 0x25b5a7e5550>
 >>> alg.params.alpha
 0.5
 ```

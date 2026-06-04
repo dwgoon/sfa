@@ -27,8 +27,10 @@ with new algorithms, datasets, or analyses.
 2. Define a `create_algorithm(abbr)` factory that returns an instance of
    a subclass of `sfa.base.Algorithm` (typically `NetworkPropagation`).
 3. Implement `compute(b)` and `compute_batch()`. For network-propagation
-   variants, override `propagate_iterative` and optionally
-   `propagate_exact`.
+   variants, override `propagate_iterative`. If you do not also provide
+   `prepare_exact_solution`/`propagate_exact`, set
+   `self._params.exsol_forbidden = True` so the base class skips its
+   closed-form branch during `initialize_network()`.
 4. Reuse `NetworkPropagationParameterSet` and add any custom
    hyperparameters as properties on a `FrozenClass` subclass.
 

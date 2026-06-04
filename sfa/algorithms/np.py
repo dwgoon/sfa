@@ -385,7 +385,7 @@ class NetworkPropagation(sfa.base.Algorithm):
             The default value is 1000.
         tol: float, optional
             Tolerance for terminating iteration.
-            Iteration continues if the Frobenius norm of
+            Iteration continues if the Euclidean ($L_2$) norm of
             $x(t+1) - x(t)$ is greater than ``tol``.
             The default value is 1e-5.
         get_trj: bool, optional
@@ -396,8 +396,10 @@ class NetworkPropagation(sfa.base.Algorithm):
         -------
         x : numpy.ndarray
             1D array of the activity after the computation.
-        trj : numpy.ndarray
-            2D array where the row represents a state of the activity.
+        num_iter_or_trj : int or numpy.ndarray
+            When ``get_trj`` is False, the number of iterations performed.
+            When ``get_trj`` is True, a 2D array where each row is a
+            recorded state of the activity along the trajectory.
 
         See also
         --------

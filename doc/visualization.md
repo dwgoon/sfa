@@ -10,10 +10,15 @@ fill colors and per-edge widths/signs/colors derived from an activity
 change and a signal-flow matrix. The result is a graph you can render
 with any NetworkX-aware drawing layer.
 
+The example below assumes a configured `alg` and `data` as in the
+[Signal flow analysis tutorial](tutorial_sfa.md):
+
 ```python
 import sfa
 from sfa.vis import compute_graphics
 from sfa.analysis import analyze_perturb
+
+# alg and data are prepared as in tutorial_sfa.md (SP on BORISOV_2009).
 
 # Run two conditions to get an activity-change vector `act` and
 # signal-flow matrix `F`.
@@ -51,11 +56,14 @@ work as `compute_graphics`, but writes the styles directly into an
 `sfv.graphics.Network` object using Qt-based color objects and header
 shapes.
 
+`net` below is a pre-constructed `sfv.graphics.Network` (e.g. loaded by
+SFV from a `.gpickle` or `.sif` file).
+
 ```python
 from sfa.vis.sfv.sfv import visualize_signal_flow
 
 visualize_signal_flow(
-    net,            # sfv.graphics.Network
+    net,            # sfv.graphics.Network (constructed by SFV).
     F=F, act=act, A=data.A, n2i=data.n2i,
     color_up=None,  # Defaults to red.
     color_dn=None,  # Defaults to blue.

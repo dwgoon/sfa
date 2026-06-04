@@ -143,15 +143,19 @@ def compute_influence(W,
 def _compute_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
                            max_iter=1000, tol=1e-6, get_iter=False):
     N = W.shape[0]
+    # Force a float working dtype so iterative updates from an int-typed
+    # adjacency matrix are not truncated.
+    W = np.asarray(W, dtype=np.float64)
     if S is not None:
-        S1 = S
+        S1 = np.asarray(S, dtype=np.float64).copy()
     else:
         S1 = np.eye(N, dtype=np.float64)
 
     I = np.eye(N, dtype=np.float64)
-    S2 = np.zeros_like(W)
+    S2 = np.zeros((N, N), dtype=np.float64)
     aW = alpha * W
-    for cnt in range(max_iter):
+    cnt = 0
+    for cnt in range(1, max_iter + 1):
         S2[:, :] = S1.dot(aW) + I
         norm = np.linalg.norm(S2 - S1)
         if norm < tol:
@@ -179,7 +183,8 @@ def _compute_influence_cpu_sparse(W, alpha, beta, S,
     I = sp.sparse.eye(N, dtype=np.float64)
     S2 = sp.sparse.lil_matrix((N,N), dtype=np.float64)
     aW = sp.sparse.csc_matrix(alpha * W)
-    for cnt in range(max_iter):
+    cnt = 0
+    for cnt in range(1, max_iter + 1):
         S2[:, :] = S1.dot(aW) + I
         norm = sp.sparse.linalg.norm(S2 - S1)
         if norm < tol:
@@ -211,8 +216,9 @@ def _compute_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
     aW = alpha * cp.array(W, dtype=cp.float32)
     
     tol_gpu = cp.array(tol)
-    
-    for cnt in range(max_iter):
+
+    cnt = 0
+    for cnt in range(1, max_iter + 1):
         S2[:, :] = cp.dot(S1, aW) + I
         mat_norm = cp.linalg.norm(S2 - S1)
         if mat_norm < tol_gpu:
@@ -220,7 +226,7 @@ def _compute_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
         # end of if
         S1[:, :] = S2
     # end of for
-    
+
     S_fin = beta*S2
     if get_iter:
         return S_fin, cnt
@@ -294,23 +300,42 @@ def prioritize(df_splo,
                max_splo=None,
                thr_inf=1e-10,
 ):
-    """Prioritize target candiates.
-    
+    """Prioritize target candidates.
+
     Parameters
     ----------
-    df_splo : pandas.DataFrame
-        Dataframe for SPLO information.
+    df_splo : pandas.Series or pandas.DataFrame
+        SPLO values for the candidate sources. Typically the column of
+        ``sfa.splo(...)`` corresponding to ``output``.
     df_inf : pandas.DataFrame
-        Dataframe for influence information.
+        Influence values; rows are candidate sources, columns are
+        outputs. ``df_inf[output]`` must be selectable.
     output : str
-        Names of output node, which is necessary for 'df_inf'.
+        Output node name (must be a column of ``df_inf``).
     dac : int
-        Direction of activity change (DAC) of the output.
-    thr_rank : int or float
-        Rank to filter out the entities.
-        The entities whose ranks are greater than thr_rank survive.
-    min_group_size : int
-        Minimum group size to be satisfied.
+        Direction of activity change (DAC) sign filter applied to the
+        influence on ``output``. Pass ``+1`` to keep sources with
+        positive influence (inhibition suppresses the output) or ``-1``
+        to keep sources with negative influence (activation suppresses
+        the output).
+    thr_rank : int or float, optional
+        Top-rank threshold per SPLO bucket. An integer keeps the top-N
+        rows of each bucket; a float in $(0, 1)$ keeps the top fraction.
+        Default is ``3``.
+    min_group_size : int, optional
+        Minimum number of rows in a SPLO bucket for it to contribute
+        candidates. Default is ``0`` (no filter).
+    min_splo, max_splo : float, optional
+        Restrict the candidate pool to SPLO values within this inclusive
+        range. ``None`` (default) lets the helper infer the bounds.
+    thr_inf : float, optional
+        Influence-magnitude floor; rows whose ``|df_inf[output]|`` is
+        less than or equal to this are dropped. Default is ``1e-10``.
+
+    Returns
+    -------
+    targets : list of str
+        Source-node names selected as control-target candidates.
     """
     ascending = True if dac < 0 else False
 

@@ -19,7 +19,9 @@ class BaseRandomSimulator(object):
         self._ir, self._ic = alg.data.A.nonzero()
         self._num_links = self._ir.size
         self._A = np.array(alg.data.A)
-        self._W = np.zeros_like(self._A, dtype=np.float64)
+        # Initialize _W with the signed adjacency so randomization
+        # subclasses see a non-empty link pattern and preserve signs.
+        self._W = self._A.astype(np.float64).copy()
 
     def _randomize(self):
         raise NotImplementedError()

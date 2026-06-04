@@ -37,13 +37,15 @@ def splo(nxdg, sources, outputs, rtype='df'):
        outputs: list (or iterable) of str
            Names of output nodes in nxdg.
        rtype: str (optional)
-           Return object type: 'df' or 'dict'.
+           Return object type: 'df' (default) or 'dict'.
 
        Returns
        -------
-       splo: dict
-           All the shortest path lengths
-           to the outputs.
+       splo: pandas.DataFrame or dict
+           Shortest path lengths from each source to each output.
+           When ``rtype='df'`` (default), a DataFrame indexed by source
+           with one column per output. When ``rtype='dict'``, a nested
+           dict ``{output: {source: length}}``.
 
     """
     if isinstance(outputs, str):

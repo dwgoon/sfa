@@ -5,6 +5,24 @@ randomized variants of a network. Each randomization perturbs either the
 topology (which links exist) or the link weights, runs the chosen
 algorithm against the experimental data, and records the accuracy.
 
+## Setup
+
+The examples below assume an `alg` (algorithm) and `data` object are
+already prepared, as in the [Signal flow analysis tutorial](tutorial_sfa.md):
+
+```python
+import sfa
+
+algs = sfa.AlgorithmSet()
+ds = sfa.DataSet()
+data = sfa.get_avalue(ds.create('BORISOV_2009'))
+
+alg = algs.create('SP')
+alg.params.apply_weight_norm = True
+alg.data = data
+alg.initialize()
+```
+
 ## Randomizing network structure
 
 The low-level functions in `sfa.utils` operate directly on adjacency

@@ -17,7 +17,7 @@ PosHeader = HeaderClassFactory.create('ARROW')
 TextLabel = LabelClassFactory.create('TEXT_LABEL')
 
 def create_from_graphics(net, abbr=None, inputs=None, outputs=None):
-    """Create sfv.base.Data object from SIF file.
+    """Create sfa.base.Data object from an SFV network graphics object.
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ def create_from_graphics(net, abbr=None, inputs=None, outputs=None):
 
     Returns
     -------
-    obj : sfv.base.Data
+    obj : sfa.base.Data
         Data object with the information of network topology.
 
     """

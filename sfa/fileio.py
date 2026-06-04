@@ -92,7 +92,7 @@ def read_sif(fpath, signs={'+':1, '-':-1}, sort=True, as_nx=False):
 
 
 def create_from_sif(fpath, abbr=None, inputs=None, outputs=None):
-    """Create sfv.base.Data object from SIF file.
+    """Create sfa.base.Data object from SIF file.
 
     Parameters
     ----------
@@ -107,7 +107,7 @@ def create_from_sif(fpath, abbr=None, inputs=None, outputs=None):
 
     Returns
     -------
-    obj : sfv.base.Data
+    obj : sfa.base.Data
         Data object with the information of network topology.
 
     """

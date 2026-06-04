@@ -79,7 +79,7 @@ returned `DataFrame` has an `object` dtype; cast it with
 | `tol`       | `1e-7`     | Tolerance for the stopping criterion.                             |
 | `get_iter`  | `False`    | Also return the actual iteration count.                           |
 | `device`    | `'cpu'`    | `'cpu'` or `'gpu:<id>'` (requires CuPy).                          |
-| `sparse`    | `False`    | Use SciPy sparse matrices for the CPU path.                       |
+| `sparse`    | `False`    | Use SciPy sparse matrices for the CPU path. When `True`, an `'array'` return type yields a SciPy sparse matrix rather than a NumPy `ndarray`. |
 
 ## Shortest path length to output (SPLO)
 
