@@ -26,9 +26,5 @@ functions for efficiently analyzing signal flow in complex networks.
 
 ## References
 
-- Daewon Lee & Kwang-Hyun Cho.
-  *Topological estimation of signal flow in complex signaling networks.*
-  [Scientific Reports (2018) **8**:5262](https://www.nature.com/articles/s41598-018-23643-5).
-- Daewon Lee & Kwang-Hyun Cho.
-  *Signal flow control of complex signaling networks.*
-  [Scientific Reports (2019) **9**:14289](https://www.nature.com/articles/s41598-019-50790-0).
+- [Lee & Cho, 2018](https://www.nature.com/articles/s41598-018-23643-5)
+- [Lee & Cho, 2019](https://www.nature.com/articles/s41598-019-50790-0)

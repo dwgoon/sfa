@@ -143,14 +143,14 @@ class Algorithm(ContainerItem):
         pass
 
     def initialize_basal_activity(self):
-        """Initialize the basal activity, :math:`b`.
+        """Initialize the basal activity, $b$.
         """
         pass
 
     @abc.abstractmethod
     def compute(self, b):
         r"""Process the assigned data
-            with the given basal activity, :math:`b`.
+            with the given basal activity, $b$.
 
         Parameters
         ----------

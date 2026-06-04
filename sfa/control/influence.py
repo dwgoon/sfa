@@ -17,35 +17,37 @@ def compute_influence(W,
                       get_iter=False,
                       device="cpu",
                       sparse=False):
-    r"""Compute the influence.
-       It estimates the effects of a node to the other nodes,
-       by calculating partial derivative with respect to source nodes,
-       based on a simple iterative method.
+    r"""Compute the influence matrix.
 
-       Based on the below difference equation,
+    Estimates how each source node affects every other node,
+    based on the signal flow propagation
 
-       x(t+1) = alpha*W.dot(x(t)) + (1-alpha)*b
+    $$
+    x(t+1) = \alpha W x(t) + \beta b.
+    $$
 
-       The influence matrix, S, is computed using chain rule of
-       partial derivative as follows.
+    Using the chain rule of partial derivatives, the influence is
 
-       \begin{align}
-        S_{ij} &= \frac{\partial{x_i}}{\partial{x_j}} \\
-               &= (I + \alpha W + \alpha^2 W^2 +  ... + \alpha^{\infty}W^{\infty})_{ij} \\
-               &\approx (I + \alpha W + \alpha^2 W^2 +  ... + \alpha^{l}W^{l})_{ij} \\
-       \end{align}
+    $$
+    S_{ij} = \frac{d x_i}{d b_j}
+           = \beta \bigl(I + \alpha W + \alpha^2 W^2 + \cdots\bigr)_{ij},
+    $$
 
-       This is the summation of the weight multiplications along all paths
-       including cycles. $S_{ij}$ denotes the influence of node (j) on node (i).
+    which converges to $S^* = \beta (I - \alpha W)^{-1}$ when the
+    spectral radius of $\alpha W$ is less than one. $S_{ij}$ is the
+    influence of node $j$ on node $i$.
 
-       An iterative method for an approximated solution is as follows.
+    An iterative method (paper form) computes
 
-        S(t+1) = \alpha WS(t) + I,
+    $$
+    S(t+1) = \alpha W S(t) + \beta I, \qquad S(0) = \beta I,
+    $$
 
-       where $S(0) = \beta I$ and $S(1) = \beta(I + \alpha W)$ $(t>1)$.
-
-       The iteration continues until $||S(t+1) - S(t)|| \leq tol$.
-
+    and stops when $\lVert S(t+1) - S(t) \rVert_F \le \mathrm{tol}$.
+    The shipped implementation iterates as
+    $S(t+1) = S(t)\,\alpha W + I$ with $S(0) = I$ and applies the
+    $\beta$ factor at the end; both arrangements converge to the same
+    $\beta (I - \alpha W)^{-1}$.
 
     Parameters
     ----------

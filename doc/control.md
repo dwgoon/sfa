@@ -3,7 +3,7 @@
 The control module provides utilities for *discovery of control targets*:
 nodes whose perturbation is most likely to push a chosen output in a chosen
 direction. The approach is described in
-[Lee & Cho, *Scientific Reports* 2019, 9:14289](https://www.nature.com/articles/s41598-019-50790-0).
+[Lee & Cho, 2019](https://www.nature.com/articles/s41598-019-50790-0).
 
 ## Influence matrix
 
@@ -11,26 +11,29 @@ direction. The approach is described in
 influence of every source node on every target, using only the network
 topology.
 
-Given the propagation update
+The signal flow propagation is
 
 $$
-x(t+1) = \alpha W x(t) + (1 - \alpha) b,
+x(t+1) = \alpha W x(t) + \beta b,
 $$
 
-the influence matrix $S$ satisfies
+with two hyperparameters $\alpha$ and $\beta$. At steady state the
+activity vector is $x^* = \beta (I - \alpha W)^{-1} b$, so the influence
+of a basal-activity change in node $j$ on node $i$ is
 
 $$
-S_{ij} = \frac{\partial x_i}{\partial x_j}
-      = \big(I + \alpha W + \alpha^2 W^2 + \cdots\big)_{ij},
+S_{ij} = \frac{dx_i}{db_j} = \frac{\partial x_j}{\partial b_j}\,\frac{dx_i}{dx_j}
+       = \beta\,\bigl(I + \alpha W + \alpha^2 W^2 + \cdots\bigr)_{ij}.
 $$
 
-which is approximated by truncating the series. SFA uses the iteration
+SFA approximates the series with the iteration
 
 $$
-S(t+1) = \alpha W S(t) + I, \qquad S(0) = \beta I,
+S(t+1) = \alpha W S(t) + \beta I, \qquad S(0) = \beta I,
 $$
 
-and the iteration stops when $\lVert S(t+1) - S(t) \rVert \le \mathrm{tol}$.
+and terminates when the Frobenius norm of the update falls below the
+tolerance: $\lVert S(t+1) - S(t) \rVert_F \le \mathrm{tol}$.
 
 ```python
 import sfa
@@ -60,25 +63,25 @@ influence on itself) and an `object` dtype mixing those infinities with
 floats; `pd.to_numeric(errors='coerce')` casts it to a clean numeric
 frame before sorting or arithmetic.
 
-| Parameter   | Default | Description                                                   |
-|-------------|---------|---------------------------------------------------------------|
-| `W`         | —       | Weight matrix (output of `alg.W`).                            |
-| `alpha`     | `0.9`   | Signal-flow contribution.                                     |
-| `beta`      | `0.1`   | Basal-activity contribution; scales the final `S`.            |
-| `S`         | `None`  | Initial influence matrix; defaults to identity.               |
-| `rtype`     | `'df'`  | `'df'` for `pandas.DataFrame`, `'array'` for `numpy.ndarray`. |
-| `outputs`   | `None`  | Required when `rtype='df'`; output node names.                |
-| `n2i`       | `None`  | Required when `rtype='df'`; the data's name-to-index map.     |
-| `max_iter`  | `1000`  | Iteration cap.                                                |
-| `tol`       | `1e-7`  | Tolerance for the stopping criterion.                         |
-| `device`    | `'cpu'` | `'cpu'` or `'gpu:<id>'` (requires CuPy).                      |
-| `sparse`    | `False` | Use SciPy sparse matrices for the CPU path.                   |
+| Parameter   | Default    | Description                                                       |
+|-------------|------------|-------------------------------------------------------------------|
+| `W`         | (required) | Weight matrix (output of `alg.W`).                                |
+| `alpha`     | `0.9`      | Signal-flow contribution.                                         |
+| `beta`      | `0.1`      | Basal-activity contribution; scales the final $S$.                |
+| `S`         | `None`     | Initial influence matrix; defaults to identity.                   |
+| `rtype`     | `'df'`     | `'df'` for `pandas.DataFrame`, `'array'` for `numpy.ndarray`.     |
+| `outputs`   | `None`     | Required when `rtype='df'`; output node names.                    |
+| `n2i`       | `None`     | Required when `rtype='df'`; the data's name-to-index map.         |
+| `max_iter`  | `1000`     | Iteration cap.                                                    |
+| `tol`       | `1e-7`     | Tolerance for the stopping criterion.                             |
+| `device`    | `'cpu'`    | `'cpu'` or `'gpu:<id>'` (requires CuPy).                          |
+| `sparse`    | `False`    | Use SciPy sparse matrices for the CPU path.                       |
 
 ## Shortest path length to output (SPLO)
 
 `sfa.splo` computes, for each `(source, output)` pair, the shortest path
-length in the directed network. This is used to bucket candidate sources by
-how "close" they are to the output.
+length in the directed network. This is used to bucket candidate sources
+by how "close" they are to the output.
 
 ```python
 df_splo = sfa.splo(
@@ -99,10 +102,10 @@ Once you have both influence and SPLO, `sfa.control.prioritize` groups
 candidates by SPLO and selects, within each group, the top-ranked
 sources whose influence on the output has the requested sign (`dac`):
 
-- `dac=+1` — sources with **positive** influence on the output. Their
+- `dac=+1`: sources with **positive** influence on the output. Their
   *inhibition* (negative perturbation) drives the output negative;
   their activation drives it positive.
-- `dac=-1` — sources with **negative** influence. Their *activation*
+- `dac=-1`: sources with **negative** influence. Their *activation*
   drives the output negative.
 
 ```python
@@ -120,13 +123,13 @@ targets = prioritize(
 ```
 
 `sfa.control.arrange_si` is the lower-level helper used by `prioritize`;
-call it directly when you need the grouped SPLO–Influence DataFrames
+call it directly when you need the grouped SPLO-Influence DataFrames
 rather than just the target list. See
 [Discovery of control targets](tutorial_dc.md) for a worked example
-that reproduces the dual-output (ERK + AKT) finding from the 2019
-paper.
+that reproduces the dual-output (ERK and AKT) finding from
+[Lee & Cho, 2019](https://www.nature.com/articles/s41598-019-50790-0).
 
-## Visualizing SPLO–Influence
+## Visualizing SPLO-Influence
 
 `sfa.plot.siplot` draws a grid of horizontal bar charts, one panel per
 SPLO bucket, with the candidate sources sorted by influence on the
@@ -144,3 +147,11 @@ plt.show()
 The `designated` argument highlights the names returned by
 `prioritize`, so you can confirm the selection visually before applying
 the perturbations.
+
+!!! note "Implementation note"
+    The shipped CPU implementation iterates as
+    $S(t+1) = S(t)\,\alpha W + I$ with $S(0) = I$ and applies the $\beta$
+    factor only at the final step. Starting from the identity, this is
+    mathematically equivalent to the paper's iteration above; both
+    converge to $\beta(I - \alpha W)^{-1}$ when the spectral radius of
+    $\alpha W$ is less than one.

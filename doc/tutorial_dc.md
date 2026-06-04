@@ -1,12 +1,12 @@
 # Discovery of control targets
 
 This tutorial reproduces the main finding of
-[Lee & Cho, *Scientific Reports* 2019, 9:14289](https://www.nature.com/articles/s41598-019-50790-0)
+[Lee & Cho, 2019](https://www.nature.com/articles/s41598-019-50790-0)
 using SFA: when both ERK and AKT must be suppressed in an EGF/insulin
 co-stimulated network, **inhibition of GAB1 or IRS** is predicted to
-work, while inhibition of GS or PDK1 fails — because GS and PDK1 have
-*opposite-sign* influences on ERK and AKT and so cannot move both in the
-same direction with a single perturbation.
+work, while inhibition of GS or PDK1 fails, because GS and PDK1 have
+*opposite-sign* influences on ERK and AKT and so cannot move both in
+the same direction with a single perturbation.
 
 The bundled `BORISOV_2009` dataset has the same EGFR + IR signaling
 topology used in the paper (22 nodes, 46 interactions), so we can
@@ -76,24 +76,24 @@ PDK1   -0.02579  +0.08779
 ```
 
 - **GAB1, IRS**: positive influence on both ERK and AKT.
-  → Inhibiting them flips both outputs negative, suppressing both
-    simultaneously.
+  Inhibiting them flips both outputs negative, suppressing both
+  simultaneously.
 - **GS**: positive on ERK, *negative* on AKT.
-  → Inhibition would suppress ERK but *up*-regulate AKT — opposite
-    direction.
+  Inhibition would suppress ERK but *up*-regulate AKT (opposite
+  direction).
 - **PDK1**: negative on ERK, positive on AKT.
-  → Inhibition would *up*-regulate ERK while suppressing AKT — again
-    opposite directions.
+  Inhibition would *up*-regulate ERK while suppressing AKT (again
+  opposite directions).
 
-This reproduces the paper's conclusion that *GS and PDK1 fail to
-suppress the two outputs simultaneously*.
+This reproduces the conclusion of [Lee & Cho, 2019](https://www.nature.com/articles/s41598-019-50790-0)
+that *GS and PDK1 fail to suppress the two outputs simultaneously*.
 
 ## Find dual-output targets programmatically
 
 For a single output, `prioritize` groups candidates by SPLO and returns
 the top sources whose influence has the requested sign. To find
 candidates whose **inhibition** suppresses an output, ask for positive
-influence (`dac=+1`) — then the same negative perturbation drives the
+influence (`dac=+1`): the same negative perturbation then drives the
 output negative.
 
 ```python
@@ -121,7 +121,7 @@ print('Inhibition candidates for both ERK and AKT:', dual_targets)
 $(0, 1)$ (top fraction). Taking the intersection of the per-output
 shortlists yields the nodes that can suppress both outputs with a
 single perturbation. GAB1 and IRS appear in the intersection; GS and
-PDK1 are filtered out — exactly the paper's finding.
+PDK1 are filtered out, exactly the paper's finding.
 
 ## Validate by perturbation
 
@@ -148,7 +148,7 @@ The signs of `ΔERK` and `ΔAKT` match the prediction read off the
 influence table: both negative for GAB1 and IRS, mixed for GS and
 PDK1.
 
-## Visualizing the SPLO–Influence layout
+## Visualizing the SPLO-Influence layout
 
 `sfa.plot.siplot` draws a panel per SPLO bucket with sources sorted by
 influence on the output of interest. The `designated` argument
@@ -163,6 +163,6 @@ fig = siplot(df_splo['ERK'], df_inf, output='ERK', designated=dual_targets)
 plt.show()
 ```
 
-For the original analysis — including the mutation-context cases
-(`SFK` for constitutively active RAS, `PIP3` for activated PI3K) — see
-the paper.
+For the original analysis, including the mutation-context cases
+(`SFK` for constitutively active RAS, `PIP3` for activated PI3K), see
+[Lee & Cho, 2019](https://www.nature.com/articles/s41598-019-50790-0).

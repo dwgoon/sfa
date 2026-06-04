@@ -38,7 +38,7 @@ class NetworkPropagationParameterSet(sfa.base.ParameterSet):
 
     @property
     def alpha(self):
-        r"""Hyperparameter, :math:`\alpha` ~ (0, 1).
+        r"""Hyperparameter $\alpha \in (0, 1)$.
          It controls the portion of signal flow
          in determining the activity.
          The default value is 0.5.
@@ -377,7 +377,7 @@ class NetworkPropagation(sfa.base.Algorithm):
         b: numpy.ndarray
             1D array for basal activity.
         a: real number, optional
-            Hyperparameter, :math:`\alpha`, ~ (0, 1).
+            Hyperparameter $\alpha \in (0, 1)$.
             The default value is 0.5.
         lim_iter: int, optional
             Number of maximum iterations in the iterative method.
@@ -385,8 +385,8 @@ class NetworkPropagation(sfa.base.Algorithm):
             The default value is 1000.
         tol: float, optional
             Tolerance for terminating iteration.
-            Iteration continues, if Frobenius norm of
-            :math:`x(t+1)-x(t)` is greater than ``tol``.
+            Iteration continues if the Frobenius norm of
+            $x(t+1) - x(t)$ is greater than ``tol``.
             The default value is 1e-5.
         get_trj: bool, optional
             Determine whether the trajectory of the state is returned.

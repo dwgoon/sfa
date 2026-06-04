@@ -25,22 +25,26 @@ class SignalPropagation(NetworkPropagation):
     # end of def __init__
 
     def prepare_exact_solution(self):
-        """
-        Prepare to get the matrix for the exact solution:
+        r"""
+        Prepare the matrix $M$ for the closed-form steady-state solution.
 
-        .. :math
-            x(t+1) = a*_W.dot(x(t)) + (1-a)*b, where $a$ is alpha.
+        Starting from
 
-        When $t -> inf$, both $x(t+1)$ and $x(t)$
-        converges to the stationary state.
+        $$
+        x(t+1) = \alpha W x(t) + (1 - \alpha) b,
+        $$
 
+        as $t \to \infty$ both $x(t+1)$ and $x(t)$ converge to the
+        stationary state $s$, giving
 
-        Then, s = aW*s + (1-a)b
-              (I-aW)*s = (1-a)b
-              s = (I-aW)^-1 * (1-a)b
-              s = M*b, where M is (1-a)(I-aW)^-1.
+        $$
+        s = \alpha W s + (1 - \alpha) b
+          \implies (I - \alpha W) s = (1 - \alpha) b
+          \implies s = M b,
+          \quad M = (1 - \alpha)(I - \alpha W)^{-1}.
+        $$
 
-        This method is to get the matrix, M for preparing the exact solution
+        This method computes and caches $M$.
         """
         W = self._W
         a = self._params.alpha

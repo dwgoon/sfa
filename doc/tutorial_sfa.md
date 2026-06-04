@@ -1,8 +1,8 @@
 # Signal flow analysis
 
 This brief tutorial will guide you to start utilizing SFA.
-We wrote this tutorial assuming users already have the overall knowledge about
-[the original journal paper](https://www.nature.com/articles/s41598-018-23643-5).
+We wrote this tutorial assuming users already have the overall knowledge
+about [Lee & Cho, 2018](https://www.nature.com/articles/s41598-018-23643-5).
 
 ## Creating algorithm object
 
