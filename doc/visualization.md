@@ -13,10 +13,11 @@ with any NetworkX-aware drawing layer.
 ```python
 import sfa
 from sfa.vis import compute_graphics
+from sfa.analysis import analyze_perturb
 
 # Run two conditions to get an activity-change vector `act` and
-# signal-flow matrix `F` (e.g. via sfa.analyze_perturb or by hand).
-act, F = sfa.analyze_perturb(alg, data, targets=['MEK'])
+# signal-flow matrix `F`.
+act, F = analyze_perturb(alg, data, targets=['MEK'])
 
 dg = compute_graphics(
     F=F,

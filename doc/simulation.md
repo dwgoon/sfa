@@ -39,8 +39,8 @@ or produces zero accuracy.
 
 ### Randomizing structure
 
-`sfa.RandomStructureBatchSimulator` rewires the network on every
-iteration using `rand_flip` + `rand_swap`.
+`sfa.analysis.RandomStructureBatchSimulator` rewires the network on
+every iteration using `rand_flip` + `rand_swap`.
 
 ```python
 import sfa
@@ -59,8 +59,8 @@ df = sim.simulate_single(
 
 ### Randomizing weights
 
-`sfa.RandomWeightBatchSimulator` keeps the topology fixed and samples
-new link magnitudes on every iteration.
+`sfa.analysis.RandomWeightBatchSimulator` keeps the topology fixed and
+samples new link magnitudes on every iteration.
 
 ```python
 from sfa.analysis import RandomWeightBatchSimulator
@@ -120,9 +120,9 @@ A few practical notes:
 ## Perturbation-only analysis
 
 If you only need a single before/after comparison rather than a random
-ensemble, `sfa.analyze_perturb` returns the activity change, the signal
-flow change, and (optionally) the activity trajectory for a given list
-of perturbation targets.
+ensemble, `sfa.analysis.analyze_perturb` returns the activity change,
+the signal flow change, and (optionally) the activity trajectory for a
+given list of perturbation targets.
 
 ```python
 from sfa.analysis import analyze_perturb

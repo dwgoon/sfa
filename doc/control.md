@@ -7,8 +7,9 @@ direction. The approach is described in
 
 ## Influence matrix
 
-`sfa.compute_influence` estimates the partial-derivative-based influence
-of every source node on every target, using only the network topology.
+`sfa.control.compute_influence` estimates the partial-derivative-based
+influence of every source node on every target, using only the network
+topology.
 
 Given the propagation update
 
@@ -34,6 +35,8 @@ and the iteration stops when $\lVert S(t+1) - S(t) \rVert \le \mathrm{tol}$.
 ```python
 import sfa
 import numpy as np
+import pandas as pd
+from sfa.control import compute_influence
 
 data = sfa.get_avalue(sfa.DataSet().create('BORISOV_2009'))
 alg = sfa.AlgorithmSet().create('SP')
@@ -41,7 +44,7 @@ alg.params.apply_weight_norm = True
 alg.data = data
 alg.initialize()
 
-df_inf = sfa.compute_influence(
+df_inf = compute_influence(
     alg.W,
     alpha=0.9,
     beta=0.1,
@@ -49,7 +52,13 @@ df_inf = sfa.compute_influence(
     outputs=['ERK', 'AKT'],
     n2i=data.n2i,
 )
+df_inf = df_inf.apply(pd.to_numeric, errors='coerce')
 ```
+
+The returned `DataFrame` has `np.inf` on the diagonal (each node's
+influence on itself) and an `object` dtype mixing those infinities with
+floats; `pd.to_numeric(errors='coerce')` casts it to a clean numeric
+frame before sorting or arithmetic.
 
 | Parameter   | Default | Description                                                   |
 |-------------|---------|---------------------------------------------------------------|
@@ -86,18 +95,25 @@ SPLO bounds.
 
 ## Prioritizing control candidates
 
-Once you have both influence and SPLO, `sfa.prioritize` groups candidates
-by SPLO and selects, within each group, the top-ranked sources that move
-the output in the requested *direction of activity change* (`dac`):
-`+1` to up-regulate, `-1` to down-regulate.
+Once you have both influence and SPLO, `sfa.control.prioritize` groups
+candidates by SPLO and selects, within each group, the top-ranked
+sources whose influence on the output has the requested sign (`dac`):
+
+- `dac=+1` — sources with **positive** influence on the output. Their
+  *inhibition* (negative perturbation) drives the output negative;
+  their activation drives it positive.
+- `dac=-1` — sources with **negative** influence. Their *activation*
+  drives the output negative.
 
 ```python
-targets = sfa.prioritize(
-    df_splo=df_splo,
+from sfa.control import prioritize
+
+targets = prioritize(
+    df_splo=df_splo['ERK'],   # SPLO series for the output of interest.
     df_inf=df_inf,
     output='ERK',
-    dac=-1,         # We want to down-regulate ERK.
-    thr_rank=3,     # Top-3 per SPLO group; or a fraction in (0, 1).
+    dac=+1,                   # Inhibit these to suppress ERK.
+    thr_rank=3,               # Top-3 per SPLO group; or a fraction in (0, 1).
     min_group_size=0,
     thr_inf=1e-10,
 )
@@ -105,7 +121,10 @@ targets = sfa.prioritize(
 
 `sfa.control.arrange_si` is the lower-level helper used by `prioritize`;
 call it directly when you need the grouped SPLO–Influence DataFrames
-rather than just the target list.
+rather than just the target list. See
+[Discovery of control targets](tutorial_dc.md) for a worked example
+that reproduces the dual-output (ERK + AKT) finding from the 2019
+paper.
 
 ## Visualizing SPLO–Influence
 
@@ -118,7 +137,7 @@ read.
 import matplotlib.pyplot as plt
 from sfa.plot import siplot
 
-fig = siplot(df_splo, df_inf, output='ERK', designated=targets)
+fig = siplot(df_splo['ERK'], df_inf, output='ERK', designated=targets)
 plt.show()
 ```
 
