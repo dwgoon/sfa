@@ -26,8 +26,8 @@ with new algorithms, datasets, or analyses.
    the key used by `AlgorithmSet`.
 2. Define a `create_algorithm(abbr)` factory that returns an instance of
    a subclass of `sfa.base.Algorithm` (typically `NetworkPropagation`).
-3. Implement `compute(b)` and `compute_batch()`, or — for network
-   propagation variants — override `propagate_iterative` and optionally
+3. Implement `compute(b)` and `compute_batch()`. For network-propagation
+   variants, override `propagate_iterative` and optionally
    `propagate_exact`.
 4. Reuse `NetworkPropagationParameterSet` and add any custom
    hyperparameters as properties on a `FrozenClass` subclass.
@@ -62,7 +62,7 @@ See `sfa/data/borisov_2009/__init__.py` and
 - Use `pd.read_csv(..., sep='\t')` instead of the deprecated
   `pd.read_table`.
 - For matrix-shape operations on adjacency matrices, work with NumPy
-  `ndarray`s directly — `.to_numpy()` is a `pandas` method and does not
+  `ndarray`s directly: `.to_numpy()` is a `pandas` method and does not
   exist on `ndarray`.
 
 ## Building the documentation

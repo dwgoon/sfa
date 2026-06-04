@@ -97,4 +97,4 @@ inspecting simulation results:
 | `sfa.plot.BatchResultTable` | Tabular view of `Algorithm.result.df_sim`.             |
 | `sfa.plot.ConditionTable`   | Tabular view of `Data.df_conds`.                       |
 | `sfa.plot.HierarchicalClusteringTable` | Hierarchically clustered table view.        |
-| `sfa.plot.siplot`           | SPLO–Influence bar grid (see [Control](control.md)).   |
+| `sfa.plot.siplot`           | SPLO-Influence bar grid (see [Control](control.md)).   |

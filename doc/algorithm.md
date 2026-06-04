@@ -20,9 +20,9 @@ and basal-activity bookkeeping.
 
 Two methods must be implemented by every concrete algorithm:
 
-- `compute(b)` — return the steady-state activity vector $x$
-  given a basal-activity vector $b$.
-- `compute_batch()` — iterate over every perturbation condition in
+- `compute(b)`: return the steady-state activity vector $x$ given a
+  basal-activity vector $b$.
+- `compute_batch()`: iterate over every perturbation condition in
   `self.data` and store the per-condition results in `self.result.df_sim`.
 
 `initialize()` is called once after `data` and `params` are set.
@@ -32,13 +32,20 @@ override one without re-implementing the other.
 
 ## The `NetworkPropagation` base
 
-`sfa.algorithms.np.NetworkPropagation` implements the propagation framework
+`sfa.algorithms.np.NetworkPropagation` provides the framework for
+network-propagation algorithms. Concrete subclasses (such as
+`SignalPropagation` below) implement the specific propagation update;
+the canonical SP form is
 
 $$
-x(t+1) = \alpha W x(t) + (1 - \alpha) b
+x(t+1) = \alpha W x(t) + (1 - \alpha) b,
 $$
 
-The class:
+which is the $\beta = 1 - \alpha$ special case of the general
+[Lee & Cho, 2019](https://www.nature.com/articles/s41598-019-50790-0)
+form $x(t+1) = \alpha W x(t) + \beta b$.
+
+The base class:
 
 - Builds `W` from `data.A` in `initialize_network()`, optionally normalizing
   it via `sfa.normalize()` when `params.apply_weight_norm` is `True`.
