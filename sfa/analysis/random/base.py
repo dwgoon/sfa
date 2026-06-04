@@ -240,8 +240,8 @@ class BaseRandomBatchSimulator(BaseRandomSimulator):
         dfs = []
         if max_workers == 1:
             for (abbr, data) in list_data:
-                df = self._simulate_single(num_samp, alg, data, use_norm,
-                                           use_print, freq_print)
+                df = self._simulate_single((num_samp, alg, data, use_norm,
+                                            use_print, freq_print))
                 dfs.append(df)
                 # end of for
         elif max_workers > 1:

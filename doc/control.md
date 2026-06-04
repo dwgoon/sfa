@@ -32,8 +32,11 @@ $$
 S(t+1) = \alpha W S(t) + \beta I, \qquad S(0) = \beta I,
 $$
 
-and terminates when the Frobenius norm of the update falls below the
-tolerance: $\lVert S(t+1) - S(t) \rVert_F \le \mathrm{tol}$.
+and terminates when the Frobenius norm of the unscaled update falls
+below the tolerance: $\lVert S(t+1) - S(t) \rVert_F \le \mathrm{tol}$.
+The shipped CPU implementation checks the tolerance on the unscaled
+series and multiplies by $\beta$ at the end (see the implementation
+note at the bottom of this page).
 
 ```python
 import sfa
@@ -58,10 +61,10 @@ df_inf = compute_influence(
 df_inf = df_inf.apply(pd.to_numeric, errors='coerce')
 ```
 
-The returned `DataFrame` has `np.inf` on the diagonal (each node's
-influence on itself) and an `object` dtype mixing those infinities with
-floats; `pd.to_numeric(errors='coerce')` casts it to a clean numeric
-frame before sorting or arithmetic.
+Because of how the DataFrame is populated (each cell is assigned in a
+loop with a transient `np.inf` placeholder on the diagonal), the
+returned `DataFrame` has an `object` dtype; cast it with
+`pd.to_numeric(errors='coerce')` before sorting or arithmetic.
 
 | Parameter   | Default    | Description                                                       |
 |-------------|------------|-------------------------------------------------------------------|
@@ -74,6 +77,7 @@ frame before sorting or arithmetic.
 | `n2i`       | `None`     | Required when `rtype='df'`; the data's name-to-index map.         |
 | `max_iter`  | `1000`     | Iteration cap.                                                    |
 | `tol`       | `1e-7`     | Tolerance for the stopping criterion.                             |
+| `get_iter`  | `False`    | Also return the actual iteration count.                           |
 | `device`    | `'cpu'`    | `'cpu'` or `'gpu:<id>'` (requires CuPy).                          |
 | `sparse`    | `False`    | Use SciPy sparse matrices for the CPU path.                       |
 
@@ -118,9 +122,14 @@ targets = prioritize(
     dac=+1,                   # Inhibit these to suppress ERK.
     thr_rank=3,               # Top-3 per SPLO group; or a fraction in (0, 1).
     min_group_size=0,
+    min_splo=None,            # Optional lower bound on SPLO bucket value.
+    max_splo=None,            # Optional upper bound on SPLO bucket value.
     thr_inf=1e-10,
 )
 ```
+
+`min_splo` and `max_splo` restrict the candidate pool to a SPLO window
+(useful for screening only "distant" or only "proximal" sources).
 
 `sfa.control.arrange_si` is the lower-level helper used by `prioritize`;
 call it directly when you need the grouped SPLO-Influence DataFrames

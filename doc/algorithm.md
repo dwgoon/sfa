@@ -80,7 +80,8 @@ M = (1 - \alpha)(I - \alpha W)^{-1}, \qquad x_\infty = M b
 $$
 
 and the iterative form is the fixed-point iteration on
-$x(t+1) = \alpha W x(t) + (1-\alpha) b$ with a Frobenius-norm tolerance.
+$x(t+1) = \alpha W x(t) + (1-\alpha) b$ with an Euclidean ($L_2$) norm
+tolerance on $x(t+1) - x(t)$.
 
 ```python
 >>> import sfa
@@ -117,16 +118,21 @@ class MyAlgorithm(NetworkPropagation):
         super().__init__(abbr)
         self._name = "My custom algorithm"
         self._params = MyAlgorithmParameterSet()
+        # Skip the closed-form branch since this example only ships an
+        # iterative solver; otherwise the base class will try to call
+        # prepare_exact_solution() during initialize_network().
+        self._params.exsol_forbidden = True
 
     def propagate_iterative(self, W, xi, b, a=0.5, lim_iter=1000,
                             tol=1e-5, get_trj=False):
         x_t1 = np.array(xi, dtype=np.float64)
-        for _ in range(lim_iter):
+        num_iter = 0
+        for num_iter in range(1, lim_iter + 1):
             x_t2 = a * W.dot(x_t1) + (1 - a) * b
             if np.linalg.norm(x_t2 - x_t1) <= tol:
                 break
             x_t1 = x_t2.copy()
-        return x_t2, _
+        return x_t2, num_iter
 ```
 
 `AlgorithmSet` discovers algorithms by scanning the `sfa/algorithms/`

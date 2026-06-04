@@ -47,9 +47,10 @@ class ThreeNodeCascade(sfa.base.Data):
         self._i2n = {idx: name for name, idx in self._n2i.items()}
 
         # Create Directed graph object of NetworkX.
+        # SIGN matches the attribute key used by sfa.read_sif.
         self._dg = nx.DiGraph()
-        self._dg.add_edge('A', 'B', attr_dict={"sign": +1})
-        self._dg.add_edge('B', 'C', attr_dict={"sign": +1})
+        self._dg.add_edge('A', 'B', SIGN=+1)
+        self._dg.add_edge('B', 'C', SIGN=+1)
 
         # Create adjacency matrix with signs.
         n = self._dg.number_of_nodes()
@@ -58,8 +59,7 @@ class ThreeNodeCascade(sfa.base.Data):
         for (src, tgt, attr) in self._dg.edges(data=True):
             isrc = self._n2i[src]
             itgt = self._n2i[tgt]
-            sign = attr['attr_dict']['sign']
-            self._A[itgt, isrc] = sign
+            self._A[itgt, isrc] = attr['SIGN']
 
 
 if __name__ == "__main__":

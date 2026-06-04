@@ -53,9 +53,10 @@ df_inf = compute_influence(
 df_inf = df_inf.apply(pd.to_numeric, errors='coerce')
 ```
 
-`compute_influence` marks self-loops with `np.inf` and returns an
-`object`-dtype frame; `pd.to_numeric(errors='coerce')` converts it to a
-clean numeric frame.
+`compute_influence` populates the `DataFrame` cell by cell with a
+transient `np.inf` placeholder on the diagonal, so the result has an
+`object` dtype; `pd.to_numeric(errors='coerce')` converts it to a clean
+numeric frame.
 
 ## Inspect the candidates
 
