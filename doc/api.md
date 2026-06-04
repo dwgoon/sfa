@@ -54,3 +54,11 @@ using [mkdocstrings](https://mkdocstrings.github.io/).
 ## `sfa.control.influence`
 
 ::: sfa.control.influence
+
+## `sfa.vis.utils`
+
+::: sfa.vis.utils
+
+## `sfa.plot.si`
+
+::: sfa.plot.si

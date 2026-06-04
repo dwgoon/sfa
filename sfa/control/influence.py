@@ -182,7 +182,7 @@ def _compute_influence_cpu_sparse(W, alpha, beta, S,
 
     I = sp.sparse.eye(N, dtype=np.float64)
     S2 = sp.sparse.lil_matrix((N, N), dtype=np.float64)
-    aW = sp.sparse.csc_matrix(alpha * np.asarray(W, dtype=np.float64))
+    aW = sp.sparse.csc_matrix(W, dtype=np.float64) * alpha
     cnt = 0
     for cnt in range(1, max_iter + 1):
         S2[:, :] = S1.dot(aW) + I

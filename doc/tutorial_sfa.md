@@ -304,7 +304,11 @@ when PI3K cannot send signal to its downstreams
 ```python
 >>> b = np.zeros((N,), dtype=np.float64)
 >>> b[data.n2i['EGF']] = 1
->>> alg.W[:, data.n2i['PI3K']] *= 0  # Remove all the out-link weights.
+>>> # Build a perturbed weight matrix and assign through the setter
+>>> # so that the cached exact-solution matrix M gets invalidated.
+>>> W_ptb = alg.W.copy()
+>>> W_ptb[:, data.n2i['PI3K']] *= 0  # Remove all PI3K out-link weights.
+>>> alg.W = W_ptb
 >>> xs3 = alg.compute(b)
 >>> xs3[data.n2i['ERK']]
 0.00172210494367554

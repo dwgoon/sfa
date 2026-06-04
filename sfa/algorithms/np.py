@@ -63,8 +63,8 @@ class NetworkPropagationParameterSet(sfa.base.ParameterSet):
     @lim_iter.setter
     def lim_iter(self, val):
         if not isinstance(val, int):
-            raise TypeError("lim_iter is a integer type value.")
-        elif val < 0:
+            raise TypeError("lim_iter is an integer type value.")
+        elif val <= 0:
             raise ValueError("lim_iter should be greater than 0.")
         else:
             self._lim_iter = val

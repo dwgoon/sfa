@@ -329,7 +329,7 @@ def _update_single_label_activity(net, node, x, fix_act_label, fmt, font):
         label_act.iden = iden
     else:
         label_act = net.labels[iden]
-        label_act.text = str_x % (x)
+        label_act.text = str_x
 
     if not fix_act_label:
         label_act['FONT'] = font
