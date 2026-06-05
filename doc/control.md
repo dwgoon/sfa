@@ -11,28 +11,89 @@ desired direction. The approach is from
 influence of every source on every target using only the network
 topology.
 
+### Derivation (Lee & Cho, 2019)
+
 The signal-flow propagation is
 
 $$
 x(t+1) = \alpha W x(t) + \beta b,
 $$
 
-with hyperparameters $\alpha$ and $\beta$. At steady state, $x^* =
-\beta (I - \alpha W)^{-1} b$, and the influence of a basal-activity
-change in node $j$ on node $i$ is
+with two hyperparameters $\alpha$ and $\beta$. Here $x \in \mathbb{R}^N$
+is the activity vector, $W \in \mathbb{R}^{N \times N}$ is the link
+weight matrix ($W_{ij}$ is the weight from node $j$ to node $i$), and
+$b \in \mathbb{R}^N$ is the basal-activity vector.
+
+**Step 1 — Unroll the recurrence.** Starting from $x(0) = 0$ and
+applying the propagation repeatedly:
 
 $$
-S_{ij} = \frac{dx_i}{db_j}
-       = \beta \bigl(I + \alpha W + \alpha^2 W^2 + \cdots\bigr)_{ij}.
+\begin{aligned}
+x(1) &= \alpha W \cdot 0 + \beta b = \beta b,\\
+x(2) &= \alpha W (\beta b) + \beta b = \beta(I + \alpha W) b,\\
+x(3) &= \alpha W \bigl[\beta(I + \alpha W) b\bigr] + \beta b
+      = \beta(I + \alpha W + \alpha^2 W^2) b,\\
+&\;\;\vdots\\
+x(t) &= \beta\bigl(I + \alpha W + \alpha^2 W^2 + \cdots + \alpha^{t-2} W^{t-2}\bigr) b.
+\end{aligned}
 $$
 
-v0.1.0 approximates the series with the iteration
+**Step 2 — Differentiate with respect to $b$.** Because the scalar $\beta$
+and the matrix factor in front of $b$ are constants in $b$, and
+$\frac{db}{db} = I$,
 
 $$
-S(t+1) = \alpha W S(t) + \beta I, \qquad S(0) = \beta I,
+\frac{dx(t)}{db}
+ = \frac{d}{db}\Bigl\{ \beta(I + \alpha W + \alpha^2 W^2 + \cdots + \alpha^{t-2} W^{t-2}) b \Bigr\}
+ = \beta\bigl(I + \alpha W + \alpha^2 W^2 + \cdots + \alpha^{t-2} W^{t-2}\bigr).
 $$
 
-and stops when $\lVert S(t+1) - S(t) \rVert_F$ falls below `tol`.
+This is **equation (6)** of the paper. The $b$ that appears in the
+$x$-iteration disappears in the $S$-iteration because $db/db = I$.
+
+**Step 3 — Truncate at the longest path length $L_M$.** For a directed
+acyclic graph, $W^k = 0$ once $k$ exceeds the longest path length
+$L_M$, so the partial sum stops growing for $t-2 \ge L_M$. For cyclic
+graphs, the geometric series converges to a finite limit when
+$\rho(\alpha W) < 1$. In either case, the limit is
+
+$$
+S = \beta\bigl(I + \alpha W + \alpha^2 W^2 + \cdots + \alpha^{L_M} W^{L_M}\bigr)
+\qquad\text{(paper Eq. 5)}
+$$
+
+and entry $S_{ij}$ is the influence of source node $j$ on target node
+$i$.
+
+**Step 4 — Geometric series closed form.** Summing yields
+
+$$
+S^{*} = \beta\,(I - \alpha W)^{-1}
+\qquad\text{(paper Eq. 7)}
+$$
+
+which is what `compute_influence` ultimately approximates.
+
+### Iterative form used in v0.1.0
+
+v0.1.0 builds the partial sum by a fixed-point iteration that is
+consistent with the truncated series above:
+
+$$
+S(t+1) = \alpha W\, S(t) + \beta I, \qquad S(0) = \beta I,
+$$
+
+terminating when $\lVert S(t+1) - S(t) \rVert_F$ falls below `tol`.
+The shipped CPU implementation stores the unscaled accumulator
+$T(t)$ and applies the $\beta$ factor only at the end:
+
+$$
+T(t+1) = T(t)\,\alpha W + I, \qquad T(0) = I, \qquad S_{\mathrm{final}} = \beta\, T.
+$$
+
+Both arrangements converge to the same $\beta(I - \alpha W)^{-1}$
+because the initial value is a scalar multiple of the identity, so
+left- and right-multiplication by $\alpha W$ produce the same series.
 
 ```python
 import sfa
