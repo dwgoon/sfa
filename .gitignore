@@ -19,3 +19,13 @@ sfa.egg-info/
 
 # Local virtual environments
 /.venv*
+
+# Compiled CUDA extension binaries (built per-platform via setup.py)
+**.pyd
+**.so
+**.so.*
+sfa/_cuda/_native*
+
+# cibuildwheel output
+wheelhouse/
+wheelhouse/**

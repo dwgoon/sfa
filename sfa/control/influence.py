@@ -16,7 +16,12 @@ def compute_influence(W,
                       tol=1e-7,
                       get_iter=False,
                       device="cpu",
-                      sparse=False):
+                      sparse=False,
+                      dtype=None,
+                      check_every=8,
+                      use_tf32=True,
+                      num_threads=None,
+                      backend=None):
     r"""Compute the influence matrix.
 
     Estimates how each source node affects every other node,
@@ -75,6 +80,30 @@ def compute_influence(W,
         Select which device to use. 'CPU' is default.
     sparse : bool, optional
         Use sparse matrices for the computation.
+    dtype : numpy.dtype or str, optional
+        Compute dtype for the native CUDA / CPU backends.
+        Supported: ``numpy.float32``, ``numpy.float64``, ``numpy.float16``
+        (CUDA only). When ``None`` (default), W's dtype is honored for CPU
+        and inferred for CUDA. The cupy ``device='gpu:N'`` path keeps its
+        historical float32 behavior.
+    check_every : int, optional
+        Native CUDA only. Number of iterations between host syncs (and the
+        size of each CUDA Graph batch). Default 8. Set to 1 to disable
+        graph capture / sync every iteration.
+    use_tf32 : bool, optional
+        Native CUDA only. Enable TF32 Tensor Core math mode for the FP32
+        path. Default True. Ignored for FP64 / FP16.
+    num_threads : int, optional
+        CPU paths only. Restrict the BLAS to this many threads for the
+        call. Requires ``threadpoolctl``. ``None`` (default) keeps the
+        process-wide default. Ignored on the CUDA path.
+    backend : str, optional
+        CPU paths only. ``'mkl'``, ``'openblas'``, or ``None`` (default).
+        ``None`` uses scipy's linked BLAS. A non-``None`` value loads the
+        named BLAS by ctypes (``sfa._blas_ctypes``) and calls LAPACKE
+        directly, bypassing scipy. Useful for benchmarking or for
+        running an environment where scipy is linked against one BLAS
+        but you want to call another. Ignored on the CUDA path.
 
     Returns
     -------
@@ -94,16 +123,35 @@ def compute_influence(W,
 
     if 'cpu' in device:
         if sparse:
-            ret = _compute_influence_cpu_sparse(W, alpha, beta, S,
-                                               max_iter, tol, get_iter)
+            from sfa._blas import thread_limit
+            with thread_limit(num_threads):
+                ret = _compute_influence_cpu_sparse(W, alpha, beta, S,
+                                                   max_iter, tol, get_iter)
         else:
             ret = _compute_influence_cpu(W, alpha, beta, S,
-                                        max_iter, tol, get_iter)
+                                        max_iter, tol, get_iter,
+                                        dtype=dtype,
+                                        backend=backend,
+                                        num_threads=num_threads)
+    elif 'cuda' in device:
+        # Native CUDA path (sm_89-tuned: cuBLAS TF32 SGEMM + fused
+        # add-identity/diff-norm kernel + CUDA Graph replay). Falls back
+        # to the cupy or numpy paths if the extension is unavailable.
+        if ':' in device:
+            _, id_device = device.split(':')
+        else:
+            id_device = '0'
+        ret = _compute_influence_cuda_native(W, alpha, beta, S,
+                                             max_iter, tol, get_iter,
+                                             int(id_device),
+                                             check_every=check_every,
+                                             use_tf32=use_tf32,
+                                             dtype=dtype)
     elif 'gpu'in device:
         _, id_device = device.split(':')
         ret = _compute_influence_gpu(W, alpha, beta, S,
                                   max_iter, tol, get_iter, id_device)
-        
+
         if rtype == 'df':
             import cupy as cp
             if isinstance(ret, cp.ndarray):
@@ -140,35 +188,99 @@ def compute_influence(W,
         raise ValueError("Unknown return type: %s"%(rtype))
 
 
+def _cpu_dtype(W, dtype):
+    """Pick a sensible floating dtype for the CPU path.
+
+    Honors the caller's ``dtype`` if given; otherwise upgrades integer W to
+    float64 (numpy default) so iterative updates aren't truncated, and keeps
+    floating W in its own dtype.
+    """
+    if dtype is not None:
+        np_dt = np.dtype(dtype)
+        if np_dt.kind != 'f':
+            raise ValueError(f"CPU dtype must be floating; got {np_dt!r}")
+        return np_dt
+    w_dt = np.dtype(getattr(W, "dtype", np.float64))
+    if w_dt.kind == 'f':
+        return w_dt
+    return np.dtype(np.float64)
+
+
 def _compute_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
-                           max_iter=1000, tol=1e-6, get_iter=False):
+                           max_iter=1000, tol=1e-6, get_iter=False,
+                           dtype=None, backend=None, num_threads=None):
+    """CPU influence backend.
+
+    Two regimes:
+
+    1. If the caller does not pass an initial ``S`` and does not need the
+       iteration count, we solve the closed form
+       ``S = beta * (I - alpha * W)^{-1}`` directly with LAPACK via
+       ``scipy.linalg.solve``. This is a single getrf+getrs and is roughly
+       an order of magnitude cheaper than the fixed-point iteration for
+       typical convergence (~13 iters of N*N DGEMM at N=4096).
+
+    2. Otherwise (caller-supplied S0, or get_iter=True) we keep the original
+       fixed-point iteration so the historical convergence path / iteration
+       count are preserved.
+    """
+    np_dt = _cpu_dtype(W, dtype)
+    W = np.ascontiguousarray(W, dtype=np_dt)
     N = W.shape[0]
-    # Force a float working dtype so iterative updates from an int-typed
-    # adjacency matrix are not truncated.
-    W = np.asarray(W, dtype=np.float64)
-    if S is not None:
-        S1 = np.asarray(S, dtype=np.float64).copy()
-    else:
-        S1 = np.eye(N, dtype=np.float64)
 
-    I = np.eye(N, dtype=np.float64)
-    S2 = np.zeros((N, N), dtype=np.float64)
-    aW = alpha * W
-    cnt = 0
-    for cnt in range(1, max_iter + 1):
-        S2[:, :] = S1.dot(aW) + I
-        norm = np.linalg.norm(S2 - S1)
-        if norm < tol:
-            break
-        # end of if
-        S1[:, :] = S2
-    # end of for
+    # ---- Fast closed-form path ---------------------------------------------
+    if S is None and not get_iter:
+        # Single LAPACK getrf+getrs: solve  (I - alpha*W) X = beta*I.
+        # alpha/beta arrive as Python double; cast to W's dtype so numpy
+        # doesn't upcast the working matrices to float64 when W is float32.
+        alpha_t = np_dt.type(alpha)
+        beta_t  = np_dt.type(beta)
+        A = np.eye(N, dtype=np_dt) - alpha_t * W
+        B = beta_t * np.eye(N, dtype=np_dt)
 
-    S_fin = beta * S2
+        if backend is None:
+            # Default path: scipy's linked LAPACK. threadpoolctl handles
+            # num_threads for the loaded BLAS.
+            from sfa._blas import thread_limit
+            with thread_limit(num_threads):
+                return sp.linalg.solve(A, B,
+                                       overwrite_a=True, overwrite_b=True,
+                                       check_finite=False)
+        # Runtime backend swap: load the requested BLAS by ctypes and call
+        # its LAPACKE_?gesv directly. Bypasses scipy so the user can call
+        # MKL even when scipy is linked against OpenBLAS (or vice versa).
+        # The ctypes dispatcher manages thread setting per backend.
+        from sfa._blas_ctypes import solve as ctypes_solve
+        return ctypes_solve(A, B, backend=backend, num_threads=num_threads)
+
+    # ---- Iterative path (preserves get_iter semantics) ---------------------
+    # The iterative loop uses scipy/numpy BLAS regardless of `backend` (it
+    # is the closed-form path that supports the runtime ctypes swap); we
+    # still honor `num_threads` here through threadpoolctl.
+    from sfa._blas import thread_limit
+    with thread_limit(num_threads):
+        if S is not None:
+            S1 = np.asarray(S, dtype=np_dt).copy()
+        else:
+            S1 = np.eye(N, dtype=np_dt)
+
+        I = np.eye(N, dtype=np_dt)
+        S2 = np.empty((N, N), dtype=np_dt)
+        aW = alpha * W
+        cnt = 0
+        for cnt in range(1, max_iter + 1):
+            np.dot(S1, aW, out=S2)
+            S2 += I
+            norm = np.linalg.norm(S2 - S1)
+            if norm < tol:
+                break
+            S1[:, :] = S2
+
+        S_fin = beta * S2
+
     if get_iter:
         return S_fin, cnt
-    else:
-        return S_fin
+    return S_fin
 
 
 def _compute_influence_cpu_sparse(W, alpha, beta, S,
@@ -233,6 +345,85 @@ def _compute_influence_gpu(W, alpha=0.5, beta=0.5, S=None,
     else:
         return S_fin
 
+
+_NATIVE_DTYPE_MAP = {
+    np.dtype(np.float32): "float32",
+    np.dtype(np.float64): "float64",
+    np.dtype(np.float16): "float16",
+}
+
+
+def _resolve_native_dtype(W, dtype):
+    """Pick the on-device compute dtype.
+
+    If ``dtype`` is given, it wins. Otherwise we honor ``W.dtype`` when it is
+    one of the supported native dtypes; integer / unsupported dtypes default
+    to float32 because that is what the native kernel was designed for.
+    """
+    if dtype is not None:
+        np_dt = np.dtype(dtype)
+    else:
+        np_dt = np.dtype(getattr(W, "dtype", np.float32))
+        if np_dt not in _NATIVE_DTYPE_MAP:
+            np_dt = np.dtype(np.float32)
+    if np_dt not in _NATIVE_DTYPE_MAP:
+        raise ValueError(
+            f"Unsupported native CUDA dtype {np_dt!r}; "
+            "supported: float32, float64, float16.")
+    return np_dt, _NATIVE_DTYPE_MAP[np_dt]
+
+
+def _compute_influence_cuda_native(W, alpha, beta, S,
+                                   max_iter, tol, get_iter,
+                                   id_device=0,
+                                   check_every=8,
+                                   use_tf32=True,
+                                   dtype=None):
+    """Native CUDA backend: cuBLAS GEMM (TF32/FP32/FP64/FP16) + fused
+    add-I/diff-norm kernel + CUDA Graph replay.
+
+    Falls back to the cupy path if the native extension was not built,
+    and to the numpy CPU path if cupy is also unavailable, so callers
+    that rely on ``device='cuda:0'`` keep working in any environment.
+    """
+    if S is not None:
+        # The native kernel currently starts from S(0) = I. If the caller
+        # passes a custom initial S we route them through the cupy path so
+        # behavior is preserved.
+        return _compute_influence_gpu(W, alpha, beta, S,
+                                      max_iter, tol, get_iter, id_device)
+
+    from sfa import _cuda as _sfa_cuda
+    if not _sfa_cuda.HAS_NATIVE:
+        try:
+            import cupy  # noqa: F401
+        except ImportError:
+            return _compute_influence_cpu(W, alpha, beta, S,
+                                          max_iter, tol, get_iter)
+        return _compute_influence_gpu(W, alpha, beta, S,
+                                      max_iter, tol, get_iter, id_device)
+
+    np_dt, dtype_str = _resolve_native_dtype(W, dtype)
+    native = _sfa_cuda.native_module()
+    W_cast = np.ascontiguousarray(W, dtype=np_dt)
+    # NOTE: alpha/beta/tol are forwarded as Python float (= IEEE 754 double)
+    # so the FP64 path keeps full precision; pybind11 binds them to C++
+    # `double` and the FP32/FP16 paths cast down only inside the cuBLAS call.
+    S_fin, num_iter = native.compute_influence_cuda(
+        W_cast,
+        alpha=alpha,
+        beta=beta,
+        max_iter=int(max_iter),
+        tol=tol,
+        device_id=int(id_device),
+        check_every=int(check_every),
+        use_tf32=bool(use_tf32),
+        dtype=dtype_str,
+    )
+
+    if get_iter:
+        return S_fin, num_iter
+    return S_fin
 
 
 def arrange_si(

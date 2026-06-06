@@ -50,10 +50,14 @@ def _find_nvcc() -> Optional[Path]:
 
 
 def _cuda_home(nvcc: Path) -> Path:
+    """Return the directory that contains 'include' and 'lib' for CUDA.
+
+    On a conda Windows env (e.g. ``<env>/Library/bin/nvcc.exe``) this is
+    ``<env>/Library``. On a standard system install or POSIX it is the
+    parent of the ``bin`` directory holding nvcc.
+    """
     p = nvcc.parent
     if p.name.lower() == "bin":
-        if p.parent.name.lower() == "library":
-            return p.parent.parent
         return p.parent
     return p.parent
 
@@ -68,12 +72,45 @@ CUDA_HOME = _cuda_home(NVCC) if NVCC else None
 # --------------------------------------------------------------------------- #
 class CudaBuildExt(build_ext):
     user_options = build_ext.user_options + [
-        ("cuda-arch=", None, "CUDA compute capability, default sm_89 (RTX 4090)"),
+        ("cuda-arch=", None,
+         "Semicolon-separated CUDA compute capabilities (e.g. "
+         "'sm_75;sm_80;sm_86;sm_89;sm_90'). Default is the wheel-wide AOT "
+         "matrix; set SFA_CUDA_ARCH=sm_89 for a single-target dev build."),
     ]
+
+    # Default AOT matrix: covers consumer + datacenter NVIDIA GPUs from
+    # Volta (sm_70) through Hopper (sm_90). The highest arch is *also*
+    # emitted as PTX so unknown future GPUs can JIT from PTX as a fallback.
+    DEFAULT_ARCH_LIST = "sm_70;sm_75;sm_80;sm_86;sm_89;sm_90"
 
     def initialize_options(self):
         super().initialize_options()
-        self.cuda_arch = os.environ.get("SFA_CUDA_ARCH", "sm_89")
+        self.cuda_arch = os.environ.get(
+            "SFA_CUDA_ARCH", CudaBuildExt.DEFAULT_ARCH_LIST)
+
+    def _gencode_flags(self):
+        """Translate the cuda_arch list into -gencode flags for nvcc.
+
+        Each arch like ``sm_89`` becomes
+        ``-gencode arch=compute_89,code=sm_89`` for AOT SASS.
+        For the highest arch we additionally emit
+        ``-gencode arch=compute_XX,code=compute_XX`` so the resulting fat
+        binary carries PTX for forward-compat JIT on newer GPUs.
+        """
+        archs = [a.strip() for a in self.cuda_arch.replace(",", ";").split(";")
+                 if a.strip()]
+        flags = []
+        for a in archs:
+            if not a.startswith("sm_"):
+                raise ValueError(
+                    f"SFA_CUDA_ARCH entry {a!r} must be of form 'sm_XX'")
+            num = a[3:]
+            flags += ["-gencode", f"arch=compute_{num},code=sm_{num}"]
+        if archs:
+            highest = archs[-1][3:]
+            flags += ["-gencode",
+                      f"arch=compute_{highest},code=compute_{highest}"]
+        return flags
 
     def build_extensions(self):
         if not CUDA_AVAILABLE:
@@ -84,16 +121,21 @@ class CudaBuildExt(build_ext):
             super().build_extensions()
             return
 
+        # Register .cu so distutils' object_filenames() recognises it.
+        if ".cu" not in self.compiler.src_extensions:
+            self.compiler.src_extensions.append(".cu")
+
         nvcc_path = str(NVCC)
-        cuda_arch = self.cuda_arch
+        gencode_flags = self._gencode_flags()
         host_flag = "/O2 /MD /EHsc" if os.name == "nt" else "-fPIC"
+        print(f"[sfa] nvcc AOT targets: {self.cuda_arch}", file=sys.stderr)
 
         def _nvcc_compile(src: str, obj: str):
             cmd = [
                 nvcc_path,
                 "-c", src,
                 "-o", obj,
-                f"-arch={cuda_arch}",
+            ] + gencode_flags + [
                 "-O3",
                 "--use_fast_math",
                 "-lineinfo",
@@ -103,7 +145,11 @@ class CudaBuildExt(build_ext):
             ]
             for inc in self.compiler.include_dirs:
                 cmd += ["-I", inc]
-            cmd += [f"-I{CUDA_HOME / 'include'}"]
+            cmd += [
+                f"-I{CUDA_HOME / 'include'}",
+                f"-I{CUDA_HOME / 'include' / 'targets' / 'x64'}",
+                f"-I{CUDA_HOME / 'include' / 'targets' / 'x64' / 'cccl'}",
+            ]
             print("[nvcc]", " ".join(cmd))
             subprocess.check_call(cmd)
 
@@ -148,24 +194,43 @@ def _cuda_extension() -> Optional[Extension]:
               file=sys.stderr)
         return None
 
+    # setuptools requires source paths to be relative POSIX paths.
     sources = [
-        str(CUDA_SRC / "bindings.cpp"),
-        str(CUDA_SRC / "influence_iter.cu"),
+        "sfa/_cuda/src/bindings.cpp",
+        "sfa/_cuda/src/influence_iter.cu",
+        "sfa/_cuda/src/signal_prop_iter.cu",
     ]
     inc_dirs = [
         str(CUDA_SRC),
         pybind11.get_include(),
         str(CUDA_HOME / "include"),
+        # CCCL ('nv/target' etc.) ships under targets/x64 in the conda layout.
+        str(CUDA_HOME / "include" / "targets" / "x64"),
+        str(CUDA_HOME / "include" / "targets" / "x64" / "cccl"),
     ]
+    inc_dirs = [p for p in inc_dirs if Path(p).exists()]
     if os.name == "nt":
         lib_dirs = [
             str(CUDA_HOME / "lib" / "x64"),
-            str(CUDA_HOME / "Library" / "lib" / "x64"),
             str(CUDA_HOME / "lib"),
         ]
     else:
         lib_dirs = [str(CUDA_HOME / "lib64"), str(CUDA_HOME / "lib")]
     lib_dirs = [p for p in lib_dirs if Path(p).exists()]
+
+    # Linux: embed an $ORIGIN-relative rpath so the shipped wheel can
+    # locate libcublas/libcudart that arrive via the nvidia-* PyPI
+    # packages declared in install_requires. The .so lives at
+    # ``site-packages/sfa/_cuda/_native.so``; the nvidia libs land at
+    # ``site-packages/nvidia/{cublas,cuda_runtime}/lib`` so the relative
+    # path is ``$ORIGIN/../../nvidia/...``.
+    extra_link_args = []
+    if os.name != "nt":
+        extra_link_args += [
+            "-Wl,-rpath,$ORIGIN/../../nvidia/cublas/lib",
+            "-Wl,-rpath,$ORIGIN/../../nvidia/cuda_runtime/lib",
+            "-Wl,-rpath,$ORIGIN/../../nvidia/cuda_nvrtc/lib",
+        ]
 
     ext = Extension(
         "sfa._cuda._native",
@@ -177,6 +242,7 @@ def _cuda_extension() -> Optional[Extension]:
         extra_compile_args=(["/std:c++17", "/O2", "/EHsc"]
                             if os.name == "nt"
                             else ["-std=c++17", "-O3", "-fPIC"]),
+        extra_link_args=extra_link_args,
     )
     ext.is_cuda = True
     return ext
@@ -187,8 +253,29 @@ if (cuda_ext := _cuda_extension()) is not None:
     ext_modules.append(cuda_ext)
 
 
+# PyPI package name. Default is the cross-platform CPU-only package "sfa".
+# CUDA-enabled wheels are published under per-CUDA-version names
+# (sfa-cu128, sfa-cu132, sfa-cu133) so users can pick the variant that
+# matches their NVIDIA driver. Override at build time:
+#   SFA_PACKAGE_NAME=sfa-cu132 SFA_BUILD_CUDA=1 python -m build --wheel
+_pkg_name = os.environ.get("SFA_PACKAGE_NAME", "sfa")
+
+
+# Per-build extra install_requires fed in by the CI matrix. Used to pin
+# the NVIDIA runtime PyPI packages (nvidia-cublas-cuXX,
+# nvidia-cuda-runtime-cuXX) that match the CUDA major version we are
+# building against. The value is a whitespace-separated list of pip
+# requirement specifiers, e.g.
+#   SFA_CUDA_RUNTIME_REQUIRES="nvidia-cublas-cu13>=13.2,<13.3 \
+#                              nvidia-cuda-runtime-cu13>=13.2,<13.3"
+_extra_runtime = [
+    spec for spec in os.environ.get("SFA_CUDA_RUNTIME_REQUIRES", "").split()
+    if spec.strip()
+]
+
+
 setup(
-    name="sfa",
+    name=_pkg_name,
     version="0.2.0.dev0",
     description="Signal flow analysis",
     url="http://github.com/dwgoon/sfa",
@@ -198,7 +285,9 @@ setup(
     packages=find_packages(),
     package_data={"": ["*.tsv", "*.sif", "*.json"]},
     python_requires=">=3.10",
-    install_requires=["numpy", "scipy", "pandas", "networkx"],
+    install_requires=(["numpy", "scipy", "pandas", "networkx",
+                       "threadpoolctl"]
+                      + _extra_runtime),
     extras_require={
         "plot": ["matplotlib", "seaborn"],
         "cuda": [],  # toolchain provided by conda env (environment-cuda.yml)

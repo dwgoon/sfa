@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "pybind11>=2.13", "numpy>=2.0"]
+build-backend = "setuptools.build_meta"
+
+# The project `name` is set dynamically from setup.py so the same source
+# tree can produce both "sfa" (CPU-only) and "sfa-cu130" (CUDA-enabled)
+# wheels under the SFA_PACKAGE_NAME env var.
+[project]
+name = "sfa"
+version = "0.2.0.dev0"
+description = "Signal flow analysis"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Daewon Lee", email = "daewon4you@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "networkx",
+    "threadpoolctl",
+]
+
+[project.optional-dependencies]
+cuda = []  # toolchain provided by conda env (environment-cuda.yml)
+test = ["pytest"]
+
+[project.urls]
+Homepage = "http://github.com/dwgoon/sfa"
+
+[tool.setuptools.packages.find]
+include = ["sfa*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.tsv", "*.sif", "*.json"]
+
+# ---------------------------------------------------------------------------
+# cibuildwheel configuration.
+#
+# Builds CPU-only wheels by default. To produce CUDA wheels, set
+# environment variables in the GitHub Actions workflow:
+#   SFA_BUILD_CUDA=1
+#   SFA_PACKAGE_NAME=sfa-cu130
+#   SFA_CUDA_ARCH=sm_70;sm_75;sm_80;sm_86;sm_89;sm_90  (AOT fat binary)
+# ---------------------------------------------------------------------------
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-* cp313-*"
+skip = "*-musllinux_* pp* *-win32 *-manylinux_i686"
+build-verbosity = 1
+# Default: CPU-only build (no nvcc required on the runner).
+environment = { SFA_BUILD_CUDA = "0" }
+# Run tests on the wheel after build (only the CPU subset; tests gated on
+# native CUDA extension skip themselves automatically).
+test-requires = ["pytest"]
+test-command = "pytest {package}/tests"
+
+# Per-platform notes. Architectures are pinned per-job in the GitHub
+# Actions matrix (CIBW_ARCHS env var); listing them here as defaults
+# would risk producing duplicate wheels when running cibuildwheel locally.
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+before-build = "pip install pybind11>=2.13 numpy>=2.0"
+
+[tool.cibuildwheel.macos]
+before-build = "pip install pybind11>=2.13 numpy>=2.0"
+
+[tool.cibuildwheel.windows]
+before-build = "pip install pybind11>=2.13 numpy>=2.0"
