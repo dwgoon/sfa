@@ -301,23 +301,35 @@ S_gpu = compute_influence(
   one warm-up call, to surface variance in addition to central
   tendency.
 - The two benchmarks below answer two different questions:
-    - **Small networks, fp64 unified.** Apples-to-apples comparison
+    - **Small networks, FP64 unified.** Apples-to-apples comparison
       against the `sfa` v0.1.0 CPU iterative solver. Every column is
-      computed in fp64 so that the speed-up reflects the algorithm
+      computed in FP64 so that the speed-up reflects the algorithm
       and the hardware, not a precision trade-off.
     - **Large networks, GPU only.** Beyond ~5k nodes the v0.1.0 CPU
       iterative baseline becomes impractical, so we compare only the
       v0.2 GPU paths against each other across the precisions that
-      a 4090 actually supports well. A CPU LAPACK fp64 column is
+      a 4090 actually supports well. A CPU LAPACK FP64 column is
       kept as the accuracy reference.
-- Driver scripts: `benchmarks/bench_v010_vs_v020.py` for the small
-  networks table, `benchmarks/bench_gpu_largeN.py` for the large
-  networks table. Speed-ups in parentheses are versus the leftmost
-  column of the same table.
+- Precision modes used in the tables:
+    - **FP64**, **FP32**, **FP16** - IEEE 754 double, single, and
+      half precision (64 / 32 / 16 bits).
+    - **TF32** - NVIDIA's Tensor Core math mode for FP32 matrix
+      multiplications. Inputs and outputs stay FP32, but inside the
+      Tensor Core each operand is truncated to a 19-bit format that
+      keeps FP32's exponent (same dynamic range as FP32) and only
+      FP16's mantissa (~3 fewer bits of precision). The trade-off
+      buys roughly an 8x matmul throughput over plain FP32 on
+      Ada / Hopper. Toggled by `use_tf32=True / False` in
+      `compute_influence` (default `True`).
+- The small networks table is produced by the benchmark script
+  `benchmarks/bench_v010_vs_v020.py`, and the large networks table
+  by `benchmarks/bench_gpu_largeN.py`. In each table, the speed-up
+  shown in parentheses is measured against the leftmost column of
+  that table.
 
 ### Small networks
 
-| # Nodes | # Edges  | CPU iter (fp64) ms | CPU LAPACK (fp64) ms | CUDA (fp64) ms        |
+| # Nodes | # Edges  | CPU iter (FP64) ms | CPU LAPACK (FP64) ms | CUDA (FP64) ms        |
 |---------|----------|--------------------|----------------------|-----------------------|
 |    32   | 992      | 0.1 ± 0.0          | 0.2 ± 0.0 (0.4x)     | 1.3 ± 0.2 (0.06x)     |
 |    64   |  ~4.0 K  | 0.2 ± 0.0          | 0.2 ± 0.0 (0.8x)     | 1.4 ± 0.1 (0.13x)     |
@@ -330,26 +342,26 @@ S_gpu = compute_influence(
 
 ### Large networks
 
-| # Nodes | # Edges | CPU LAPACK (fp64) s | CUDA TF32 (fp32) s   | CUDA fp32 (no TF32) s | CUDA fp16 s              |
+| # Nodes | # Edges | CPU LAPACK (FP64) s | CUDA TF32 (FP32) s   | CUDA FP32 (no TF32) s | CUDA FP16 s              |
 |---------|---------|---------------------|----------------------|-----------------------|--------------------------|
 |  5000   |  ~25 M  |  5.10 ± 2.24             | 0.366 ± 0.027 (14x)  | 0.356 ± 0.034 (14x)   | 0.349 ± 0.037 (**15x**)  |
 | 10000   | ~100 M  | 17.60 ± 0.57             | 1.55 ± 0.05 (11x)    | 4.07 ± 0.06 (4.3x)    | 1.13 ± 0.16 (**16x**)    |
 | 20000   | ~400 M  | 70.88 ± 0.79             | 9.13 ± 0.10 (7.8x)   | 16.30 ± 0.28 (4.3x)   | 4.28 ± 0.02 (**17x**)    |
 
 - CPU paths show noticeably higher variance than GPU paths (CPU
-  LAPACK fp64 stddev reaches ~25-77% of the mean at small `N`),
+  LAPACK FP64 stddev reaches ~25-77% of the mean at small `N`),
   reflecting interference from the host OS and the 8P + 8E
   heterogeneous scheduler. GPU paths sit at ~1-10% stddev.
-- The CUDA fp64 column beats the CPU LAPACK fp64 column across the
+- The CUDA FP64 column beats the CPU LAPACK FP64 column across the
   entire small-network sweep, but the margin is modest because
-  consumer Ada GPUs (RTX 4090 included) throttle fp64 to roughly
-  1/64 of fp32. Strict fp64 work that does not fit on a workstation
+  consumer Ada GPUs (RTX 4090 included) throttle FP64 to roughly
+  1/64 of FP32. Strict FP64 work that does not fit on a workstation
   GPU should still consider a server-class CUDA card with full-rate
-  fp64.
-- For the lower-precision GPU paths, fp16 wins from `N` >= 5k upward,
+  FP64.
+- For the lower-precision GPU paths, FP16 wins from `N` >= 5k upward,
   with TF32 close behind once `N` becomes large enough to be
-  matmul-bound. Max abs error versus the CPU fp64 reference stays
-  around `10^-6` for TF32 and `10^-4` for fp16 across the sweep,
+  matmul-bound. Max abs error versus the CPU FP64 reference stays
+  around `10^-6` for TF32 and `10^-4` for FP16 across the sweep,
   which is well within the accuracy budget for most SFA analyses.
 - `SignalPropagation.propagate_iterative` is GEMV-bound rather than
   matmul-bound, so it scales differently from `compute_influence`;
