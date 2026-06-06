@@ -14,7 +14,6 @@ on:
 #   CPU wheels  (package name: sfa)
 #     - Linux   manylinux2014 x86_64
 #     - Windows AMD64
-#     - macOS   x86_64        (Intel)
 #     - macOS   arm64         (Apple Silicon)
 #   CUDA wheels (package name: sfa-cu130)
 #     - Linux   manylinux2014 x86_64
@@ -45,9 +44,10 @@ jobs:
         include:
           - { os: ubuntu-latest,  cibw_archs: x86_64 }
           - { os: windows-latest, cibw_archs: AMD64 }
-          # macOS Intel and Apple Silicon are explicitly separated so we
-          # do NOT cross-compile from each runner (which would double up).
-          - { os: macos-13,       cibw_archs: x86_64 }
+          # macOS Apple Silicon only. Intel Mac (macos-13 x86_64) is dropped
+          # because GitHub's macos-13 runner pool is exhausted as Apple winds
+          # down macOS 13. CPU-only sfa is pure Python, so Intel Mac users
+          # still get a working install via sdist fallback.
           - { os: macos-14,       cibw_archs: arm64 }
           # Opt-in: Linux aarch64 via QEMU. Uncomment to publish for
           # Raspberry Pi / AWS Graviton / etc. Slow (~20 min per Python).
