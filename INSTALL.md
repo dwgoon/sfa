@@ -38,7 +38,7 @@ that is the maximum CUDA version your driver supports.
 | Package     | CUDA bundled | Minimum NVIDIA driver | When to pick                                              |
 |-------------|--------------|------------------------|-----------------------------------------------------------|
 | `sfa-cu133` | 13.3.x       | 580                    | Newest hardware / drivers; default for fresh installs.    |
-| `sfa-cu132` | 13.2.x       | 580                    | Matches the `sfa-cu132` conda env used for development.   |
+| `sfa-cu132` | 13.2.x       | 580                    | Matches the CUDA 13.2 conda env in `environment-cuda.yml`. |
 | `sfa-cu128` | 12.8.x       | 570                    | Older driver (CUDA 12 line); broadest backwards compat.   |
 
 Example (install the newest one):
@@ -81,15 +81,15 @@ the host compiler, and `conda` will not install it for you.
 git clone https://github.com/dwgoon/sfa.git && cd sfa
 
 conda env create -f environment-cuda.yml
-conda activate sfa-cu132
+conda activate sfa
 pip install -e .                 # builds the CUDA extension via the env's nvcc
 
 # CPU-only variant (skip CUDA even if nvcc is on PATH):
 SFA_BUILD_CUDA=0 pip install -e .
 ```
 
-This is also how the project maintainers build on Windows: the
-`sfa-cu132` env provides `nvcc` and cuBLAS, while system MSVC handles
+This is also how the project maintainers build on Windows: the `sfa`
+env provides `nvcc` and cuBLAS, while system MSVC handles
 `bindings.cpp`. The resulting extension is e.g.
 `sfa/_cuda/_native.cp312-win_amd64.pyd`.
 
@@ -180,7 +180,7 @@ and falls through to a CPU-only build (printing
 ### What `environment-cuda.yml` provides
 
 The shipped conda environment file creates a self-contained build
-environment named `sfa-cu132` that does **not** require any
+environment named `sfa` that does **not** require any
 system-wide CUDA install. Everything the build needs - the CUDA
 compiler, the CUDA runtime, cuBLAS headers and import libs, plus the
 Python build and runtime dependencies - is pulled in from the
@@ -199,14 +199,14 @@ Concretely, the file pins:
 
 The `cuda-toolkit` meta-package pulls in `nvcc`, `cudart`, `nvrtc`,
 `cccl`, `cupti`, the profiler API, and the rest of the CUDA dev
-toolchain. After `conda activate sfa-cu132`, `nvcc` is on `PATH` and
+toolchain. After `conda activate sfa`, `nvcc` is on `PATH` and
 `setup.py`'s CUDA-extension build picks it up automatically.
 
 Notes for adjusting the file:
 
 - To target a different CUDA major version, change the two `nvidia::`
   pins (`cuda-version` and `cuda-toolkit`) in lockstep. The env name
-  on the first line (`sfa-cu132`) is just a label; rename it freely.
+  on the first line (`sfa`) is just a label; rename it freely.
 - A host C++ compiler is still required (MSVC on Windows, GCC on
   Linux). The toolchain itself is not bundled by `cuda-toolkit`;
   conda will not install it for you.

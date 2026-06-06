@@ -102,7 +102,7 @@ and the runtime Python deps:
 
 ```bash
 conda env create -f environment-cuda.yml
-conda activate sfa-cu132
+conda activate sfa
 pip install -e .
 ```
 
