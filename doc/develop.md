@@ -77,7 +77,7 @@ controlled by three environment variables:
 |----------------------|---------------|----------------------------------------------------------------------|
 | `SFA_BUILD_CUDA`     | `1` if `nvcc` found, else `0` | Set `0` to force a pure-Python install.              |
 | `SFA_CUDA_ARCH`      | `sm_70;sm_75;sm_80;sm_86;sm_89;sm_90` | Semicolon-separated SM list. Each becomes a `-gencode arch=compute_XX,code=sm_XX`. The highest also emits PTX for forward-compat JIT. |
-| `SFA_PACKAGE_NAME`   | `sfa`         | PyPI package name. The CI wheel matrix sets this to `sfa-cu130` for the CUDA variant. |
+| `SFA_PACKAGE_NAME`   | `sfa`         | PyPI package name. The CI wheel matrix sets this to `sfa-cu1XX` for the CUDA-optimized wheels. |
 
 For day-to-day single-GPU development, override `SFA_CUDA_ARCH` to the
 single arch you have to keep nvcc fast:

@@ -1,10 +1,9 @@
 # Install
 
-SFA is distributed as one CPU-only wheel plus a family of CUDA wheels,
-one per supported CUDA major/minor pair. Each CUDA wheel bundles its
-matching cuBLAS at build time, so no separate CUDA toolkit install is
-required at runtime - only an NVIDIA driver new enough for that CUDA
-version.
+SFA is distributed as one CPU-only wheel plus a set of CUDA optimized
+wheels. Each CUDA wheel bundles its matching cuBLAS at build time, so
+no separate CUDA toolkit install is required at runtime - only an
+NVIDIA driver new enough for that CUDA version.
 
 | Package      | CUDA    | Min. NVIDIA driver | Platforms              |
 |--------------|---------|--------------------|------------------------|
@@ -16,7 +15,7 @@ version.
 All CUDA wheels share the same AOT-compiled SASS matrix (SM 7.0
 through SM 12.0: Volta, Turing, Ampere, Ada, Hopper, Blackwell), plus
 a PTX fallback that the driver JIT-compiles for newer GPUs. The only
-practical difference between `sfa-cuXYZ` variants is which CUDA
+practical difference between `sfa-cuXYZ` versions is which CUDA
 runtime they link against.
 
 This file is a quick reference. See
@@ -32,17 +31,17 @@ Requires Python 3.10+. macOS Apple Silicon and Intel are both supported.
 
 ## CUDA (Linux or Windows + NVIDIA GPU)
 
-Pick **one** variant that matches your NVIDIA driver and install only
-that one. Run `nvidia-smi` and read the "CUDA Version" column - that
-is the maximum CUDA version your driver supports.
+Pick **one** `sfa-cuXYZ` that matches your NVIDIA driver and install
+only that one. Run `nvidia-smi` and read the "CUDA Version" column -
+that is the maximum CUDA version your driver supports.
 
-| Variant     | CUDA bundled | Minimum NVIDIA driver | When to pick                                              |
+| Package     | CUDA bundled | Minimum NVIDIA driver | When to pick                                              |
 |-------------|--------------|------------------------|-----------------------------------------------------------|
 | `sfa-cu133` | 13.3.x       | 580                    | Newest hardware / drivers; default for fresh installs.    |
 | `sfa-cu132` | 13.2.x       | 580                    | Matches the `sfa-cu132` conda env used for development.   |
 | `sfa-cu128` | 12.8.x       | 570                    | Older driver (CUDA 12 line); broadest backwards compat.   |
 
-Example (install the newest variant):
+Example (install the newest one):
 
 ```bash
 pip install sfa-cu133
@@ -53,7 +52,7 @@ NVIDIA driver development in 2019.
 
 > [!IMPORTANT]
 > `sfa` and `sfa-cuXYZ` install into the same `sfa` Python namespace.
-> Install **only one** variant per environment; mixing them causes
+> Install **only one** `sfa-cuXYZ` per environment; mixing them causes
 > import conflicts.
 
 ## Optional extras

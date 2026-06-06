@@ -1,6 +1,7 @@
 # Install
 
-SFA ships pre-built wheels across one CPU and three CUDA variants. All
+SFA ships pre-built wheels across one CPU and three CUDA optimized
+versions. All
 of them share the same `sfa` Python namespace, so install **at most
 one** into a given environment.
 
@@ -16,7 +17,7 @@ one** into a given environment.
 - Python 3.10 or newer.
 - For `sfa`: `numpy`, `scipy`, `pandas`, `networkx`, `threadpoolctl`
   (pulled in automatically).
-- For each `sfa-cu1XX` variant: a sufficiently new NVIDIA driver (see
+- For each `sfa-cu1XX`: a sufficiently new NVIDIA driver (see
   table) plus the matching `nvidia-cublas-cu1X` and
   `nvidia-cuda-runtime-cu1X` runtime packages. These are declared as
   pip dependencies of the wheel and resolve automatically; you do not
@@ -24,7 +25,7 @@ one** into a given environment.
 - AOT-compiled SASS covers Volta (SM 7.0) through Blackwell
   (SM 12.0); newer GPUs use the embedded PTX via the driver JIT.
 
-## Picking a CUDA variant
+## Picking the right `sfa-cuXYZ`
 
 Run `nvidia-smi` and look at the "CUDA Version" column. That is the
 **maximum** CUDA the installed driver supports. Pick the highest
@@ -39,7 +40,7 @@ nvidia-smi -> "CUDA Version: 12.6"  -> upgrade your driver or use `sfa` (CPU)
 ```
 
 When in doubt, start with `sfa-cu128` for the widest driver coverage
-and move to a newer variant only when you need the absolute latest
+and move to a newer one only when you need the absolute latest
 cuBLAS.
 
 ## CPU install
@@ -114,7 +115,7 @@ for Visual Studio 2022 is enough). On Linux, `gcc` 9+ is fine.
 |----------------------|------------------------------------------------------------------------|
 | `SFA_BUILD_CUDA`     | `0` to force a pure-Python install. Default: build if `nvcc` is found. |
 | `SFA_CUDA_ARCH`      | Semicolon-separated list of CUDA compute capabilities, e.g. `sm_89` for a single-GPU dev build, or `sm_70;sm_75;sm_80;sm_86;sm_89;sm_90` for the wheel-wide AOT matrix. Default: the full matrix. |
-| `SFA_PACKAGE_NAME`   | Override the PyPI name. CI uses `SFA_PACKAGE_NAME=sfa-cu130` to publish the CUDA variant from the same source tree as `sfa`. |
+| `SFA_PACKAGE_NAME`   | Override the PyPI name. CI uses `SFA_PACKAGE_NAME=sfa-cu1XX` to publish a CUDA-optimized wheel from the same source tree as `sfa`. |
 
 The build emits AOT SASS for every requested arch and a PTX fallback for
 the highest one, so the resulting binary works on any current NVIDIA GPU

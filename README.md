@@ -27,8 +27,7 @@ steer those outputs in a desired direction.
   matrix) and identification of control-target candidates that steer
   chosen output nodes in a prescribed direction.
 - Stratification of control-target candidates by their shortest-path
-  distance to the output, following the SPLO-based prioritization of
-  [Lee and Cho (2019)](https://www.nature.com/articles/s41598-019-50790-0).
+  distance to the output via SPLO-based prioritization.
 - An extensible model in which user-defined propagation algorithms and
   benchmark datasets integrate with the core without modification.
 - Optional GPU acceleration for large-scale problems on NVIDIA hardware.
@@ -36,7 +35,8 @@ steer those outputs in a desired direction.
 ## Install
 
 SFA supports Python 3.10 and newer on Linux, macOS, and Windows.
-Distributions are published in two families:
+Two distributions are published: a CPU-only `sfa` package and a
+set of CUDA optimized `sfa-cuXYZ` versions:
 
 | Package       | CUDA   | Min. NVIDIA driver  | Platforms              |
 |---------------|--------|---------------------|------------------------|
@@ -59,19 +59,19 @@ pip install sfa
 
 ### NVIDIA CUDA (Linux or Windows)
 
-Pick **one** variant from the wheel matrix above that matches your
-NVIDIA driver. If unsure, run `nvidia-smi` and check the "CUDA
+Pick **one** `sfa-cuXYZ` from the wheel matrix above that matches
+your NVIDIA driver. If unsure, run `nvidia-smi` and check the "CUDA
 Version" column - that is the maximum CUDA version your driver
 supports.
 
-Example (install the newest variant):
+Example (install the newest one):
 
 ```bash
 pip install sfa-cu133
 ```
 
 > [!IMPORTANT]
-> Install **only one** CUDA variant per environment. `sfa` and every
+> Install **only one** `sfa-cuXYZ` per environment. `sfa` and every
 > `sfa-cuXYZ` share the `sfa` Python namespace and will conflict if
 > stacked.
 
@@ -330,7 +330,7 @@ S_gpu = compute_influence(
 
 ### Large networks
 
-| # Nodes | # Edges | CPU LAPACK (fp64) s | CUDA TF32 (fp32) s   | CUDA FP32 (no TF32) s | CUDA FP16 s              |
+| # Nodes | # Edges | CPU LAPACK (fp64) s | CUDA TF32 (fp32) s   | CUDA fp32 (no TF32) s | CUDA fp16 s              |
 |---------|---------|---------------------|----------------------|-----------------------|--------------------------|
 |  5000   |  ~25 M  |  5.10 ± 2.24             | 0.366 ± 0.027 (14x)  | 0.356 ± 0.034 (14x)   | 0.349 ± 0.037 (**15x**)  |
 | 10000   | ~100 M  | 17.60 ± 0.57             | 1.55 ± 0.05 (11x)    | 4.07 ± 0.06 (4.3x)    | 1.13 ± 0.16 (**16x**)    |
@@ -346,10 +346,10 @@ S_gpu = compute_influence(
   1/64 of fp32. Strict fp64 work that does not fit on a workstation
   GPU should still consider a server-class CUDA card with full-rate
   fp64.
-- For the lower-precision GPU paths, FP16 wins from `N` >= 5k upward,
+- For the lower-precision GPU paths, fp16 wins from `N` >= 5k upward,
   with TF32 close behind once `N` becomes large enough to be
   matmul-bound. Max abs error versus the CPU fp64 reference stays
-  around `10^-6` for TF32 and `10^-4` for FP16 across the sweep,
+  around `10^-6` for TF32 and `10^-4` for fp16 across the sweep,
   which is well within the accuracy budget for most SFA analyses.
 - `SignalPropagation.propagate_iterative` is GEMV-bound rather than
   matmul-bound, so it scales differently from `compute_influence`;
