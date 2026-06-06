@@ -172,7 +172,12 @@ jobs:
         with:
           cuda: ${{ matrix.cuda.toolkit }}
           method: 'network'
-          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "nvrtc", "nvrtc_dev"]'
+          # `cudart_dev` is needed in addition to `cudart` starting with
+          # CUDA 13: the Windows installer split the runtime developer
+          # headers (including crt/host_config.h, required by nvcc to
+          # talk to MSVC) out of `cudart` into a separate sub-package.
+          # Listing both also works on CUDA 12.8.
+          sub-packages: '["nvcc", "cudart", "cudart_dev", "cublas", "cublas_dev", "nvrtc", "nvrtc_dev"]'
 
       - name: Set up MSVC environment (Windows)
         # cibuildwheel spawns the build in a subprocess that does NOT
