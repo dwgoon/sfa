@@ -1,4 +1,4 @@
-name: sfa-cu132
+name: sfa
 channels:
   - nvidia
   - conda-forge
