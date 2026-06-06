@@ -9,6 +9,47 @@ implementations.
 """
 from __future__ import annotations
 
+import os
+import sys
+
+
+def _add_nvidia_dll_paths() -> None:
+    """Make the bundled NVIDIA runtime DLLs locatable on Windows.
+
+    The wheel declares ``nvidia-cublas-cu1X`` / ``nvidia-cuda-runtime-cu1X``
+    as install_requires; those packages drop their DLLs under
+    ``site-packages/nvidia/cublas/bin`` and ``cuda_runtime/bin`` on
+    Windows. We register each of those directories with the Win32 DLL
+    loader before importing the native extension so the dependent
+    ``cublas64_X.dll`` / ``cudart64_X.dll`` are found regardless of how
+    the user launched Python.
+
+    On Linux / macOS the same problem is handled at link time via an
+    ``$ORIGIN``-relative rpath embedded in the extension (see setup.py).
+    """
+    if sys.platform != "win32":
+        return
+    try:
+        import nvidia  # type: ignore
+    except ImportError:
+        return
+    base = os.path.dirname(getattr(nvidia, "__file__", "") or "")
+    if not base:
+        return
+    for sub in ("cublas/bin", "cuda_runtime/bin", "cuda_nvrtc/bin"):
+        cand = os.path.join(base, *sub.split("/"))
+        if os.path.isdir(cand):
+            try:
+                os.add_dll_directory(cand)  # type: ignore[attr-defined]
+            except (AttributeError, OSError):
+                # add_dll_directory is Python 3.8+ on Windows only; if
+                # it is unavailable we silently fall back to PATH.
+                pass
+
+
+_add_nvidia_dll_paths()
+
+
 # IMPORTANT: do not pre-create a module-level ``_native = None`` — that
 # would shadow the submodule name and make ``from . import _native``
 # silently bind ``None``. Import first, then assign fallbacks on failure.

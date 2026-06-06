@@ -9,7 +9,9 @@ from .utils import *
 from .topology import *
 from .fileio import *
 
-__all__ = ["__version__"]
+from . import _blas as blas  # noqa: F401  (top-level alias)
+
+__all__ = ["__version__", "blas"]
 __all__ += base.__all__
 __all__ += containers.__all__
 __all__ += stats.__all__

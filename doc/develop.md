@@ -19,6 +19,7 @@ with new algorithms, datasets, or analyses.
 | `sfa/control/`              | Influence matrix and target prioritization.               |
 | `sfa/plot/`                 | Matplotlib-based plotters.                                |
 | `sfa/vis/`                  | Graph annotation and the optional SFV integration.        |
+| `sfa/_cuda/`                | Native CUDA backend (pybind11 + cuBLAS + hand-written kernels). Optional. See [CUDA backend](cuda.md). |
 
 ## Adding a new algorithm
 
@@ -57,8 +58,7 @@ See `sfa/data/borisov_2009/__init__.py` and
 
 ## Coding conventions
 
-- Target Python 3.7 and newer; the codebase no longer carries Python 2
-  compatibility shims.
+- Target Python 3.10 and newer.
 - Prefer explicit dtypes (`np.float64`, `int`) over the legacy aliases
   `np.float` / `np.int`, which were removed in NumPy 1.20.
 - Use `pd.read_csv(..., sep='\t')` instead of the deprecated
@@ -66,6 +66,49 @@ See `sfa/data/borisov_2009/__init__.py` and
 - For matrix-shape operations on adjacency matrices, work with NumPy
   `ndarray`s directly: `.to_numpy()` is a `pandas` method and does not
   exist on `ndarray`.
+
+## Building the CUDA extension
+
+The native CUDA backend lives under `sfa/_cuda/src` and is compiled by
+`setup.py`'s custom `build_ext` when `nvcc` is on `PATH`. The build is
+controlled by three environment variables:
+
+| Variable             | Default       | Purpose                                                              |
+|----------------------|---------------|----------------------------------------------------------------------|
+| `SFA_BUILD_CUDA`     | `1` if `nvcc` found, else `0` | Set `0` to force a pure-Python install.              |
+| `SFA_CUDA_ARCH`      | `sm_70;sm_75;sm_80;sm_86;sm_89;sm_90` | Semicolon-separated SM list. Each becomes a `-gencode arch=compute_XX,code=sm_XX`. The highest also emits PTX for forward-compat JIT. |
+| `SFA_PACKAGE_NAME`   | `sfa`         | PyPI package name. The CI wheel matrix sets this to `sfa-cu130` for the CUDA variant. |
+
+For day-to-day single-GPU development, override `SFA_CUDA_ARCH` to the
+single arch you have to keep nvcc fast:
+
+```bash
+SFA_CUDA_ARCH=sm_89 pip install -e .
+```
+
+The shipped conda environment `environment-cuda.yml` pins CUDA 13.2
+with `cuda-toolkit`, `libcublas-dev`, `pybind11`, and the runtime
+Python deps; activate it before `pip install -e .`.
+
+Sources are organized as:
+
+```
+sfa/_cuda/
+  __init__.py                     # lazy import + HAS_NATIVE flag
+  src/
+    bindings.cpp                  # pybind11 entry points
+    common.cuh                    # CUDA error-check macros
+    dtype.cuh                     # AccTraits<T>, host_to_double, etc.
+    influence_iter.cu             # influence iteration kernel
+    signal_prop_iter.cu           # signal-propagation iteration kernel
+```
+
+Adding a new dtype (e.g. `bfloat16`) means: adding the conversion
+helpers to `dtype.cuh`, specializing `gemm_NN<T>` / `gemv<T>` in the
+relevant `.cu`, adding an explicit instantiation line, and extending
+the dispatch in `bindings.cpp`. The fused kernels themselves are
+written against `T` and need no changes if the operator overloads
+(`+`, `-`, `*`, `atomicAdd`) exist for the new type.
 
 ## Building the documentation
 

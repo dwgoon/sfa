@@ -75,7 +75,9 @@ class SignalPropagation(NetworkPropagation):
                             device="cpu",
                             dtype=None,
                             check_every=8,
-                            use_tf32=True):
+                            use_tf32=True,
+                            num_threads=None,
+                            backend=None):
 
         device = (device or "cpu").lower()
         if "cuda" in device:
@@ -87,6 +89,13 @@ class SignalPropagation(NetworkPropagation):
                 return out
 
         # ---- CPU path ------------------------------------------------------
+        # `backend` only affects the closed-form LAPACK paths in
+        # compute_influence; the GEMV iteration below uses whatever BLAS
+        # scipy/numpy is linked against. We accept the kwarg for API
+        # consistency. ``num_threads`` is honored through threadpoolctl.
+        from sfa._blas import thread_limit
+        del backend  # currently no per-call BLAS swap for GEMV; see _blas_ctypes for ?gesv.
+
         # Pick the working dtype. None means "honor xi.dtype if floating,
         # else upgrade to float64". This keeps backward compatibility with
         # callers that pass integer/float64 inputs.
@@ -116,19 +125,20 @@ class SignalPropagation(NetworkPropagation):
             trj[0] = x_t1
 
         num_iter = 0
-        for i in range(lim_iter):
-            # x_t2 = a*W @ x_t1 + (1-a)*b  (no temporary allocations)
-            np.dot(W_, x_t1, out=x_t2)
-            x_t2 *= a_
-            x_t2 += one_minus_a * b_
-            num_iter += 1
-            if get_trj:
-                trj[num_iter] = x_t2
-            if np.linalg.norm(x_t2 - x_t1) <= tol:
-                break
-            # Swap views instead of copying: x_t1 becomes the freshest state,
-            # and we recycle x_t1's old buffer as the next x_t2.
-            x_t1, x_t2 = x_t2, x_t1
+        with thread_limit(num_threads):
+            for i in range(lim_iter):
+                # x_t2 = a*W @ x_t1 + (1-a)*b  (no temporary allocations)
+                np.dot(W_, x_t1, out=x_t2)
+                x_t2 *= a_
+                x_t2 += one_minus_a * b_
+                num_iter += 1
+                if get_trj:
+                    trj[num_iter] = x_t2
+                if np.linalg.norm(x_t2 - x_t1) <= tol:
+                    break
+                # Swap views instead of copying: x_t1 becomes the freshest
+                # state, and the old x_t1 buffer is recycled as next x_t2.
+                x_t1, x_t2 = x_t2, x_t1
 
         if get_trj:
             # Slice to actual rows (no copy).

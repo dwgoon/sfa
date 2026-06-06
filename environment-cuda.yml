@@ -21,5 +21,6 @@ dependencies:
   - conda-forge::scipy
   - conda-forge::pandas
   - conda-forge::networkx
+  - conda-forge::threadpoolctl
   # Test / bench
   - conda-forge::pytest

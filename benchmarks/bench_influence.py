@@ -8,7 +8,7 @@ Backends:
 
 Usage (from inside the sfa-cu132 conda env):
 
-    python bench/bench_influence.py --sizes 512 2048 4096 --reps 3 \\
+    python benchmarks/bench_influence.py --sizes 512 2048 4096 --reps 3 \\
         --backends cpu gpu cuda \\
         --dtypes float32 float64 float16
 

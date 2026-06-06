@@ -18,6 +18,7 @@ dependencies = [
     "scipy",
     "pandas",
     "networkx",
+    "threadpoolctl",
 ]
 
 [project.optional-dependencies]

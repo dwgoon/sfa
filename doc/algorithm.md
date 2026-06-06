@@ -90,6 +90,38 @@ tolerance on $x(t+1) - x(t)$.
 >>> alg.params.apply_weight_norm = True
 ```
 
+### `propagate_iterative` keyword arguments
+
+```python
+alg.propagate_iterative(
+    W, xi, b,
+    a=0.5, lim_iter=1000, tol=1e-5,
+    get_trj=False,
+    device='cpu',
+    dtype=None,
+    check_every=8,
+    use_tf32=True,
+)
+```
+
+| Parameter      | Default | Description                                                                |
+|----------------|---------|----------------------------------------------------------------------------|
+| `a`            | `0.5`   | Hyperparameter $\alpha \in (0, 1)$.                                        |
+| `lim_iter`     | `1000`  | Iteration cap.                                                             |
+| `tol`          | `1e-5`  | Stopping tolerance for $\lVert x(t+1) - x(t)\rVert_2$.                     |
+| `get_trj`      | `False` | When `True`, return `(x_final, trajectory)` where `trajectory` is a `(num_iter + 1, N)` array. |
+| `device`       | `'cpu'` | `'cpu'`, `'cuda:<id>'` (native), or implicit numpy fallback when the native extension is unavailable. |
+| `dtype`        | `None`  | One of `numpy.float32`, `numpy.float64`, `numpy.float16` (CUDA only). `None` honors `xi.dtype`. |
+| `check_every`  | `8`     | Native CUDA only. Iterations per host sync / CUDA Graph batch.             |
+| `use_tf32`     | `True`  | Native CUDA only. Enable TF32 Tensor Cores on the FP32 path.               |
+| `num_threads`  | `None`  | CPU path only. BLAS thread cap via `threadpoolctl`. Ignored on CUDA.       |
+| `backend`      | `None`  | Accepted for API consistency. The propagation iteration uses GEMV, which is bandwidth-bound and not parameterized by the runtime ctypes backend swap; the kwarg is a no-op here. The closed-form `compute_influence` path is where backend selection matters. |
+
+Trajectory mode is supported on both the CPU and CUDA paths. The CPU
+path uses a pre-allocated `(lim_iter + 1, N)` NumPy buffer; the CUDA
+path allocates the buffer on the device and downloads only the used
+rows at the end. See [CUDA backend](cuda.md) for the GPU details.
+
 ## Defining a new algorithm
 
 To add a new algorithm, create a new module under `sfa/algorithms/`
@@ -124,7 +156,13 @@ class MyAlgorithm(NetworkPropagation):
         self._params.exsol_forbidden = True
 
     def propagate_iterative(self, W, xi, b, a=0.5, lim_iter=1000,
-                            tol=1e-5, get_trj=False):
+                            tol=1e-5, get_trj=False,
+                            device='cpu', dtype=None,
+                            check_every=8, use_tf32=True):
+        # The base class checks `device` and routes 'cuda:<id>' to the
+        # native backend automatically if your subclass uses the
+        # standard SignalPropagation hooks. A minimal numpy-only
+        # implementation can ignore device/dtype like below.
         x_t1 = np.array(xi, dtype=np.float64)
         num_iter = 0
         for num_iter in range(1, lim_iter + 1):

@@ -41,8 +41,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ".[test]"
 
-      - name: Portable smoke
-        run: python tests/smoke.py
+      - name: Portable verification
+        run: python tests/verification.py
 
       - name: pytest
         run: python -m pytest tests/ -v --tb=short

@@ -218,6 +218,20 @@ def _cuda_extension() -> Optional[Extension]:
         lib_dirs = [str(CUDA_HOME / "lib64"), str(CUDA_HOME / "lib")]
     lib_dirs = [p for p in lib_dirs if Path(p).exists()]
 
+    # Linux: embed an $ORIGIN-relative rpath so the shipped wheel can
+    # locate libcublas/libcudart that arrive via the nvidia-* PyPI
+    # packages declared in install_requires. The .so lives at
+    # ``site-packages/sfa/_cuda/_native.so``; the nvidia libs land at
+    # ``site-packages/nvidia/{cublas,cuda_runtime}/lib`` so the relative
+    # path is ``$ORIGIN/../../nvidia/...``.
+    extra_link_args = []
+    if os.name != "nt":
+        extra_link_args += [
+            "-Wl,-rpath,$ORIGIN/../../nvidia/cublas/lib",
+            "-Wl,-rpath,$ORIGIN/../../nvidia/cuda_runtime/lib",
+            "-Wl,-rpath,$ORIGIN/../../nvidia/cuda_nvrtc/lib",
+        ]
+
     ext = Extension(
         "sfa._cuda._native",
         sources=sources,
@@ -228,6 +242,7 @@ def _cuda_extension() -> Optional[Extension]:
         extra_compile_args=(["/std:c++17", "/O2", "/EHsc"]
                             if os.name == "nt"
                             else ["-std=c++17", "-O3", "-fPIC"]),
+        extra_link_args=extra_link_args,
     )
     ext.is_cuda = True
     return ext
@@ -239,11 +254,24 @@ if (cuda_ext := _cuda_extension()) is not None:
 
 
 # PyPI package name. Default is the cross-platform CPU-only package "sfa".
-# CUDA-enabled wheels are published under a parallel name (e.g.
-# "sfa-cu130") so both can coexist on PyPI; install one or the other but
-# never both into the same env. Override at build time:
-#   SFA_PACKAGE_NAME=sfa-cu130 SFA_BUILD_CUDA=1 python -m build --wheel
+# CUDA-enabled wheels are published under per-CUDA-version names
+# (sfa-cu128, sfa-cu132, sfa-cu133) so users can pick the variant that
+# matches their NVIDIA driver. Override at build time:
+#   SFA_PACKAGE_NAME=sfa-cu132 SFA_BUILD_CUDA=1 python -m build --wheel
 _pkg_name = os.environ.get("SFA_PACKAGE_NAME", "sfa")
+
+
+# Per-build extra install_requires fed in by the CI matrix. Used to pin
+# the NVIDIA runtime PyPI packages (nvidia-cublas-cuXX,
+# nvidia-cuda-runtime-cuXX) that match the CUDA major version we are
+# building against. The value is a whitespace-separated list of pip
+# requirement specifiers, e.g.
+#   SFA_CUDA_RUNTIME_REQUIRES="nvidia-cublas-cu13>=13.2,<13.3 \
+#                              nvidia-cuda-runtime-cu13>=13.2,<13.3"
+_extra_runtime = [
+    spec for spec in os.environ.get("SFA_CUDA_RUNTIME_REQUIRES", "").split()
+    if spec.strip()
+]
 
 
 setup(
@@ -257,7 +285,9 @@ setup(
     packages=find_packages(),
     package_data={"": ["*.tsv", "*.sif", "*.json"]},
     python_requires=">=3.10",
-    install_requires=["numpy", "scipy", "pandas", "networkx"],
+    install_requires=(["numpy", "scipy", "pandas", "networkx",
+                       "threadpoolctl"]
+                      + _extra_runtime),
     extras_require={
         "plot": ["matplotlib", "seaborn"],
         "cuda": [],  # toolchain provided by conda env (environment-cuda.yml)

@@ -74,6 +74,7 @@ nav:
   - Data: data.md
   - Algorithm: algorithm.md
   - Control: control.md
+  - CUDA backend: cuda.md
   - Visualization: visualization.md
   - Simulation: simulation.md
   - Development: develop.md

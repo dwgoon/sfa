@@ -26,17 +26,25 @@ S_{ij} = \frac{dx_i}{db_j} = \frac{\partial x_j}{\partial b_j}\,\frac{dx_i}{dx_j
        = \beta\,\bigl(I + \alpha W + \alpha^2 W^2 + \cdots\bigr)_{ij}.
 $$
 
-SFA approximates the series with the iteration
+SFA computes $S$ in one of two equivalent forms:
 
-$$
-S(t+1) = \alpha W S(t) + \beta I, \qquad S(0) = \beta I,
-$$
+1. **Closed form** (default CPU path when no initial `S` is supplied
+   and `get_iter=False`): solve $(I - \alpha W) X = \beta I$ via LAPACK
+   `getrf` + `getrs` through `scipy.linalg.solve`. This is roughly an
+   order of magnitude cheaper than the fixed-point iteration for
+   typical convergence at N >= 2048, and is dtype-aware.
+2. **Iterative form** (CPU when an initial `S` is supplied or
+   `get_iter=True`; always on the GPU paths):
 
-and terminates when the Frobenius norm of the unscaled update falls
-below the tolerance: $\lVert S(t+1) - S(t) \rVert_F \le \mathrm{tol}$.
-The shipped CPU implementation checks the tolerance on the unscaled
-series and multiplies by $\beta$ at the end (see the implementation
-note at the bottom of this page).
+    $$
+    S(t+1) = \alpha W S(t) + \beta I, \qquad S(0) = \beta I,
+    $$
+
+    terminating when
+    $\lVert S(t+1) - S(t) \rVert_F \le \mathrm{tol}$. The shipped CPU
+    implementation iterates as $S(t+1) = S(t)\,\alpha W + I$ with
+    $S(0) = I$ and applies the $\beta$ factor at the end (see the note
+    at the bottom of this page).
 
 ```python
 import sfa
@@ -66,20 +74,25 @@ loop with a transient `np.inf` placeholder on the diagonal), the
 returned `DataFrame` has an `object` dtype; cast it with
 `pd.to_numeric(errors='coerce')` before sorting or arithmetic.
 
-| Parameter   | Default    | Description                                                       |
-|-------------|------------|-------------------------------------------------------------------|
-| `W`         | (required) | Weight matrix (output of `alg.W`).                                |
-| `alpha`     | `0.9`      | Signal-flow contribution.                                         |
-| `beta`      | `0.1`      | Basal-activity contribution; scales the final $S$.                |
-| `S`         | `None`     | Initial influence matrix; defaults to identity.                   |
-| `rtype`     | `'df'`     | `'df'` for `pandas.DataFrame`, `'array'` for `numpy.ndarray`.     |
-| `outputs`   | `None`     | Required when `rtype='df'`; output node names.                    |
-| `n2i`       | `None`     | Required when `rtype='df'`; the data's name-to-index map.         |
-| `max_iter`  | `1000`     | Iteration cap.                                                    |
-| `tol`       | `1e-7`     | Tolerance for the stopping criterion.                             |
-| `get_iter`  | `False`    | Also return the actual iteration count.                           |
-| `device`    | `'cpu'`    | `'cpu'` or `'gpu:<id>'` (requires CuPy).                          |
-| `sparse`    | `False`    | Use SciPy sparse matrices for the CPU path. When `True`, an `'array'` return type yields a SciPy sparse matrix rather than a NumPy `ndarray`. |
+| Parameter      | Default    | Description                                                       |
+|----------------|------------|-------------------------------------------------------------------|
+| `W`            | (required) | Weight matrix (output of `alg.W`).                                |
+| `alpha`        | `0.9`      | Signal-flow contribution.                                         |
+| `beta`         | `0.1`      | Basal-activity contribution; scales the final $S$.                |
+| `S`            | `None`     | Initial influence matrix; defaults to identity. Passing this opts you out of the closed-form CPU fast path and into the iterative loop. |
+| `rtype`        | `'df'`     | `'df'` for `pandas.DataFrame`, `'array'` for `numpy.ndarray`.     |
+| `outputs`      | `None`     | Required when `rtype='df'`; output node names.                    |
+| `n2i`          | `None`     | Required when `rtype='df'`; the data's name-to-index map.         |
+| `max_iter`     | `1000`     | Iteration cap.                                                    |
+| `tol`          | `1e-7`     | Tolerance for the stopping criterion.                             |
+| `get_iter`     | `False`    | Also return the actual iteration count. Forces the iterative CPU path. |
+| `device`       | `'cpu'`    | `'cpu'`, `'cuda:<id>'` (native CUDA backend), or `'gpu:<id>'` (legacy CuPy path). The native backend falls back to CuPy and then to CPU if unavailable. |
+| `sparse`       | `False`    | Use SciPy sparse matrices for the CPU path. When `True`, an `'array'` return type yields a SciPy sparse matrix rather than a NumPy `ndarray`. |
+| `dtype`        | `None`     | Compute dtype. Supported: `numpy.float32`, `numpy.float64`, `numpy.float16` (CUDA only). `None` honors `W.dtype` for CPU and infers for CUDA. See [CUDA backend](cuda.md). |
+| `check_every`  | `8`        | Native CUDA only. Iterations per host sync / CUDA Graph batch.    |
+| `use_tf32`     | `True`     | Native CUDA only. Enable TF32 Tensor Cores on the FP32 path.      |
+| `num_threads`  | `None`     | CPU paths only. Cap the BLAS to this many threads for the call (via `threadpoolctl`). `None` keeps the process-wide default. Ignored on the CUDA path. |
+| `backend`      | `None`     | CPU closed-form path only. `'mkl'`, `'openblas'`, or `None` (use whichever BLAS scipy is linked against). Setting `backend` loads the requested BLAS by ctypes and calls LAPACKE directly, so MKL can be used even when scipy is linked against OpenBLAS. See [Install: CPU BLAS](install.md). |
 
 ## Shortest path length to output (SPLO)
 

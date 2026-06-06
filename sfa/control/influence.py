@@ -19,7 +19,9 @@ def compute_influence(W,
                       sparse=False,
                       dtype=None,
                       check_every=8,
-                      use_tf32=True):
+                      use_tf32=True,
+                      num_threads=None,
+                      backend=None):
     r"""Compute the influence matrix.
 
     Estimates how each source node affects every other node,
@@ -91,6 +93,17 @@ def compute_influence(W,
     use_tf32 : bool, optional
         Native CUDA only. Enable TF32 Tensor Core math mode for the FP32
         path. Default True. Ignored for FP64 / FP16.
+    num_threads : int, optional
+        CPU paths only. Restrict the BLAS to this many threads for the
+        call. Requires ``threadpoolctl``. ``None`` (default) keeps the
+        process-wide default. Ignored on the CUDA path.
+    backend : str, optional
+        CPU paths only. ``'mkl'``, ``'openblas'``, or ``None`` (default).
+        ``None`` uses scipy's linked BLAS. A non-``None`` value loads the
+        named BLAS by ctypes (``sfa._blas_ctypes``) and calls LAPACKE
+        directly, bypassing scipy. Useful for benchmarking or for
+        running an environment where scipy is linked against one BLAS
+        but you want to call another. Ignored on the CUDA path.
 
     Returns
     -------
@@ -110,12 +123,16 @@ def compute_influence(W,
 
     if 'cpu' in device:
         if sparse:
-            ret = _compute_influence_cpu_sparse(W, alpha, beta, S,
-                                               max_iter, tol, get_iter)
+            from sfa._blas import thread_limit
+            with thread_limit(num_threads):
+                ret = _compute_influence_cpu_sparse(W, alpha, beta, S,
+                                                   max_iter, tol, get_iter)
         else:
             ret = _compute_influence_cpu(W, alpha, beta, S,
                                         max_iter, tol, get_iter,
-                                        dtype=dtype)
+                                        dtype=dtype,
+                                        backend=backend,
+                                        num_threads=num_threads)
     elif 'cuda' in device:
         # Native CUDA path (sm_89-tuned: cuBLAS TF32 SGEMM + fused
         # add-identity/diff-norm kernel + CUDA Graph replay). Falls back
@@ -191,7 +208,7 @@ def _cpu_dtype(W, dtype):
 
 def _compute_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
                            max_iter=1000, tol=1e-6, get_iter=False,
-                           dtype=None):
+                           dtype=None, backend=None, num_threads=None):
     """CPU influence backend.
 
     Two regimes:
@@ -220,31 +237,47 @@ def _compute_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
         beta_t  = np_dt.type(beta)
         A = np.eye(N, dtype=np_dt) - alpha_t * W
         B = beta_t * np.eye(N, dtype=np_dt)
-        # overwrite_a/b avoid extra copies; check_finite=False skips an O(N^2)
-        # NaN scan that is irrelevant for well-formed inputs.
-        return sp.linalg.solve(A, B,
-                               overwrite_a=True, overwrite_b=True,
-                               check_finite=False)
+
+        if backend is None:
+            # Default path: scipy's linked LAPACK. threadpoolctl handles
+            # num_threads for the loaded BLAS.
+            from sfa._blas import thread_limit
+            with thread_limit(num_threads):
+                return sp.linalg.solve(A, B,
+                                       overwrite_a=True, overwrite_b=True,
+                                       check_finite=False)
+        # Runtime backend swap: load the requested BLAS by ctypes and call
+        # its LAPACKE_?gesv directly. Bypasses scipy so the user can call
+        # MKL even when scipy is linked against OpenBLAS (or vice versa).
+        # The ctypes dispatcher manages thread setting per backend.
+        from sfa._blas_ctypes import solve as ctypes_solve
+        return ctypes_solve(A, B, backend=backend, num_threads=num_threads)
 
     # ---- Iterative path (preserves get_iter semantics) ---------------------
-    if S is not None:
-        S1 = np.asarray(S, dtype=np_dt).copy()
-    else:
-        S1 = np.eye(N, dtype=np_dt)
+    # The iterative loop uses scipy/numpy BLAS regardless of `backend` (it
+    # is the closed-form path that supports the runtime ctypes swap); we
+    # still honor `num_threads` here through threadpoolctl.
+    from sfa._blas import thread_limit
+    with thread_limit(num_threads):
+        if S is not None:
+            S1 = np.asarray(S, dtype=np_dt).copy()
+        else:
+            S1 = np.eye(N, dtype=np_dt)
 
-    I = np.eye(N, dtype=np_dt)
-    S2 = np.empty((N, N), dtype=np_dt)
-    aW = alpha * W
-    cnt = 0
-    for cnt in range(1, max_iter + 1):
-        np.dot(S1, aW, out=S2)
-        S2 += I
-        norm = np.linalg.norm(S2 - S1)
-        if norm < tol:
-            break
-        S1[:, :] = S2
+        I = np.eye(N, dtype=np_dt)
+        S2 = np.empty((N, N), dtype=np_dt)
+        aW = alpha * W
+        cnt = 0
+        for cnt in range(1, max_iter + 1):
+            np.dot(S1, aW, out=S2)
+            S2 += I
+            norm = np.linalg.norm(S2 - S1)
+            if norm < tol:
+                break
+            S1[:, :] = S2
 
-    S_fin = beta * S2
+        S_fin = beta * S2
+
     if get_iter:
         return S_fin, cnt
     return S_fin

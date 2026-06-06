@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Portable post-install smoke test for sfa.
+"""Portable post-install verification for sfa.
 
 Runs without pytest. Exits 0 on success, non-zero on failure. Designed to
 be runnable from any environment that has sfa installed:
 
-    python -m tests.smoke
+    python -m tests.verification
     # or, if `tests/` is not on sys.path:
-    python path/to/tests/smoke.py
+    python path/to/tests/verification.py
 
 What it checks
 --------------
@@ -17,11 +17,12 @@ What it checks
    finite values).
 4. CPU SignalPropagation propagate_iterative produces a plausible result
    and a trajectory of the expected shape.
-5. If a CUDA GPU is visible, a quick GPU smoke (tiny influence) also runs.
+5. If a CUDA GPU is visible, a quick GPU verification (tiny influence)
+   also runs.
 
 The CUDA portion is purely opportunistic - the script does NOT fail when
-no GPU is present. That way the same smoke script works on plain CPU
-installs, CUDA installs without a GPU on the build runner, and full
+no GPU is present. That way the same verification script works on plain
+CPU installs, CUDA installs without a GPU on the build runner, and full
 CUDA installs on developer machines.
 """
 from __future__ import annotations
@@ -60,7 +61,7 @@ def main() -> int:
             print(f"   CUDA runtime call raised (ignored): {e!r}")
 
     # ------------------------------------------------------------------
-    _step("CPU influence smoke (LAPACK closed-form)")
+    _step("CPU influence verification (LAPACK closed-form)")
     from sfa.control.influence import compute_influence
     N = 32
     rng = np.random.default_rng(0)
@@ -75,7 +76,7 @@ def main() -> int:
     print(f"   ||S||_F={np.linalg.norm(S):.4f}  dtype={S.dtype}")
 
     # ------------------------------------------------------------------
-    _step("CPU SignalPropagation smoke (trajectory)")
+    _step("CPU SignalPropagation verification (trajectory)")
     from sfa.algorithms.sp import SignalPropagation
     alg = SignalPropagation("SP")
     xi = np.zeros(N, dtype=np.float64)
@@ -89,19 +90,19 @@ def main() -> int:
     print(f"   iters={trj.shape[0]-1}  ||x||={np.linalg.norm(x):.4f}")
 
     # ------------------------------------------------------------------
-    # Opportunistic GPU smoke
+    # Opportunistic GPU verification
     if has_native:
         try:
             m = _cuda.native_module()
             if m.device_count() > 0:
-                _step("CUDA influence smoke (opportunistic)")
+                _step("CUDA influence verification (opportunistic)")
                 S_gpu = compute_influence(
                     W, alpha=0.5, beta=0.5, device="cuda:0",
                     rtype="array", dtype=np.float32)
                 assert S_gpu.shape == (N, N)
                 print(f"   ||S_gpu||_F={np.linalg.norm(S_gpu):.4f}")
         except Exception as e:
-            print(f"   GPU smoke skipped: {e!r}")
+            print(f"   GPU verification skipped: {e!r}")
 
     print("ALL OK")
     return 0
