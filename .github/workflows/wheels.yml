@@ -128,7 +128,10 @@ jobs:
               nvidia-cuda-nvrtc-cu12>=12.8,<12.9
           - pkg: sfa-cu132
             toolkit: '13.2.0'
-            archs: 'sm_70;sm_75;sm_80;sm_86;sm_89;sm_90;sm_100;sm_120'
+            # sm_70 (Volta) is gone from CUDA 13's nvcc - the prior dry
+            # run hit `nvcc fatal: Unsupported gpu architecture 'compute_70'`
+            # on both Linux and Windows. Volta users stay on sfa-cu128.
+            archs: 'sm_75;sm_80;sm_86;sm_89;sm_90;sm_100;sm_120'
             runtime_requires: >-
               nvidia-cublas-cu13>=13.2,<13.3
               nvidia-cuda-runtime-cu13>=13.2,<13.3
@@ -212,6 +215,13 @@ jobs:
         uses: pypa/cibuildwheel@v2.21
         env:
           CIBW_ARCHS: ${{ runner.os == 'Windows' && 'AMD64' || 'x86_64' }}
+          # Use a manylinux base new enough that scipy still publishes
+          # binary wheels for it. scipy 1.16+ (picked up automatically
+          # on cp311+) dropped manylinux2014 in favour of manylinux_2_28,
+          # so the older default image forced a from-source scipy build
+          # at the test phase (which needs OpenBLAS and meson, neither
+          # available in the container).
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           # Linux build runs inside a manylinux container; bind-mount
           # the consolidated host CUDA tree (`/usr/local/cuda` symlink
           # is resolved by Docker to its versioned target dir).
