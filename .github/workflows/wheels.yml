@@ -290,7 +290,7 @@ jobs:
     name: publish-to-pypi
     needs: [build_cpu_wheel, build_sdist, build_cuda_wheels]
     runs-on: ubuntu-latest
-    if: false  # set to `startsWith(github.ref, 'refs/tags/v')` to enable
+    if: startsWith(github.ref, 'refs/tags/v')
     permissions:
       id-token: write
     steps:

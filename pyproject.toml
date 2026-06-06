@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 # wheels under the SFA_PACKAGE_NAME env var.
 [project]
 name = "sfa"
-version = "0.2.0.dev0"
+version = "0.2.0"
 description = "Signal flow analysis"
 readme = "README.md"
 license = { text = "MIT" }
