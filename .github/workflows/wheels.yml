@@ -143,42 +143,60 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install CUDA toolkit (host)
+      # Linux and Windows use different sub-package naming conventions:
+      #
+      # - Linux apt repos use a `cuda-` prefix for most CUDA components
+      #   (cuda-nvcc-12-8, cuda-cudart-dev-12-8, cuda-nvrtc-12-8, ...).
+      #   The exception is cuBLAS, which ships as a separate `lib*`
+      #   package family (libcublas-12-8, libcublas-dev-12-8) and must
+      #   therefore go through Jimver's `non-cuda-sub-packages` input.
+      # - Windows uses the NVIDIA Windows installer's sub-package names,
+      #   which are unprefixed and use underscores for the dev variants
+      #   (nvcc, cudart, cublas, cublas_dev, nvrtc, nvrtc_dev). There is
+      #   no separate cudart-dev on Windows; the cudart sub-package
+      #   already includes the headers.
+
+      - name: Install CUDA toolkit (Linux)
+        if: runner.os == 'Linux'
         uses: Jimver/cuda-toolkit@v0.2.35
         with:
           cuda: ${{ matrix.cuda.toolkit }}
           method: 'network'
-          # nvcc + cudart get the `cuda-` apt prefix; cuBLAS and NVRTC
-          # ship as `libcublas*` / `libnvrtc*` and must be listed under
-          # non-cuda-sub-packages to avoid the wrong prefix on Ubuntu.
-          sub-packages: '["nvcc", "cudart", "cudart-dev"]'
-          non-cuda-sub-packages: '["libcublas", "libcublas-dev", "libnvrtc", "libnvrtc-dev"]'
+          sub-packages: '["nvcc", "cudart", "cudart-dev", "nvrtc", "nvrtc-dev"]'
+          non-cuda-sub-packages: '["libcublas", "libcublas-dev"]'
 
-      - name: Stage cuBLAS / NVRTC under CUDA_HOME (Linux only)
-        # The network method puts cuBLAS / NVRTC headers in /usr/include
-        # and shared libs in /usr/lib/x86_64-linux-gnu/, but setup.py
-        # looks for them under $CUDA_HOME/{include,lib64}/. Consolidate
-        # so a single bind mount of /usr/local/cuda is enough for the
-        # manylinux container to see everything.
+      - name: Install CUDA toolkit (Windows)
+        if: runner.os == 'Windows'
+        uses: Jimver/cuda-toolkit@v0.2.35
+        with:
+          cuda: ${{ matrix.cuda.toolkit }}
+          method: 'network'
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "nvrtc", "nvrtc_dev"]'
+
+      - name: Stage cuBLAS under CUDA_HOME (Linux only)
+        # libcublas / libcublas-dev install headers to /usr/include and
+        # shared libs to /usr/lib/x86_64-linux-gnu/, while setup.py only
+        # looks under $CUDA_HOME/{include,lib64}/. NVRTC was pulled in
+        # with the `cuda-` prefix above and is already in CUDA_HOME, so
+        # only cuBLAS needs staging.
         if: runner.os == 'Linux'
         shell: bash
         run: |
           set -euo pipefail
           CUDA_HOME=/usr/local/cuda
           sudo mkdir -p "$CUDA_HOME/include" "$CUDA_HOME/lib64"
-          for h in cublas.h cublas_v2.h cublas_api.h cublasLt.h nvrtc.h; do
+          for h in cublas.h cublas_v2.h cublas_api.h cublasLt.h; do
             if [ -f "/usr/include/$h" ]; then
               sudo cp "/usr/include/$h" "$CUDA_HOME/include/"
             fi
           done
-          for pat in 'libcublas*.so*' 'libnvrtc*.so*'; do
-            sudo find /usr/lib/x86_64-linux-gnu/ -maxdepth 1 -name "$pat" \
-              -exec cp -a {} "$CUDA_HOME/lib64/" \;
-          done
-          echo "--- $CUDA_HOME/include ---"
-          ls -la "$CUDA_HOME/include/" | head
-          echo "--- $CUDA_HOME/lib64 ---"
-          ls -la "$CUDA_HOME/lib64/" | head
+          sudo find /usr/lib/x86_64-linux-gnu/ -maxdepth 1 \
+            -name 'libcublas*.so*' \
+            -exec cp -a {} "$CUDA_HOME/lib64/" \;
+          echo "--- $CUDA_HOME/include (cublas only) ---"
+          ls -la "$CUDA_HOME/include/" | grep -E 'cublas|nvrtc' || true
+          echo "--- $CUDA_HOME/lib64 (cublas only) ---"
+          ls -la "$CUDA_HOME/lib64/" | grep -E 'cublas|nvrtc' || true
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21
