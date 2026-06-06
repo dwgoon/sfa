@@ -171,13 +171,18 @@ jobs:
         uses: Jimver/cuda-toolkit@v0.2.35
         with:
           cuda: ${{ matrix.cuda.toolkit }}
-          method: 'network'
-          # `cudart_dev` is needed in addition to `cudart` starting with
-          # CUDA 13: the Windows installer split the runtime developer
-          # headers (including crt/host_config.h, required by nvcc to
-          # talk to MSVC) out of `cudart` into a separate sub-package.
-          # Listing both also works on CUDA 12.8.
-          sub-packages: '["nvcc", "cudart", "cudart_dev", "cublas", "cublas_dev", "nvrtc", "nvrtc_dev"]'
+          # Use the full local installer on Windows. The `network` method
+          # with cherry-picked sub-packages worked on CUDA 12.8 but on
+          # CUDA 13 nvcc fails with "Cannot open include file:
+          # 'crt/host_config.h'" because that header has been moved
+          # behind a sub-package whose exact name varies between minor
+          # CUDA versions (and isn't always called `cudart_dev` -
+          # adding that string broke even the 12.8 install). The local
+          # installer ships the whole toolkit unconditionally, so every
+          # CUDA major / minor we plug into the matrix is guaranteed to
+          # land a complete include tree. Trade-off: a one-time ~3 GB
+          # download per cell.
+          method: 'local'
 
       - name: Set up MSVC environment (Windows)
         # cibuildwheel spawns the build in a subprocess that does NOT
