@@ -10,7 +10,6 @@ NVIDIA driver new enough for that CUDA version.
 | `sfa`        | none    | -                  | Linux, macOS, Windows  |
 | `sfa-cu128`  | 12.8.x  | 570 (Linux / Win)  | Linux, Windows         |
 | `sfa-cu132`  | 13.2.x  | 580                | Linux, Windows         |
-| `sfa-cu133`  | 13.3.x  | 580                | Linux, Windows         |
 
 All CUDA wheels share the same AOT-compiled SASS matrix (SM 7.0
 through SM 12.0: Volta, Turing, Ampere, Ada, Hopper, Blackwell), plus
@@ -37,14 +36,13 @@ that is the maximum CUDA version your driver supports.
 
 | Package     | CUDA bundled | Minimum NVIDIA driver | When to pick                                              |
 |-------------|--------------|------------------------|-----------------------------------------------------------|
-| `sfa-cu133` | 13.3.x       | 580                    | Newest hardware / drivers; default for fresh installs.    |
-| `sfa-cu132` | 13.2.x       | 580                    | Matches the CUDA 13.2 conda env in `environment-cuda.yml`. |
+| `sfa-cu132` | 13.2.x       | 580                    | Newest CUDA stack; matches `environment-cuda.yml`.        |
 | `sfa-cu128` | 12.8.x       | 570                    | Older driver (CUDA 12 line); broadest backwards compat.   |
 
 Example (install the newest one):
 
 ```bash
-pip install sfa-cu133
+pip install sfa-cu132
 ```
 
 Requires Python 3.10+. macOS is not supported because Apple ended
@@ -98,8 +96,8 @@ is what the maintainers test against. The same workflow works for any
 CUDA major / minor that has a `cuda-toolkit` build on the `nvidia`
 channel: edit the two `cuda-version` / `cuda-toolkit` pins in lockstep
 (see [What `environment-cuda.yml` provides](#what-environment-cudayml-provides)
-below) and rename the env on the first line of the file. CUDA 12.8 and
-13.3 environments have been tested in CI.
+below) and rename the env on the first line of the file. CUDA 12.8
+and 13.2 environments have been tested in CI.
 
 ### Option B: conda-free build (system CUDA + system C++ compiler)
 
@@ -220,7 +218,7 @@ Notes for adjusting the file:
 |----------------------|------------------------------------------------------------------------|
 | `SFA_BUILD_CUDA`     | `0` to force a pure-Python install. Default: build if `nvcc` is found. |
 | `SFA_CUDA_ARCH`      | Semicolon-separated SM list, e.g. `sm_89` (dev) or `sm_70;sm_80;sm_89`. Default: the full wheel-wide AOT matrix. |
-| `SFA_PACKAGE_NAME`   | Override the PyPI name (used by CI to produce e.g. `sfa-cu132` or `sfa-cu133` from the same source tree). |
+| `SFA_PACKAGE_NAME`   | Override the PyPI name (used by CI to produce e.g. `sfa-cu128` or `sfa-cu132` from the same source tree). |
 
 ## Verify the install
 

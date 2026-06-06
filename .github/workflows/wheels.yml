@@ -133,13 +133,11 @@ jobs:
               nvidia-cublas-cu13>=13.2,<13.3
               nvidia-cuda-runtime-cu13>=13.2,<13.3
               nvidia-cuda-nvrtc-cu13>=13.2,<13.3
-          - pkg: sfa-cu133
-            toolkit: '13.3.0'
-            archs: 'sm_70;sm_75;sm_80;sm_86;sm_89;sm_90;sm_100;sm_120'
-            runtime_requires: >-
-              nvidia-cublas-cu13>=13.3,<13.4
-              nvidia-cuda-runtime-cu13>=13.3,<13.4
-              nvidia-cuda-nvrtc-cu13>=13.3,<13.4
+          # sfa-cu133 (CUDA 13.3) is temporarily disabled: Jimver/cuda-toolkit
+          # v0.2.35 does not yet have a 13.3 entry in its version table, so
+          # the install step reports 'Version not available: 13.3.0'. Re-add
+          # this matrix row when a newer Jimver release ships with 13.3
+          # support.
     steps:
       - uses: actions/checkout@v5
 
@@ -172,6 +170,18 @@ jobs:
           cuda: ${{ matrix.cuda.toolkit }}
           method: 'network'
           sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "nvrtc", "nvrtc_dev"]'
+
+      - name: Set up MSVC environment (Windows)
+        # cibuildwheel spawns the build in a subprocess that does NOT
+        # inherit a Developer Command Prompt, so cl.exe is not on PATH
+        # and nvcc fails with 'Cannot find compiler cl.exe in PATH'.
+        # This action sets the MSVC env vars (VCINSTALLDIR, PATH, ...)
+        # for subsequent steps on the runner so the cibuildwheel
+        # subprocess can find cl.exe.
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
       - name: Stage cuBLAS under CUDA_HOME (Linux only)
         # libcublas / libcublas-dev install headers to /usr/include and
@@ -227,6 +237,19 @@ jobs:
           # tests skip via tests/_skip_helpers.py (device_count() == 0).
           # The verification script verifies that the native extension
           # loads (which exercises the bundled NVIDIA runtime libs).
+          # Linux only: tell auditwheel NOT to bundle the NVIDIA runtime
+          # shared libs into the wheel. The wheel declares pinned PyPI
+          # dependencies on nvidia-cublas-cuXX / nvidia-cuda-runtime-cuXX /
+          # nvidia-cuda-nvrtc-cuXX through SFA_CUDA_RUNTIME_REQUIRES, so
+          # the runtime libs arrive via pip at install time. Covering
+          # both major sonames (.so.12 for cu128, .so.13 for cu132).
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: >-
+            auditwheel repair -w {dest_dir} {wheel}
+            --exclude libcudart.so.12 --exclude libcudart.so.13
+            --exclude libcublas.so.12 --exclude libcublas.so.13
+            --exclude libcublasLt.so.12 --exclude libcublasLt.so.13
+            --exclude libnvrtc.so.12 --exclude libnvrtc.so.13
+            --exclude libnvrtc-builtins.so.12 --exclude libnvrtc-builtins.so.13
           CIBW_TEST_REQUIRES: "pytest"
           CIBW_TEST_COMMAND: >-
             python {package}/tests/verification.py

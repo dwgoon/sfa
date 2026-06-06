@@ -43,7 +43,6 @@ set of CUDA optimized `sfa-cuXYZ` versions:
 | `sfa`         | none   | -                   | Linux, macOS, Windows  |
 | `sfa-cu128`   | 12.8.x | 570 (Linux / Win)   | Linux, Windows         |
 | `sfa-cu132`   | 13.2.x | 580                 | Linux, Windows         |
-| `sfa-cu133`   | 13.3.x | 580                 | Linux, Windows         |
 
 Each CUDA wheel ships ahead-of-time compiled SASS for NVIDIA SM 7.0
 through SM 12.0 (Volta, Turing, Ampere, Ada, Hopper, Blackwell) plus a
@@ -67,7 +66,7 @@ supports.
 Example (install the newest one):
 
 ```bash
-pip install sfa-cu133
+pip install sfa-cu132
 ```
 
 > [!IMPORTANT]

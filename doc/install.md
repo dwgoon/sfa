@@ -9,8 +9,7 @@ one** into a given environment.
 |---------------|--------|---------------------|-----------------------------|
 | `sfa`         | none   | -                   | Linux, macOS, Windows       |
 | `sfa-cu128`   | 12.8.x | 570 (Linux / Win)   | Linux, Windows              |
-| `sfa-cu132`   | 13.2.x | 580                 | Linux, Windows              |
-| `sfa-cu133`   | 13.3.x | 580                 | Linux, Windows (newest)     |
+| `sfa-cu132`   | 13.2.x | 580                 | Linux, Windows (newest)     |
 
 ## Requirements
 
@@ -33,10 +32,9 @@ Run `nvidia-smi` and look at the "CUDA Version" column. That is the
 number:
 
 ```text
-nvidia-smi -> "CUDA Version: 13.3"  -> any of sfa-cu128 / cu132 / cu133
-nvidia-smi -> "CUDA Version: 13.0"  -> sfa-cu128
-nvidia-smi -> "CUDA Version: 12.8"  -> sfa-cu128
-nvidia-smi -> "CUDA Version: 12.6"  -> upgrade your driver or use `sfa` (CPU)
+nvidia-smi -> "CUDA Version: 13.2" or higher  -> sfa-cu132 or sfa-cu128
+nvidia-smi -> "CUDA Version: 12.8" - 13.1     -> sfa-cu128
+nvidia-smi -> "CUDA Version: 12.6"             -> upgrade your driver or use `sfa` (CPU)
 ```
 
 When in doubt, start with `sfa-cu128` for the widest driver coverage
