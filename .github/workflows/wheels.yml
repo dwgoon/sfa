@@ -49,7 +49,6 @@ jobs:
       - name: Build the universal CPU wheel
         env:
           SFA_BUILD_CUDA: "0"
-          SFA_PACKAGE_NAME: "sfa"
         run: |
           python -m pip install --upgrade pip build
           python -m build --wheel
@@ -72,7 +71,6 @@ jobs:
       - name: Build sdist
         env:
           SFA_BUILD_CUDA: "0"
-          SFA_PACKAGE_NAME: "sfa"
         run: |
           python -m pip install --upgrade pip build
           python -m build --sdist
@@ -221,6 +219,22 @@ jobs:
           echo "--- $CUDA_HOME/lib64 (cublas only) ---"
           ls -la "$CUDA_HOME/lib64/" | grep -E 'cublas|nvrtc' || true
 
+      - name: Rename wheel project to ${{ matrix.cuda.pkg }}
+        # PEP 621 forbids `name` from being declared dynamic in
+        # pyproject.toml, so the same source tree's static
+        # `name = "sfa"` must be sed-replaced in place per CUDA cell
+        # to produce the per-CUDA wheel names (sfa-cu128 / sfa-cu132).
+        # The CPU and sdist jobs leave this line untouched and ship
+        # under the default `sfa` name. Runs on both Linux and
+        # Windows runners via Git Bash; cibuildwheel afterwards reads
+        # the modified pyproject.toml inside its build sandbox.
+        shell: bash
+        run: |
+          set -euo pipefail
+          sed -i 's/^name = "sfa"$/name = "${{ matrix.cuda.pkg }}"/' pyproject.toml
+          echo "--- name line after rename ---"
+          grep '^name' pyproject.toml
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21
         env:
@@ -238,9 +252,10 @@ jobs:
           CIBW_CONTAINER_ENGINE: >-
             docker; create_args: -v /usr/local/cuda:/usr/local/cuda:ro
           # Linux-only env: bind-mounted CUDA path + PATH update.
+          # The wheel project name is set by the sed step above
+          # (pyproject.toml's `[project] name`), not by an env var.
           CIBW_ENVIRONMENT_LINUX: >-
             SFA_BUILD_CUDA=1
-            SFA_PACKAGE_NAME=${{ matrix.cuda.pkg }}
             SFA_CUDA_ARCH="${{ matrix.cuda.archs }}"
             SFA_CUDA_RUNTIME_REQUIRES="${{ matrix.cuda.runtime_requires }}"
             CUDA_PATH=/usr/local/cuda
@@ -250,7 +265,6 @@ jobs:
           # subprocess automatically.
           CIBW_ENVIRONMENT_WINDOWS: >-
             SFA_BUILD_CUDA=1
-            SFA_PACKAGE_NAME=${{ matrix.cuda.pkg }}
             SFA_CUDA_ARCH="${{ matrix.cuda.archs }}"
             SFA_CUDA_RUNTIME_REQUIRES="${{ matrix.cuda.runtime_requires }}"
           # GitHub runners have no NVIDIA GPU, so the CUDA-gated pytest
