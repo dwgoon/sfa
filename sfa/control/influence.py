@@ -156,6 +156,10 @@ def compute_influence(W,
             import cupy as cp
             if isinstance(ret, cp.ndarray):
                 ret = cp.asnumpy(ret)
+    else:
+        raise ValueError(
+            f"Unknown device: {device!r}. "
+            "Expected one of 'cpu', 'cuda[:N]', or 'gpu:N'.")
 
     if get_iter:
         S_ret, num_iter = ret
@@ -173,9 +177,6 @@ def compute_influence(W,
 
         for trg in outputs:
             for src in n2i:
-                if src == trg:
-                    df.loc[src, trg] = np.inf
-
                 idx_src = n2i[src]
                 idx_trg = n2i[trg]
                 df.loc[src, trg] = S_ret[idx_trg, idx_src]
@@ -272,7 +273,7 @@ def _compute_influence_cpu(W, alpha=0.5, beta=0.5, S=None,
             np.dot(S1, aW, out=S2)
             S2 += I
             norm = np.linalg.norm(S2 - S1)
-            if norm < tol:
+            if norm <= tol:
                 break
             S1[:, :] = S2
 
@@ -299,7 +300,7 @@ def _compute_influence_cpu_sparse(W, alpha, beta, S,
     for cnt in range(1, max_iter + 1):
         S2[:, :] = S1.dot(aW) + I
         norm = sp.sparse.linalg.norm(S2 - S1)
-        if norm < tol:
+        if norm <= tol:
             break
         # end of if
         S1[:, :] = S2

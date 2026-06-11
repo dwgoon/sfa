@@ -125,6 +125,7 @@ class SignalPropagation(NetworkPropagation):
             trj[0] = x_t1
 
         num_iter = 0
+        converged = False
         with thread_limit(num_threads):
             for i in range(lim_iter):
                 # x_t2 = a*W @ x_t1 + (1-a)*b  (no temporary allocations)
@@ -135,15 +136,22 @@ class SignalPropagation(NetworkPropagation):
                 if get_trj:
                     trj[num_iter] = x_t2
                 if np.linalg.norm(x_t2 - x_t1) <= tol:
+                    converged = True
                     break
                 # Swap views instead of copying: x_t1 becomes the freshest
                 # state, and the old x_t1 buffer is recycled as next x_t2.
                 x_t1, x_t2 = x_t2, x_t1
 
+        # When we converge we break *before* the swap, so x_t2 holds the
+        # latest iterate. When we exhaust lim_iter the final swap left the
+        # latest iterate in x_t1. Pick the right buffer so the returned x is
+        # always the last computed state (and matches trj[-1]). This also
+        # avoids returning the uninitialized x_t2 buffer when lim_iter == 0.
+        x_fin = x_t2 if converged else x_t1
         if get_trj:
             # Slice to actual rows (no copy).
-            return x_t2, trj[: num_iter + 1]
-        return x_t2, num_iter
+            return x_fin, trj[: num_iter + 1]
+        return x_fin, num_iter
 
     # end of def propagate_iterative
 
