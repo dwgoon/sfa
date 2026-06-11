@@ -79,8 +79,34 @@ class _Backend:
             ctypes.POINTER(ctypes.c_float), ctypes.c_int,
         ]
 
-        # Thread setters are backend-specific.
+        # Thread setters/getters are backend-specific.
         self.set_num_threads = self._resolve_thread_setter()
+        self.get_num_threads = self._resolve_thread_getter()
+
+    def _resolve_thread_getter(self):
+        """Return a callable ``f() -> int`` reporting the backend thread count.
+
+        Used to snapshot and restore the process-wide thread count around a
+        single ``solve`` so a one-off ``num_threads`` does not leak into the
+        rest of the process. Returns ``None`` when the backend exposes no
+        getter (then the count is simply left as set).
+        """
+        lib = self.lib
+        # MKL: int MKL_Get_Max_Threads(void) / int mkl_get_max_threads(void)
+        for sym in ('MKL_Get_Max_Threads', 'mkl_get_max_threads'):
+            fn = getattr(lib, sym, None)
+            if fn is not None:
+                fn.argtypes = []
+                fn.restype = ctypes.c_int
+                return fn
+        # OpenBLAS: int openblas_get_num_threads(void) / goto_get_num_threads
+        for sym in ('openblas_get_num_threads', 'goto_get_num_threads'):
+            fn = getattr(lib, sym, None)
+            if fn is not None:
+                fn.argtypes = []
+                fn.restype = ctypes.c_int
+                return fn
+        return None
 
     def _resolve_thread_setter(self):
         """Return a callable ``f(n: int) -> None`` for this backend."""
@@ -322,7 +348,15 @@ def solve(A: np.ndarray, B: np.ndarray, *,
     else:
         be = _load(canon)
 
+    # Snapshot the backend's current thread count so a one-off num_threads
+    # does not leak into the rest of the process; restore it after the solve.
+    prev_threads = None
     if num_threads is not None:
+        if be.get_num_threads is not None:
+            try:
+                prev_threads = int(be.get_num_threads())
+            except Exception:
+                prev_threads = None
         be.set_num_threads(int(num_threads))
 
     # Make sure layout is C-contiguous (LAPACK_ROW_MAJOR friendly).
@@ -332,20 +366,24 @@ def solve(A: np.ndarray, B: np.ndarray, *,
     NRHS = B.shape[1]
     ipiv = np.empty(N, dtype=np.int32)
 
-    if A.dtype == np.float64:
-        info = be.dgesv(
-            _LAPACK_ROW_MAJOR, N, NRHS,
-            A.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), N,
-            ipiv.ctypes.data_as(ctypes.POINTER(ctypes.c_int)),
-            B.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), NRHS,
-        )
-    else:  # float32
-        info = be.sgesv(
-            _LAPACK_ROW_MAJOR, N, NRHS,
-            A.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), N,
-            ipiv.ctypes.data_as(ctypes.POINTER(ctypes.c_int)),
-            B.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), NRHS,
-        )
+    try:
+        if A.dtype == np.float64:
+            info = be.dgesv(
+                _LAPACK_ROW_MAJOR, N, NRHS,
+                A.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), N,
+                ipiv.ctypes.data_as(ctypes.POINTER(ctypes.c_int)),
+                B.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), NRHS,
+            )
+        else:  # float32
+            info = be.sgesv(
+                _LAPACK_ROW_MAJOR, N, NRHS,
+                A.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), N,
+                ipiv.ctypes.data_as(ctypes.POINTER(ctypes.c_int)),
+                B.ctypes.data_as(ctypes.POINTER(ctypes.c_float)), NRHS,
+            )
+    finally:
+        if prev_threads is not None:
+            be.set_num_threads(prev_threads)
 
     if info != 0:
         raise np.linalg.LinAlgError(

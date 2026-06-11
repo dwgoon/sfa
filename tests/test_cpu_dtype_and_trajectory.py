@@ -102,3 +102,49 @@ def test_cuda_influence_use_tf32_off_higher_precision():
     err_fp32 = np.abs(S_fp32.astype(np.float64) - S_cpu).max()
     # FP32 path should be at least as accurate as TF32 (often much more so).
     assert err_fp32 <= err_tf32 + 1e-12
+
+
+def test_cpu_sp_nonconvergence_returns_last_iterate():
+    """Non-converged runs must return the *last* iterate, not the one before.
+
+    Regression test: the ping-pong swap optimization left the final swap in
+    place when lim_iter was exhausted, so the function returned the
+    second-to-last iterate (and a value that disagreed with trajectory[-1]).
+    """
+    alg = SignalPropagation("SP")
+    N = 16
+    W = _W(N, seed=3)
+    xi = np.zeros(N)
+    rng = np.random.default_rng(3)
+    b = rng.standard_normal(N) * 0.1
+    a = 0.5
+    n_steps = 5  # small lim_iter + unreachable tol => guaranteed non-convergence
+
+    x, num_iter = alg.propagate_iterative(
+        W, xi, b, a=a, lim_iter=n_steps, tol=1e-30, get_trj=False)
+    assert num_iter == n_steps
+
+    # Manual reference: exactly n_steps fixed-point updates from xi.
+    ref = xi.astype(np.float64).copy()
+    for _ in range(n_steps):
+        ref = a * W.dot(ref) + (1 - a) * b
+    np.testing.assert_allclose(x, ref, rtol=1e-12, atol=1e-12)
+
+    # The returned state must equal the last trajectory row.
+    x_trj, trj = alg.propagate_iterative(
+        W, xi, b, a=a, lim_iter=n_steps, tol=1e-30, get_trj=True)
+    assert trj.shape[0] == n_steps + 1
+    np.testing.assert_allclose(trj[-1], x_trj, rtol=1e-12, atol=1e-12)
+
+
+def test_cpu_sp_zero_iterations_returns_initial():
+    """lim_iter == 0 must return the initial state, not an uninitialized buffer."""
+    alg = SignalPropagation("SP")
+    N = 8
+    W = _W(N, seed=5)
+    xi = np.arange(N, dtype=np.float64)
+    b = np.zeros(N)
+    x, num_iter = alg.propagate_iterative(
+        W, xi, b, a=0.5, lim_iter=0, tol=1e-5)
+    assert num_iter == 0
+    np.testing.assert_allclose(x, xi)
