@@ -20,6 +20,15 @@ runtime they link against.
 This file is a quick reference. See
 [doc/install.md](doc/install.md) for the full guide.
 
+> [!NOTE]
+> For the **0.2.0** line, the primary distribution channel is the
+> [GitHub Releases page](https://github.com/dwgoon/sfa/releases),
+> not PyPI. The `pip install sfa-cuXYZ` shortcuts shown below assume
+> the wheels are on PyPI; until they land there, use the explicit
+> release URLs in the "Install from GitHub Releases" section. The
+> 0.1.0 `sfa` CPU package remains installable from PyPI through the
+> `pip install sfa` snippet.
+
 ## CPU (any OS)
 
 ```bash
@@ -52,6 +61,56 @@ NVIDIA driver development in 2019.
 > `sfa` and `sfa-cuXYZ` install into the same `sfa` Python namespace.
 > Install **only one** `sfa-cuXYZ` per environment; mixing them causes
 > import conflicts.
+
+## Install from GitHub Releases
+
+When a `v*` tag is pushed, `wheels.yml` attaches every artifact (one
+universal CPU wheel, the sdist, and a CUDA wheel for every supported
+Python + OS + CUDA combination) to the corresponding GitHub Release.
+`pip` can install those wheels directly:
+
+```bash
+# CPU (universal; any OS, any Python from 3.10 to 3.13).
+pip install https://github.com/dwgoon/sfa/releases/download/v0.2.0/sfa-0.2.0-py3-none-any.whl
+```
+
+For CUDA wheels, the filename encodes Python version, OS, and CUDA
+major.minor. The pattern is
+
+```
+sfa_cuXYZ-VER-cpPP-cpPP-PLAT.whl
+```
+
+with
+
+| Token  | Meaning                                              | Possible values                                  |
+|--------|------------------------------------------------------|--------------------------------------------------|
+| `XYZ`  | CUDA major.minor (no dot)                            | `128` (CUDA 12.8) or `132` (CUDA 13.2)           |
+| `VER`  | sfa version (matches the tag without the `v` prefix) | e.g. `0.2.0`                                     |
+| `PP`   | CPython major+minor (no dot)                         | `310`, `311`, `312`, `313`                       |
+| `PLAT` | Wheel platform tag                                   | `manylinux_2_28_x86_64` (Linux) / `win_amd64` (Windows) |
+
+Examples:
+
+```bash
+# Linux + Python 3.12 + CUDA 13.2
+pip install https://github.com/dwgoon/sfa/releases/download/v0.2.0/sfa_cu132-0.2.0-cp312-cp312-manylinux_2_28_x86_64.whl
+
+# Windows + Python 3.10 + CUDA 12.8
+pip install https://github.com/dwgoon/sfa/releases/download/v0.2.0/sfa_cu128-0.2.0-cp310-cp310-win_amd64.whl
+```
+
+If none of the prebuilt wheels match your environment, install the
+sdist or a tagged git source instead:
+
+```bash
+# sdist (compiles a pure-Python install; no CUDA extension).
+pip install https://github.com/dwgoon/sfa/releases/download/v0.2.0/sfa-0.2.0.tar.gz
+
+# git source at the v0.2.0 tag (set SFA_BUILD_CUDA=1 + have nvcc to
+# build the CUDA extension; otherwise a pure-Python install is made).
+pip install git+https://github.com/dwgoon/sfa.git@v0.2.0
+```
 
 ## Optional extras
 

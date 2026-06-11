@@ -253,14 +253,6 @@ if (cuda_ext := _cuda_extension()) is not None:
     ext_modules.append(cuda_ext)
 
 
-# PyPI package name. Default is the cross-platform CPU-only package "sfa".
-# CUDA-enabled wheels are published under per-CUDA-version names
-# (sfa-cu128, sfa-cu132, sfa-cu133) so users can pick the variant that
-# matches their NVIDIA driver. Override at build time:
-#   SFA_PACKAGE_NAME=sfa-cu132 SFA_BUILD_CUDA=1 python -m build --wheel
-_pkg_name = os.environ.get("SFA_PACKAGE_NAME", "sfa")
-
-
 # Per-build extra install_requires fed in by the CI matrix. Used to pin
 # the NVIDIA runtime PyPI packages (nvidia-cublas-cuXX,
 # nvidia-cuda-runtime-cuXX) that match the CUDA major version we are
@@ -268,6 +260,12 @@ _pkg_name = os.environ.get("SFA_PACKAGE_NAME", "sfa")
 # requirement specifiers, e.g.
 #   SFA_CUDA_RUNTIME_REQUIRES="nvidia-cublas-cu13>=13.2,<13.3 \
 #                              nvidia-cuda-runtime-cu13>=13.2,<13.3"
+#
+# The wheel's static metadata (name, version, description, author, etc.)
+# lives in pyproject.toml's [project] table; setup.py only supplies what
+# isn't there: the CUDA build extension, the dynamic install_requires
+# composed from the base list plus _extra_runtime, and the
+# build-extension command class.
 _extra_runtime = [
     spec for spec in os.environ.get("SFA_CUDA_RUNTIME_REQUIRES", "").split()
     if spec.strip()
@@ -275,24 +273,9 @@ _extra_runtime = [
 
 
 setup(
-    name=_pkg_name,
-    version="0.2.0.dev0",
-    description="Signal flow analysis",
-    url="http://github.com/dwgoon/sfa",
-    author="Daewon Lee",
-    author_email="daewon4you@gmail.com",
-    license="MIT",
-    packages=find_packages(),
-    package_data={"": ["*.tsv", "*.sif", "*.json"]},
-    python_requires=">=3.10",
     install_requires=(["numpy", "scipy", "pandas", "networkx",
                        "threadpoolctl"]
                       + _extra_runtime),
-    extras_require={
-        "plot": ["matplotlib", "seaborn"],
-        "cuda": [],  # toolchain provided by conda env (environment-cuda.yml)
-        "test": ["pytest"],
-    },
     ext_modules=ext_modules,
     cmdclass={"build_ext": CudaBuildExt} if ext_modules else {},
     zip_safe=False,

@@ -2,9 +2,17 @@
 requires = ["setuptools>=68", "wheel", "pybind11>=2.13", "numpy>=2.0"]
 build-backend = "setuptools.build_meta"
 
-# The project `name` is set dynamically from setup.py so the same source
-# tree can produce both "sfa" (CPU-only) and "sfa-cu130" (CUDA-enabled)
-# wheels under the SFA_PACKAGE_NAME env var.
+# PEP 621 requires `name` to be a static string here (it explicitly
+# forbids name from being dynamic). The CPU and sdist builds use this
+# default `sfa`; CUDA build cells in `wheels.yml` overwrite this line
+# in-place with `sed` so the same source tree produces sfa-cu128 /
+# sfa-cu132 wheels under their own PyPI names.
+#
+# `dependencies` is left dynamic so setup.py can append the per-CUDA
+# nvidia-cublas-cuXX / nvidia-cuda-runtime-cuXX runtime packages via
+# the SFA_CUDA_RUNTIME_REQUIRES env var. With no entry under
+# [tool.setuptools.dynamic], setuptools reads the resolved value from
+# setup.py's `install_requires=` call.
 [project]
 name = "sfa"
 version = "0.2.0"
@@ -13,13 +21,7 @@ readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Daewon Lee", email = "daewon4you@gmail.com" }]
 requires-python = ">=3.10"
-dependencies = [
-    "numpy",
-    "scipy",
-    "pandas",
-    "networkx",
-    "threadpoolctl",
-]
+dynamic = ["dependencies"]
 
 [project.optional-dependencies]
 cuda = []  # toolchain provided by conda env (environment-cuda.yml)
@@ -40,8 +42,9 @@ include = ["sfa*"]
 # Builds CPU-only wheels by default. To produce CUDA wheels, set
 # environment variables in the GitHub Actions workflow:
 #   SFA_BUILD_CUDA=1
-#   SFA_PACKAGE_NAME=sfa-cu130
-#   SFA_CUDA_ARCH=sm_70;sm_75;sm_80;sm_86;sm_89;sm_90  (AOT fat binary)
+#   SFA_CUDA_ARCH=sm_75;sm_80;sm_86;sm_89;sm_90;sm_100;sm_120
+# and rewrite the static `[project] name` line above to the target
+# wheel name (sfa-cu128 / sfa-cu132) via a sed step before running.
 # ---------------------------------------------------------------------------
 [tool.cibuildwheel]
 build = "cp310-* cp311-* cp312-* cp313-*"

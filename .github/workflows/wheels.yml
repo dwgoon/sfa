@@ -49,7 +49,6 @@ jobs:
       - name: Build the universal CPU wheel
         env:
           SFA_BUILD_CUDA: "0"
-          SFA_PACKAGE_NAME: "sfa"
         run: |
           python -m pip install --upgrade pip build
           python -m build --wheel
@@ -72,7 +71,6 @@ jobs:
       - name: Build sdist
         env:
           SFA_BUILD_CUDA: "0"
-          SFA_PACKAGE_NAME: "sfa"
         run: |
           python -m pip install --upgrade pip build
           python -m build --sdist
@@ -221,6 +219,22 @@ jobs:
           echo "--- $CUDA_HOME/lib64 (cublas only) ---"
           ls -la "$CUDA_HOME/lib64/" | grep -E 'cublas|nvrtc' || true
 
+      - name: Rename wheel project to ${{ matrix.cuda.pkg }}
+        # PEP 621 forbids `name` from being declared dynamic in
+        # pyproject.toml, so the same source tree's static
+        # `name = "sfa"` must be sed-replaced in place per CUDA cell
+        # to produce the per-CUDA wheel names (sfa-cu128 / sfa-cu132).
+        # The CPU and sdist jobs leave this line untouched and ship
+        # under the default `sfa` name. Runs on both Linux and
+        # Windows runners via Git Bash; cibuildwheel afterwards reads
+        # the modified pyproject.toml inside its build sandbox.
+        shell: bash
+        run: |
+          set -euo pipefail
+          sed -i 's/^name = "sfa"$/name = "${{ matrix.cuda.pkg }}"/' pyproject.toml
+          echo "--- name line after rename ---"
+          grep '^name' pyproject.toml
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21
         env:
@@ -238,9 +252,10 @@ jobs:
           CIBW_CONTAINER_ENGINE: >-
             docker; create_args: -v /usr/local/cuda:/usr/local/cuda:ro
           # Linux-only env: bind-mounted CUDA path + PATH update.
+          # The wheel project name is set by the sed step above
+          # (pyproject.toml's `[project] name`), not by an env var.
           CIBW_ENVIRONMENT_LINUX: >-
             SFA_BUILD_CUDA=1
-            SFA_PACKAGE_NAME=${{ matrix.cuda.pkg }}
             SFA_CUDA_ARCH="${{ matrix.cuda.archs }}"
             SFA_CUDA_RUNTIME_REQUIRES="${{ matrix.cuda.runtime_requires }}"
             CUDA_PATH=/usr/local/cuda
@@ -250,7 +265,6 @@ jobs:
           # subprocess automatically.
           CIBW_ENVIRONMENT_WINDOWS: >-
             SFA_BUILD_CUDA=1
-            SFA_PACKAGE_NAME=${{ matrix.cuda.pkg }}
             SFA_CUDA_ARCH="${{ matrix.cuda.archs }}"
             SFA_CUDA_RUNTIME_REQUIRES="${{ matrix.cuda.runtime_requires }}"
           # GitHub runners have no NVIDIA GPU, so the CUDA-gated pytest
@@ -281,16 +295,50 @@ jobs:
           path: ./wheelhouse/*.whl
 
   # ---------------------------------------------------------------------------
-  # Optional: publish to PyPI on tag pushes. Requires the OIDC trusted-
-  # publisher relationship to be configured at https://pypi.org for each
-  # of `sfa`, `sfa-cu128`, `sfa-cu132`, `sfa-cu133`. Disabled by default;
-  # change the `if:` guard to enable.
+  # Publish all build artifacts (CPU universal wheel, sdist, and every
+  # CUDA wheel produced by the matrix) to the GitHub Release that the
+  # `v*` tag triggers. End users install from these URLs directly:
+  #
+  #   pip install https://github.com/dwgoon/sfa/releases/download/v0.2.0/<wheel-name>
+  #
+  # This is the primary distribution channel while the PyPI publish job
+  # below is disabled.
   # ---------------------------------------------------------------------------
-  publish:
-    name: publish-to-pypi
+  publish_github_release:
+    name: publish-github-release
     needs: [build_cpu_wheel, build_sdist, build_cuda_wheels]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: List collected artifacts
+        run: ls -la dist/
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          prerelease: false
+          fail_on_unmatched_files: true
+
+  # ---------------------------------------------------------------------------
+  # Optional: publish to PyPI on tag pushes. Requires the OIDC trusted-
+  # publisher relationship to be configured at https://pypi.org for each
+  # of `sfa`, `sfa-cu128`, `sfa-cu132`. Currently disabled because the
+  # maintainer's PyPI account is unavailable; re-enable by flipping the
+  # `if:` guard back to `startsWith(github.ref, 'refs/tags/v')` once
+  # trusted publishers are in place. Existing GitHub Release artifacts
+  # are unaffected by this gate.
+  # ---------------------------------------------------------------------------
+  publish_pypi:
+    name: publish-to-pypi
+    needs: [build_cpu_wheel, build_sdist, build_cuda_wheels]
+    runs-on: ubuntu-latest
+    if: false
     permissions:
       id-token: write
     steps:

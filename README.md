@@ -74,6 +74,25 @@ pip install sfa-cu132
 > `sfa-cuXYZ` share the `sfa` Python namespace and will conflict if
 > stacked.
 
+### Install from GitHub Releases (current 0.2.0 primary channel)
+
+The 0.2.0 line is distributed through the project's
+[GitHub Releases page](https://github.com/dwgoon/sfa/releases) until
+the new CUDA wheels land on PyPI. Each `v*` tag attaches one universal
+CPU wheel, the sdist, and a per-Python / per-OS / per-CUDA wheel for
+each `sfa-cuXYZ` variant. Examples:
+
+```bash
+# CPU (universal, any OS / Python 3.10 - 3.13)
+pip install https://github.com/dwgoon/sfa/releases/download/v0.2.0/sfa-0.2.0-py3-none-any.whl
+
+# CUDA 13.2, Linux, Python 3.12
+pip install https://github.com/dwgoon/sfa/releases/download/v0.2.0/sfa_cu132-0.2.0-cp312-cp312-manylinux_2_28_x86_64.whl
+```
+
+See [INSTALL.md](INSTALL.md#install-from-github-releases) for the
+full wheel-filename pattern and Windows / older-Python URLs.
+
 ### Build from source
 
 For a new CUDA major version, a custom GPU architecture, or
